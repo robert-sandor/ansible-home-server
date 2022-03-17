@@ -1,0 +1,15 @@
+# Ignore inventory file
+inventory.yml
+
+# ignore group vars except for examples and readme
+group_vars/*
+!group_vars/all.example.yml
+!group_vars/README.md
+
+# ignore host vars except for examples and readme
+host_vars/*
+!host_vars/example.yml
+!host_vars/README.md
+
+# ignore all vars.yml files for each individual service
+service/*/vars.yml

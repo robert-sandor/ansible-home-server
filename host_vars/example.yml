@@ -1,0 +1,19 @@
+domain: example.domain.local
+
+networks:
+  - example
+  - example2
+
+volumes:
+  - name: local-example
+    type: local
+  - name: nfs-example
+    type: nfs4
+    host: fileserver.domain.local
+    device: example
+  - name: cifs-example
+    type: cifs
+    host: fileserver.domain.local
+    device: example
+    user: notroot
+    password: p@ssw0rd

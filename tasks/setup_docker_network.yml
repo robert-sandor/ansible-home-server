@@ -1,0 +1,3 @@
+- name: Setup docker network {{ network }}
+  community.docker.docker_network:
+    name: "{{ network }}"

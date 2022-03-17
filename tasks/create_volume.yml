@@ -1,0 +1,9 @@
+- name: Create volume with type {{ volume.type }}
+  include_tasks: "{{ volume_tasks[volume.type] }}"
+  vars:
+    volume_tasks:
+      local: tasks/local_volume.yml
+      nfs: tasks/nfs_volume.yml
+      nfs4: tasks/nfs_volume.yml
+      cifs: tasks/cifs_volume.yml
+      smb: tasks/cifs_volume.yml

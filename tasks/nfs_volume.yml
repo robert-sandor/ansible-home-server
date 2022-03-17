@@ -1,0 +1,8 @@
+- name: Create {{ volume.type }} volume {{ volume.name }}
+  community.docker.docker_volume:
+    name: "{{ volume.name }}"
+    driver: local
+    driver_options:
+      type: "{{ volume.type }}"
+      o: "addr={{ volume.host }},{{ volume.options | default('rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14') }}"
+      device: ":{{ volume.device }}"

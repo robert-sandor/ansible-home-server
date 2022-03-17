@@ -1,0 +1,15 @@
+- name: Ensure path to service folder for {{ service }}
+  file:
+    path: "{{ project_dir }}/{{service}}"
+    state: directory
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0755'
+
+- name: Template docker-compose file for {{ service }}
+  template:
+    src: services/{{ service }}/templates/docker-compose.yml.j2
+    dest: "{{ project_dir }}/{{ service }}/docker-compose.yml"
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0644'

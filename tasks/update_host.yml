@@ -1,0 +1,9 @@
+- name: Check for updates
+  apt:
+    update_cache: yes
+  become: true
+
+- name: Run full upgrade
+  apt:
+    upgrade: dist
+  become: true
