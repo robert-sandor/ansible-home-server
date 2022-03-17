@@ -19,8 +19,8 @@ For `nfs` and `nfs4` docker volumes, `host` and `device` are also required. Also
 ```
 volumes:
   - name: nfs-share
-    type: nfs
-    host: 192.168.1./ NFS42
+    type: nfs4
+    host: 192.168.1.2
     device: media
 ```
 
