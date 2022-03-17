@@ -12,4 +12,4 @@ host_vars/*
 !host_vars/README.md
 
 # ignore all vars.yml files for each individual service
-service/*/vars.yml
+**/vars.yml
