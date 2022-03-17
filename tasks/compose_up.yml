@@ -1,0 +1,6 @@
+- name: Start service {{ service }}
+  community.docker.docker_compose:
+    project_name: "{{ service }}"
+    project_src: "{{ project_dir }}/{{ service }}"
+    pull: yes
+    remove_orphans: yes

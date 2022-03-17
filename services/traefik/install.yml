@@ -11,4 +11,7 @@
   vars:
     service: traefik
 
-
+- name: Start service
+  include_tasks: tasks/compose_up.yml
+  vars:
+    service: traefik

@@ -2,49 +2,53 @@
 
   hosts: all
 
-  # pre_tasks:
+  pre_tasks:
 
-  #   - name: Set timezone to {{ timezone }}
-  #     timezone:
-  #       name: "{{ timezone }}"
-  #     become: yes
+    - name: Set timezone to {{ timezone }}
+      timezone:
+        name: "{{ timezone }}"
+      become: yes
 
-  #   - name: Update and restart if needed
-  #     include_tasks: ./tasks/update_host.yml
+    - name: Update and restart if needed
+      include_tasks: ./tasks/update_host.yml
 
-  # roles:
-  #   - name: geerlingguy.docker
-  #     become: yes
-  #     vars:
-  #       docker_install_compose: false
-  #       docker_users: "{{ ansible_facts.user_id }}"
-  #   - name: geerlingguy.pip
-  #     become: yes
-  #     vars:
-  #       pip_install_packages:
-  #         - name: docker
-  #         - name: docker-compose
+  roles:
+    - name: geerlingguy.docker
+      become: yes
+      vars:
+        docker_install_compose: false
+        docker_users: "{{ ansible_facts.user_id }}"
+    - name: geerlingguy.pip
+      become: yes
+      vars:
+        pip_install_packages:
+          - name: docker
+          - name: docker-compose
 
   tasks:
-    # - name: Reset connection to reload user changes
-      # meta: reset_connection
+    - name: Reset connection to reload user changes
+      meta: reset_connection
 
     - name: Setup docker networks
       include_tasks: ./tasks/setup_docker_network.yml
       vars:
         network: "{{ item }}"
       with_items: "{{ networks }}"
+      when: networks
 
     - name: Setup docker volumes
       include_tasks: ./tasks/create_volume.yml
       vars:
         volume: "{{ item }}"
       with_items: "{{ volumes }}"
+      when: volumes
 
     - name: Include vars for selected services
       include_vars: ./services/{{ item }}/vars.yml
       with_items: "{{ services }}"
+      when: services
 
     - name: Start install for selected services
       include_tasks: ./services/{{ item }}/install.yml
       with_items: "{{ services }}"
+      when: services

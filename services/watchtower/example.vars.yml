@@ -1,6 +1,7 @@
 watchtower_version: latest
 watchtower_network: "{{ networks[0] }}"
 watchtower_schedule: "0 0 1 * * *"
+watchtower_monitor_only: no
 watchtower_discord: yes
 watchtower_discord_hook: https://discord.com/api/webhooks/.../...
 watchtower_autoupdate: yes

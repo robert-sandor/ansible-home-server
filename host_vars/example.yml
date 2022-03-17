@@ -17,3 +17,8 @@ volumes:
     device: example
     user: notroot
     password: p@ssw0rd
+
+services:
+  - traefik
+  - watchtower
+  
