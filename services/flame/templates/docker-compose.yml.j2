@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  flame:
+    container_name: flame
+    hostname: flame
+    image: pawelmalak/flame:{{ flame_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - PASSWORD={{ flame_password }}
+    volumes:    
+      - flame-data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - {{ flame_network | default(networks[0]) }}
+    ports:
+      - 5005:5005
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.flame.rule=Host(`{{ domain }}`)
+      - traefik.http.routers.flame.entrypoints=websecure
+      - traefik.http.services.flame.loadbalancer.server.port=5005
+      - traefik.http.routers.flame.service=flame
+      - traefik.http.routers.flame.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'watchtower' in services %}{% if flame_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if flame_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ flame_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  flame-data:
+    external: true

@@ -1,16 +1,16 @@
-- name: Create docker volume for Template
+- name: Create docker volume for Flame
   include_tasks: tasks/local_volume.yml
   vars:
     volume:
-      name: template-data
+      name: flame-data
       type: local
 
 - name: Copy service docker-compose file
   include_tasks: tasks/template_compose.yml
   vars:
-    service: template
+    service: flame
 
 - name: Start service
   include_tasks: tasks/compose_up.yml
   vars:
-    service: template
+    service: flame

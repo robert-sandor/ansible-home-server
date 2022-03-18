@@ -1,0 +1,17 @@
+- name: Authenticate with flame
+  uri:
+    url: "{{ flame_api }}/auth"
+    method: POST
+    body_format: json
+    body:
+      duration: 14d
+      password: "{{ flame_password }}"
+    status_code: 200
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 or _response.status == 404
+
+- name: Save flame token
+  set_fact:
+    flame_token: "{{ _response.json.data.token }}"

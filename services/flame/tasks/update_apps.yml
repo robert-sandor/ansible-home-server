@@ -1,0 +1,22 @@
+- name: Get flame apps
+  uri:
+    url: "{{ flame_api }}/apps"
+    method: GET
+    status_code: 200
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 or _response.status == 404
+
+- name: Save flame app ids
+  set_fact:
+    present_flame_apps: "{{ _response.json.data }}"
+
+- name: Add apps
+  include_tasks: services/flame/tasks/update_app.yml
+  vars:
+    existing_apps: "{{ present_flame_apps }}"
+    app: "{{ i }}"
+  with_items: "{{ flame_apps }}"
+  loop_control:
+    loop_var: i

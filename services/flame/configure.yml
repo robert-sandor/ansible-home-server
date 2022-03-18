@@ -1,0 +1,13 @@
+- name: Setup flame api variable
+  set_fact:
+    flame_api: "http://localhost:5005/api"
+
+- name: Authenticate with Flame
+  include_tasks: tasks/auth.yml
+
+- name: Set configuration
+  include_tasks: tasks/config.yml
+
+- name: Add apps if not already present
+  include_tasks: tasks/update_apps.yml
+  when: flame_apps

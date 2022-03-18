@@ -1,0 +1,46 @@
+- name: Check if app for {{ app.name }} exists
+  set_fact:
+    app_exists: "{{ existing_apps | json_query(app_query) | length() > 0 }}"
+    found_apps: "{{ existing_apps | json_query(app_query) }}"
+  vars:
+    app_query: "[?name == `{{ app.name }}`]"
+
+- name: Create app for {{ app.name }}
+  uri:
+    url: "{{ flame_api }}/apps"
+    method: POST
+    body_format: json
+    body:
+      name: "{{ app.name }}"
+      url: "{{ app.url }}"
+      icon: "{{ app.icon }}"
+    status_code: 201
+    headers:
+      authorization-flame: "Bearer {{ flame_token }}"
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 or _response.status == 404
+  when: not app_exists
+
+- name: Save app id
+  set_fact:
+    app_id: "{{ app_exists | ternary(found_apps[0].id, _response.json.data.id) }}"
+  
+- name: Update existing app for {{ app.name }}
+  uri:
+    url: "{{ flame_api }}/apps/{{ found_apps[0].id }}"
+    method: PUT
+    body_format: json
+    body:
+      name: "{{ app.name }}"
+      url: "{{ app.url }}"
+      icon: "{{ app.icon }}"
+    status_code: 200
+    headers:
+      authorization-flame: "Bearer {{ flame_token }}"
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 or _response.status == 404
+  when: app_exists and (found_apps[0].name != app.name or found_apps[0].url != app.url or found_apps[0].icon != app.icon)

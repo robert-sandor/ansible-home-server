@@ -57,8 +57,8 @@ services:
       - traefik.http.routers.traefik.tls.certresolver={{ traefik_acme_provider }}
 {% if 'flame' in services %}
       - flame.type=application
-      - flame.name={{ traefik_name }}
-      - flame.url={{ traefik_name }}.{{ domain }}
+      - flame.name=Traefik
+      - flame.url=traefik.{{ domain }}
       - flame.icon=traffic-light
 {% endif %}
 {% if 'watchtower' in services %}{% if traefik_autoupdate == "enable" %}

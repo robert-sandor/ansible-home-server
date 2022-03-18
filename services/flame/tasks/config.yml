@@ -1,0 +1,43 @@
+- name: Configure flame
+  uri:
+    url: "{{ flame_api }}/config"
+    method: PUT
+    body_format: json
+    body:
+      appsSameTab: "{{ flame_config.apps_same_tab }}"
+      bookmarksSameTab: "{{ flame_config.bookmarks_same_tab }}"
+      customTitle: "{{ flame_config.custom_title }}"
+      daySchema: "{{ flame_config.day_schema }}"
+      defaultSearchProvider: "{{ flame_config.default_search_provider }}"
+      defaultTheme: "{{ flame_config.default_theme }}"
+      disableAutofocus: "{{ flame_config.disable_autofocus }}"
+      dockerApps: "{{ flame_config.docker_apps }}"
+      dockerHost: "{{ flame_config.docker_host }}"
+      greetingsSchema: "{{ flame_config.greetings_schema }}"
+      hideApps: "{{ flame_config.hide_apps }}"
+      hideCategories: "{{ flame_config.hide_categories }}"
+      hideDate: "{{ flame_config.hide_date }}"
+      hideHeader: "{{ flame_config.hide_header }}"
+      hideSearch: "{{ flame_config.hide_search }}"
+      isCelsius: "{{ flame_config.is_celsius }}"
+      isKilometer: "{{ flame_config.is_kilometer }}"
+      kubernetesApps: false
+      lat: "{{ flame_config.lat }}"
+      long: "{{ flame_config.long }}"
+      monthSchema: "{{ flame_config.month_schema }}"
+      pinAppsByDefault: "{{ flame_config.pin_apps_by_default }}"
+      pinCategoriesByDefault: "{{ flame_config.pin_categories_by_default }}"
+      searchSameTab: "{{ flame_config.search_same_tab }}"
+      showTime: "{{ flame_config.show_time }}"
+      unpinStoppedApps: "{{ flame_config.unpin_stopped_apps }}"
+      useAmericanDate: "{{ flame_config.use_american_date }}"
+      useOrdering: "{{ flame_config.use_ordering }}"
+      weatherData: "{{ flame_config.weather_data }}"
+      WEATHER_API_KEY: "{{ flame_config.weather_api_key }}"
+    headers:
+      authorization-flame: "Bearer {{ flame_token }}"
+    status_code: 200
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 or _response.status == 404

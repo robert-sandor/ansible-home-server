@@ -1,0 +1,39 @@
+flame_version: latest
+flame_password: p@ssw0rd
+flame_autoupdate: monitor
+
+flame_config:
+  apps_same_tab: false
+  bookmarks_same_tab: false
+  custom_title: "{{ domain }}"
+  day_schema: "Sunday;Monday;Tuesday;Wednesday;Thursday;Friday;Saturday"
+  default_search_provider: "l"
+  default_theme: blackboard
+  disable_autofocus: false
+  docker_apps: true
+  docker_host: localhost
+  greetings_schema: "Good evening!;Good afternoon!;Good morning!;Good night!"
+  hide_apps: false
+  hide_categories: false
+  hide_date: false
+  hide_header: false
+  hide_search: false
+  is_celsius: true
+  is_kilometer: true
+  lat: 0
+  long: 0
+  month_schema: "January;February;March;April;May;June;July;August;September;October;November;December"
+  pin_apps_by_default: true
+  pin_categories_by_default: true
+  search_same_tab: false
+  show_time: true
+  unpin_stopped_apps: false
+  use_american_date: false
+  use_ordering: name
+  weather_data: cloud
+  weather_api_key: ""
+
+flame_apps:
+  - name: test
+    url: test.yavin.xyz
+    icon: test
