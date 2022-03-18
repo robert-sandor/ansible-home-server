@@ -3,7 +3,7 @@ traefik_network: traefik
 traefik_https: yes
 traefik_access_logs: false
 traefik_metrics: yes
-traefik_autoupdate: no
+traefik_autoupdate: monitor
 
 traefik_acme: yes
 traefik_acme_staging: yes

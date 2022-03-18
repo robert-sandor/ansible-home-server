@@ -1,0 +1,28 @@
+- name: Update home server services
+
+  hosts: all
+
+  tasks:
+    - name: Setup docker networks
+      include_tasks: ./tasks/setup_docker_network.yml
+      vars:
+        network: "{{ item }}"
+      with_items: "{{ networks }}"
+      when: networks
+
+    - name: Setup docker volumes
+      include_tasks: ./tasks/create_volume.yml
+      vars:
+        volume: "{{ item }}"
+      with_items: "{{ volumes }}"
+      when: volumes
+
+    - name: Include vars for selected services
+      include_vars: ./services/{{ item }}/vars.yml
+      with_items: "{{ services }}"
+      when: services
+
+    - name: Start install for selected services
+      include_tasks: ./services/{{ item }}/install.yml
+      with_items: "{{ services }}"
+      when: services

@@ -11,12 +11,9 @@ services:
       - "--schedule={{ watchtower_schedule }}"
       - "--label-enable"
       - "--no-startup-message"
-{% if watchtower_monitor_only %}
-      - "--monitor-only"
-{% endif %}
 {% if watchtower_discord %}
       - "--notifications=slack"
-      - "--notification-slack-hook-url={{ watchtower_discord_hook }}/slack"
+      - "--notification-slack-hook-url={{ watchtower_discord_hook }}"
       - "--notification-slack-identifier=watchtower-{{ domain }}"
 {% endif %}
     environment:
@@ -26,7 +23,12 @@ services:
     networks:
       - {{ watchtower_network }}
     labels:
-      - com.centurylinklabs.watchtower.enable={{ watchtower_autoupdate | ternary('true', 'false') }}
+{% if watchtower_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if watchtower_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
 
 networks:
   {{ watchtower_network }}:

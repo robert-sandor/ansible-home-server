@@ -6,6 +6,7 @@ services:
     container_name: traefik
     hostname: traefik
     image: traefik:{{ traefik_version }}
+    restart: unless-stopped
     command:
       - "--api=true"
       - "--accesslog={{ traefik_access_logs | ternary('true', 'false') }}"
@@ -61,10 +62,12 @@ services:
       - flame.url={{ traefik_name }}.{{ domain }}
       - flame.icon=traffic-light
 {% endif %}
-{% if 'watchtower' in services %}
-      - com.centurylinklabs.watchtower.enable={{ traefik_autoupdate | ternary('true', 'false')}}
+{% if 'watchtower' in services %}{% if traefik_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-    restart: unless-stopped
+{% if traefik_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
 
 networks:
   {{ traefik_network }}:
