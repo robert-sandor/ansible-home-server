@@ -2,7 +2,7 @@
 
 Traefik is used as an application proxy, router and certificate manager. It will create routers and services for each additional service added, based on the labels that are set on each docker container.
 
-Traefik variables:
+## Configuration
 
 | Variable | Example/Allowd values | Description |
 |----------|-----------------------|-------------|
