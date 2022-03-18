@@ -4,3 +4,7 @@ portainer_autoupdate: monitor
 portainer_user: admin
 portainer_password: p@ssw0rd
 portainer_enable_dark_mode: yes
+portainer_agents:
+  - name: example
+    host: example.domain.local
+    

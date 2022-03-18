@@ -1,6 +1,6 @@
 - name: Setup portainer api variable
   set_fact:
-    portainer_api: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:9000/api"
+    portainer_api: "http://localhost:9000/api"
 
 - name: Configure Portainer admin user
   include_tasks: tasks/configure_admin_user.yml
@@ -11,3 +11,12 @@
 - name: Set dark mode for admin user
   include_tasks: tasks/enable_dark_mode.yml
   when: portainer_enable_dark_mode
+
+- name: Configure additional agents
+  include_tasks: tasks/configure_agent.yml
+  vars:
+    agent: "{{ i }}"
+  with_items: "{{ portainer_agents }}"
+  when: portainer_agents
+  loop_control:
+    loop_var: i
