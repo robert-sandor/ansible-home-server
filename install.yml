@@ -52,3 +52,8 @@
       include_tasks: ./services/{{ item }}/install.yml
       with_items: "{{ services }}"
       when: services
+
+    - name: Start configuration for selected services
+      include_tasks: ./services/{{ item }}/configure.yml
+      with_items: "{{ services }}"
+      when: services

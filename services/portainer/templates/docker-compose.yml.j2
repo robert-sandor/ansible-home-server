@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  portainer:
+    container_name: portainer
+    hostname: portainer
+    image: portainer/portainer-ce:{{ portainer_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+    networks:
+      - {{ portainer_network }}
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.portainer.rule=Host(`portainer.{{ domain }}`)
+      - traefik.http.routers.portainer.entrypoints=websecure
+      - traefik.http.services.portainer.loadbalancer.server.port=9000
+      - traefik.http.routers.portainer.service=portainer
+      - traefik.http.routers.portainer.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=portainer
+      - flame.url=portainer.{{ domain }}
+      - flame.icon=docker
+{% endif %}
+{% if 'watchtower' in services %}{% if portainer_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if portainer_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ portainer_network }}:
+    external: true
+
+volumes:
+  portainer-data:
+    external: true

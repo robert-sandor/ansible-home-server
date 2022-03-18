@@ -1,0 +1,9 @@
+- name: Copy service docker-compose file
+  include_tasks: tasks/template_compose.yml
+  vars:
+    service: template
+
+- name: Start service
+  include_tasks: tasks/compose_up.yml
+  vars:
+    service: template

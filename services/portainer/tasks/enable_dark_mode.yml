@@ -1,0 +1,32 @@
+- name: Get Users
+  ansible.builtin.uri:
+    url: "{{ portainer_api }}/users"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ portainer_token }}"
+    status_code: 200
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1
+
+- name: Get Portainer Admin User ID
+  ansible.builtin.set_fact:
+    admin_users: "{{ _response.json | json_query(admin_user_query) }}"
+  vars:
+    admin_user_query: "[?Username == `{{ portainer_user }}`]"
+
+- name: Set dark mode for admin user
+  ansible.builtin.uri:
+    url: "{{ portainer_api }}/users/{{ admin_users[0].Id }}"
+    method: PUT
+    body_format: json
+    body:
+      userTheme: dark
+    headers:
+      Authorization: "Bearer {{ portainer_token }}"
+    status_code: 200
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1

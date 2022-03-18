@@ -13,3 +13,4 @@ host_vars/*
 
 # ignore all vars.yml files for each individual service
 **/vars.yml
+!services/.template/vars.yml

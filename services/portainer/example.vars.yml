@@ -1,0 +1,6 @@
+portainer_version: latest
+portainer_network: "{{ networks[0] }}"
+portainer_autoupdate: monitor
+portainer_user: admin
+portainer_password: p@ssw0rd
+portainer_enable_dark_mode: yes
