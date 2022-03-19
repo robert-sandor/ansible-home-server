@@ -1,0 +1,22 @@
+qbt_version: latest
+qbt_autoupdate: enable
+qbt_download_volume: smb-data
+qbt_vuetorrent: yes
+
+qbt_config:
+  save_path: "/data/downloads"
+  auto_tmm_enabled: true
+  max_active_downloads: 50
+  max_active_torrents: 50
+  max_active_uploads: 50
+  alt_dl_limit: 5242880
+  alt_up_limit: 5242880
+  scheduler_enabled: true
+  schedule_from_hour: 9
+  schedule_to_hour: 23
+  web_ui_username: admin
+  web_ui_password: p@ssw0rd
+
+qbt_categories:
+  - name: isos
+    path: "/data/downloads/isos"

@@ -1,0 +1,16 @@
+- name: Create docker volume for Qbittorrent
+  include_tasks: tasks/local_volume.yml
+  vars:
+    volume:
+      name: qbittorrent-data
+      type: local
+
+- name: Copy service docker-compose file
+  include_tasks: tasks/template_compose.yml
+  vars:
+    service: qbittorrent
+
+- name: Start service
+  include_tasks: tasks/compose_up.yml
+  vars:
+    service: qbittorrent

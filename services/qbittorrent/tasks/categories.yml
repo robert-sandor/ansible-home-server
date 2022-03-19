@@ -1,0 +1,26 @@
+- name: Create folders for categories
+  community.docker.docker_container_exec:
+    container: qbittorrent
+    command: "mkdir -p {{ i.path }}"
+  with_items: "{{ qbt_categories }}"
+  loop_control:
+    loop_var: i
+
+- name: Create category {{ i.name }} in Qbittorrent
+  ansible.builtin.uri:
+    url: "{{ qbt_api_url }}/torrents/createCategory"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      category: "{{ i.name }}"
+      savePath: "{{ i.path }}"
+    headers:
+      Cookie: "{{ qbt_cookie }}"
+    status_code: 200, 409
+  with_items: "{{ qbt_categories }}"
+  loop_control:
+    loop_var: i
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404

@@ -1,0 +1,17 @@
+- name: Set qbittorrent api URL
+  set_fact:
+    qbt_referer: "http://localhost:8082"
+    qbt_api_url: "http://localhost:8082/api/v2"
+
+- name: Authenticate with Qbittorrent
+  include_tasks: tasks/auth.yml
+
+- name: Configure preferences
+  include_tasks: tasks/preferences.yml
+
+- name: Configure categories
+  include_tasks: tasks/categories.yml
+
+- name: Configure VueTorrent
+  include_tasks: tasks/vuetorrent.yml
+  when: qbt_vuetorrent

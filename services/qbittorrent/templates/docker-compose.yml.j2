@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  qbittorrent:
+    container_name: qbittorrent
+    hostname: qbittorrent
+    image: linuxserver/qbittorrent:{{ qbt_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - WEBUI_PORT=8082
+    volumes:
+      - qbittorrent-data:/config
+      - {{ qbt_download_volume }}:/data
+    networks:
+      - {{ qbt_network | default(networks[0]) }}
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - 8082:8082
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.qbittorrent.rule=Host(`qbt.{{ domain }}`)
+      - traefik.http.routers.qbittorrent.entrypoints=websecure
+      - traefik.http.services.qbittorrent.loadbalancer.server.port=8082
+      - traefik.http.routers.qbittorrent.service=qbittorrent
+      - traefik.http.routers.qbittorrent.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=Qbittorrent
+      - flame.url=qbt.{{ domain }}
+      - flame.icon=download
+{% endif %}
+{% if 'watchtower' in services %}{% if qbt_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if qbt_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ qbt_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  qbittorrent-data:
+    external: true
+  {{ qbt_download_volume }}:
+    external: true
