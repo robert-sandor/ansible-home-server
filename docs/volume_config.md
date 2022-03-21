@@ -16,6 +16,8 @@ volumes:
 
 For `nfs` and `nfs4` docker volumes, `host` and `device` are also required. Also, make sure the host's user has the needed (read-only, or read-write) access to the share, and the host is allowed to connect.
 
+**Note**: The host should also have package `nfs-common` installed for NFS to function properly. See [Host Vars](host_vars.md) for more details.
+
 ```
 volumes:
   - name: nfs-share
@@ -27,6 +29,8 @@ volumes:
 ## CIFS / SMB
 
 For **cifs**/**smb** docker volumes, you need to declare the `user` and `password` variables as well. Also, make sure the user has the correct (read-only or read-write) access to the share.
+
+**Note**: The host should also have package `cifs-utils` installed for CIFS/SMB to function properly. See [Host Vars](host_vars.md) for more details.
 
 ```
 volumes:
