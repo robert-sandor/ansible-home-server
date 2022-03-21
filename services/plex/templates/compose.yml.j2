@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  plex:
+    container_name: plex
+    hostname: plex
+    image: plexinc/pms-docker:{{ plex_version }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+      - HOSTNAME=plex.{{ domain }}
+      - PLEX_CLAIM={{ plex_claim }}
+      - ADVERTISE_IP=http://{{ ansible_facts.default_ipv4.address }}:32400
+    networks:
+      - {{ plex_network | default(networks[0]) }}
+    ports:
+      - 32400:32400/tcp
+      - 32400:32400/udp
+    volumes:
+      - plex-data:/config
+      - plex-transcode-cache:/transcode
+      - {{ plex_data_volume }}:/data
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.plex.rule=Host(`plex.{{ domain }}`)
+      - traefik.http.routers.plex.entrypoints=websecure
+      - traefik.http.services.plex.loadbalancer.server.port=32400
+      - traefik.http.routers.plex.service=plex
+      - traefik.http.routers.plex.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'watchtower' in services %}{% if plex_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if plex_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ plex_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  plex-data:
+    external: true
+  plex-transcode-cache: 
+    external: true
+  {{ plex_data_volume }}:
+    external: true

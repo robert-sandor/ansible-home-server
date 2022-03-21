@@ -1,0 +1,5 @@
+plex_claim: changeme # get from https://plex.tv/claim
+
+plex_version: latest
+plex_autoupdate: enable
+plex_data_volume: "{{ volumes[0].name }}"
