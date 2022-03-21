@@ -8,3 +8,4 @@
 | [Portainer Agent](portainer-agent.md) | Remote agent for Portainer | 9001 - Portainer access | none |
 | [Flame](flame.md) | Application Dashboard |  5005 - UI | `<domain>` |
 | [Qbittorrent](qbittorrent.md) | Torrent download manager | 8082 - UI<br>6881 - P2P port | `qbt.<domain>` |
+| [Jackett](jackett.md) | Proxy server that translates Queries from Sonarr/Radarr to tracker-site-specific queries | 9117 - UI and API | `jackett.<domain>` |

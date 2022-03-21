@@ -1,0 +1,23 @@
+- name: Setup jackett host variable
+  set_fact:
+    jackett_host: "http://localhost:9117"
+
+- name: Get a Jackett Cookie
+  include_tasks: tasks/get_cookie.yml
+
+- name: Set Jackett admin password
+  include_tasks: tasks/admin_pass.yml
+  when: jackett_password
+
+- name: Set Jackett server config
+  include_tasks: tasks/server_config.yml
+
+- name: Set Jackett indexers
+  include_tasks: tasks/indexer.yml
+  vars:
+    indexer: "{{ i }}"
+  with_items: "{{ jackett_indexers }}"
+  loop_control:
+    loop_var: i
+  when: jackett_indexers
+

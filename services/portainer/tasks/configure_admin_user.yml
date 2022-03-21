@@ -1,5 +1,5 @@
 - name: Check if admin user exists
-  ansible.builtin.uri:
+  uri:
     url: "{{ portainer_api }}/users/admin/check"
     method: GET
     status_code: [ 204, 404 ]
@@ -9,11 +9,11 @@
   until: _response.status != -1
 
 - name: Save status of admin user
-  ansible.builtin.set_fact:
+  set_fact:
     portainer_admin_exists: "{{ _response.status == 204 }}"
 
 - name: Initialize admin user
-  ansible.builtin.uri:
+  uri:
     url: "{{ portainer_api }}/users/admin/init"
     method: POST
     body_format: json

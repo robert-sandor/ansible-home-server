@@ -1,0 +1,16 @@
+- name: Set jackett server config
+  uri:
+    url: "{{ jackett_host }}/api/v2.0/server/config"
+    method: POST
+    body_format: json
+    body: "{{ jackett_config }}"
+    headers:
+      Cookie: "{{ jackett_cookie }}"
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404
+
+- name: Save jackett api key
+  set_fact:
+    jackett_api_key: "{{ _response.json.APIKey }}"

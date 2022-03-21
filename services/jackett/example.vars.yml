@@ -1,0 +1,38 @@
+jackett_version: latest
+jackett_autoupdate: monitor
+jackett_dark_theme: yes
+jackett_password: p@ssw0rd
+
+jackett_config:
+	port: 9117
+	external: true
+	updatedisabled: false
+	prerelease: false
+	blackholedir: ""
+	logging: false
+	basepathoverride: ""
+	baseurloverride: ""
+	cache_enabled: true
+	cache_ttl: "2100"
+	cache_max_results_per_indexer: "1000"
+	flaresolverrurl: ""
+	flaresolverr_maxtimeout: "55000"
+	omdbkey: ""
+	omdburl: ""
+	proxy_type: "-1"
+	proxy_url: ""
+	proxy_port: ""
+	proxy_username: ""
+	proxy_password: ""
+
+jackett_indexers:
+  - name: changeme
+    config:
+      - id: sitelink
+        value: https://change.me/
+      - id: username
+        value: changeme
+      - id: passkey
+        value: changeme
+      - id: tags
+        value: ""

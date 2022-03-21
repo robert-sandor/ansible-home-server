@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  jackett:
+    container_name: jackett
+    hostname: jackett
+    image: linuxserver/jackett:{{ jackett_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+{% if jackett_dark_theme %}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:jackett
+{% endif %}
+    volumes:
+      - jackett-data:/config
+    networks:
+      - {{ jackett_network | default(networks[0]) }}
+    ports:
+      - 9117:9117
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.jackett.rule=Host(`jackett.{{ domain }}`)
+      - traefik.http.routers.jackett.entrypoints=websecure
+      - traefik.http.services.jackett.loadbalancer.server.port=9117
+      - traefik.http.routers.jackett.service=jackett
+      - traefik.http.routers.jackett.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'watchtower' in services %}{% if jackett_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if jackett_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+
+networks:
+  {{ jackett_network | default(networks[0]) }}:
+    external: true 
+
+volumes:
+  jackett-data:
+    external: true

@@ -1,0 +1,40 @@
+- name: Debug playbook
+
+  hosts: all
+
+  tasks:
+    # - name: Setup docker networks
+    #   include_tasks: ./tasks/setup_docker_network.yml
+    #   vars:
+    #     network: "{{ item }}"
+    #   with_items: "{{ networks }}"
+    #   when: networks
+
+    # - name: Setup docker volumes
+    #   include_tasks: ./tasks/create_volume.yml
+    #   vars:
+    #     volume: "{{ item }}"
+    #   with_items: "{{ volumes }}"
+    #   when: volumes
+
+    # - name: Include vars for selected services
+    #   include_vars: ./services/{{ item }}/vars.yml
+    #   with_items: "{{ services }}"
+    #   when: services
+
+    - name: Include vars for selected services
+      include_vars: ./services/jackett/vars.yml
+      when: '"jackett" in services'
+
+    # - name: Start install for selected services
+    #   include_tasks: ./services/{{ item }}/install.yml
+    #   with_items: "{{ services }}"
+    #   when: services
+
+    # - name: Start configuration for selected services
+    #   include_tasks: ./services/{{ item }}/configure.yml
+    #   with_items: "{{ services }}"
+
+    - name: Start configuration for jackett
+      include_tasks: ./services/jackett/configure.yml
+      when: '"jackett" in services'

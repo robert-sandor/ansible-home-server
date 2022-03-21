@@ -1,5 +1,5 @@
 - name: Attempt to authenticate using default credentials
-  ansible.builtin.uri:
+  uri:
     url: "{{ qbt_api_url }}/auth/login"
     method: POST
     body_format: form-urlencoded
@@ -15,11 +15,11 @@
   until: _response.status != -1 and _response.status < 500 and _response.status != 404 
 
 - name: Save qbittorrent cookie
-  ansible.builtin.set_fact:
+  set_fact:
     qbt_cookie: "{{ _response.cookies_string }}"
 
 - name: Authenticate with qbittorrent using changed credentials
-  ansible.builtin.uri:
+  uri:
     url: "{{ qbt_api_url }}/auth/login"
     method: POST
     body_format: form-urlencoded
@@ -35,6 +35,6 @@
   until: _response.status != -1 and _response.status < 500 and _response.status != 404 
 
 - name: Save qbittorrent cookie
-  ansible.builtin.set_fact:
+  set_fact:
     qbt_cookie: "{{ _response.cookies_string }}"
   when: qbt_cookie == ""

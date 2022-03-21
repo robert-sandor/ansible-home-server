@@ -1,5 +1,5 @@
 - name: Set preferences in QBittorrent
-  ansible.builtin.uri:
+  uri:
     url: "{{ qbt_api_url }}/app/setPreferences"
     method: POST
     body_format: form-urlencoded

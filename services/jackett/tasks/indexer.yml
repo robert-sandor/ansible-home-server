@@ -1,0 +1,13 @@
+- name: Set jackett indexer config for {{ indexer.name }}
+  uri:
+    url: "{{ jackett_host }}/api/v2.0/indexers/{{ indexer.name }}/config"
+    method: POST
+    body_format: json
+    body: "{{ indexer.config }}"
+    headers:
+      Cookie: "{{ jackett_cookie }}"
+    status_code: 204
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 and _response.status < 500 and _response.status != 404
