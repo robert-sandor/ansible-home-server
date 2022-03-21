@@ -1,5 +1,7 @@
 domain: example.domain.local
 
+packages:
+
 networks:
   - example
   - example2

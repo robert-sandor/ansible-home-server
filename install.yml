@@ -9,7 +9,7 @@
         name: "{{ timezone }}"
       become: yes
 
-    - name: Update and restart if needed
+    - name: Install packages and update
       include_tasks: ./tasks/update_host.yml
 
   roles:
@@ -26,8 +26,14 @@
           - name: docker-compose
 
   tasks:
-    - name: Reset connection to reload user changes
+    - name: Reboot host
+      become: yes
+      reboot:
+      when: reboot_needed
+
+    - name: Reset connection to reload user changes if not rebooted
       meta: reset_connection
+      when: not reboot_needed
 
     - name: Setup docker networks
       include_tasks: ./tasks/setup_docker_network.yml
