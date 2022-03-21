@@ -17,19 +17,19 @@
     #   with_items: "{{ volumes }}"
     #   when: volumes
 
-    # - name: Include vars for selected services
-    #   include_vars: ./services/{{ item }}/vars.yml
-    #   with_items: "{{ services }}"
-    #   when: services
-
     - name: Include vars for selected services
-      include_vars: ./services/jackett/vars.yml
-      when: '"jackett" in services'
+      include_vars: ./services/{{ item }}/vars.yml
+      with_items: "{{ services }}"
+      when: services
 
     # - name: Start install for selected services
     #   include_tasks: ./services/{{ item }}/install.yml
     #   with_items: "{{ services }}"
     #   when: services
+
+    # - name: Start install for selected services
+    #   include_tasks: ./services/sonarr/install.yml
+    #   when: '"sonarr" in services'
 
     # - name: Start configuration for selected services
     #   include_tasks: ./services/{{ item }}/configure.yml
@@ -38,3 +38,7 @@
     - name: Start configuration for jackett
       include_tasks: ./services/jackett/configure.yml
       when: '"jackett" in services'
+
+    - name: Start configuration for sonarr
+      include_tasks: ./services/sonarr/configure.yml
+      when: '"sonarr" in services'

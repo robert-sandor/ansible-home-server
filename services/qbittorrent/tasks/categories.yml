@@ -6,7 +6,7 @@
   loop_control:
     loop_var: i
 
-- name: Create category {{ i.name }} in Qbittorrent
+- name: Create category in Qbittorrent
   uri:
     url: "{{ qbt_api_url }}/torrents/createCategory"
     method: POST

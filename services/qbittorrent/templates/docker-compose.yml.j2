@@ -4,7 +4,7 @@ services:
   qbittorrent:
     container_name: qbittorrent
     hostname: qbittorrent
-    image: linuxserver/qbittorrent:{{ qbt_version }}
+    image: ghcr.io/linuxserver/qbittorrent:{{ qbt_version }}
     restart: unless-stopped
     environment:
       - PUID={{ ansible_facts.user_uid }}

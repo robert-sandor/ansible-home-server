@@ -1,0 +1,32 @@
+- name: Get sonarr root folder
+  ansible.builtin.uri:
+    url: "{{ sonarr_api_url }}/rootFolder?apiKey={{ sonarr_api_key }}"
+    method: GET
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+
+- name: Check if a rootfolder is configured
+  set_fact:
+    rootpath_not_set: "{{ _response.json | json_query('[*].path') | length() == 0 }}"
+
+- name: Ensure rootfolder exists
+  community.docker.docker_container_exec:
+    container: sonarr
+    command: /bin/bash -c "mkdir -p /data/{{ sonarr_media_dir }}"
+  when: rootpath_not_set
+
+- name: Configure Sonarr rootfolder
+  ansible.builtin.uri:
+    url: "{{ sonarr_api_url }}/rootFolder?apiKey={{ sonarr_api_key }}"
+    method: POST
+    body_format: json
+    body:
+      path: "/data/{{ sonarr_media_dir }}"
+    status_code: 201
+  when: rootpath_not_set
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 

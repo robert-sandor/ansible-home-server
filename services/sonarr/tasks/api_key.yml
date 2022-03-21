@@ -1,0 +1,9 @@
+- name: Get API Key for Sonarr
+  community.docker.docker_container_exec:
+    container: sonarr
+    command: /bin/bash -c "cat /config/config.xml | grep ApiKey | tr '<' '>' | cut -d '>' -f3"
+  register: _response
+
+- name: Save Sonarr API Key
+  set_fact: 
+    sonarr_api_key: "{{ _response.stdout }}"

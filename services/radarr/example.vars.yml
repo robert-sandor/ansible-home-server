@@ -1,0 +1,12 @@
+radarr_version: latest
+radarr_autoupdate: monitor
+radarr_dark_theme: yes
+radarr_data_volume: "{{ volumes[0].name }}"
+
+radarr_media_dir: movies
+radarr_qbt_category: movies
+
+radarr_indexers:
+  - name: changeme
+    categories: [ 5000 ]
+    minimum_seeders: 5

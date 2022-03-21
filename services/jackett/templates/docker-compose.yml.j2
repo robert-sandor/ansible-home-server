@@ -4,7 +4,7 @@ services:
   jackett:
     container_name: jackett
     hostname: jackett
-    image: linuxserver/jackett:{{ jackett_version }}
+    image: ghcr.io/linuxserver/jackett:{{ jackett_version }}
     restart: unless-stopped
     environment:
       - PUID={{ ansible_facts.user_uid }}

@@ -4,5 +4,5 @@
     driver: local
     driver_options:
       type: cifs
-      o: "username={{ volume.user }},password={{ volume.password }},{{ volume.options | default('file_mode=0775,dir_mode=0775,rw') }}"
+      o: "username={{ volume.user }},password={{ volume.password }},{{ volume.options | default('file_mode=0777,dir_mode=0777,rw') }}"
       device: "//{{ volume.host }}/{{ volume.device }}"

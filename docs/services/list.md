@@ -9,3 +9,5 @@
 | [Flame](flame.md) | Application Dashboard |  5005 - UI | `<domain>` |
 | [Qbittorrent](qbittorrent.md) | Torrent download manager | 8082 - UI<br>6881 - P2P port | `qbt.<domain>` |
 | [Jackett](jackett.md) | Proxy server that translates Queries from Sonarr/Radarr to tracker-site-specific queries | 9117 - UI and API | `jackett.<domain>` |
+| [Sonarr](sonarr.md) | Media management for TV Series | 8989 - UI and API | `sonarr.<domain>` |
+| [Radarr](radarr.md) | Media management for Movies | 7878 - UI and API | `radarr.<domain>` |

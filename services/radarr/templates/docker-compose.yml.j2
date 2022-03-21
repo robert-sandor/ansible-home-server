@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  radarr:
+    container_name: radarr
+    hostname: radarr
+    image: ghcr.io/linuxserver/radarr:{{ radarr_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+{% if radarr_dark_theme %}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:radarr
+{% endif %}
+    volumes:
+      - radarr-data:/config
+      - {{ radarr_data_volume }}:/data
+    networks:
+      - {{ radarr_network | default(networks[0]) }}
+    ports:
+      - 7878:7878
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.radarr.rule=Host(`radarr.{{ domain }}`)
+      - traefik.http.routers.radarr.entrypoints=websecure
+      - traefik.http.services.radarr.loadbalancer.server.port=7878
+      - traefik.http.routers.radarr.service=radarr
+      - traefik.http.routers.radarr.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'watchtower' in services %}{% if radarr_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if radarr_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ radarr_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  radarr-data:
+    external: true
+  {{ radarr_data_volume }}:
+    external: true

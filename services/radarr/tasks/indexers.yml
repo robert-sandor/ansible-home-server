@@ -1,0 +1,62 @@
+- name: Get radarr indexers
+  ansible.builtin.uri:
+    url: "{{ radarr_api_url }}/indexer?apiKey={{ radarr_api_key }}"
+    follow_redirects: none
+    method: GET
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404
+
+- name: Check whether Jacket indexer {{ indexer.name }} is already configured
+  ansible.builtin.set_fact:
+    indexer_not_configured: "{{ _response.json | json_query(q) | length() == 0 }}"
+  vars:
+    q: "[?name == `{{ indexer.name }}`]"
+
+- name: Configure Jacket indexer {{ indexer.name }}
+  ansible.builtin.uri:
+    url: "{{ radarr_api_url }}/indexer?apiKey={{ radarr_api_key }}"
+    method: POST
+    body_format: json
+    body:
+      enableRss: true
+      enableAutomaticSearch: true
+      enableInteractiveSearch: true
+      supportsRss: true
+      supportsSearch: true
+      protocol: torrent
+      priority: 25
+      name: "{{ indexer.name }}"
+      fields:
+        - name: baseUrl
+          value: "http://jackett:9117/api/v2.0/indexers/{{ indexer.name }}/results/torznab/"
+        - name: apiPath
+          value: /api
+        - name: multiLanguages
+          value: []
+        - name: apiKey
+          value: '{{ jackett_api_key }}'
+        - name: categories
+          value: "{{ indexer.categories }}"
+        - name: minimumSeeders
+          value: "{{ indexer.minimum_seeders }}"
+        - name: seedCriteria.seedRatio
+        - name: seedCriteria.seedTime
+        - name: seedCriteria.seasonPackSeedTime
+        - name: additionalParameters
+        - name: removeYear
+          value: false
+        - name: requiredFlags
+          value: []
+      implementationName: Torznab
+      implementation: Torznab
+      configContract: TorznabSettings
+      infoLink: 'https://wiki.servarr.com/radarr/supported#torznab'
+      tags: []
+    status_code: 201
+  when: indexer_not_configured
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 

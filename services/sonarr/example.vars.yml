@@ -1,0 +1,12 @@
+sonarr_version: latest
+sonarr_autoupdate: monitor
+sonarr_dark_theme: yes
+sonarr_data_volume: "{{ volumes[0].name }}"
+
+sonarr_media_dir: series
+sonarr_qbt_category: series
+
+sonarr_indexers:
+  - name: changeme
+    categories: [ 5000 ]
+    minimum_seeders: 5

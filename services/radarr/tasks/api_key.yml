@@ -1,0 +1,9 @@
+- name: Get API Key for Radarr
+  community.docker.docker_container_exec:
+    container: radarr
+    command: /bin/bash -c "cat /config/config.xml | grep ApiKey | tr '<' '>' | cut -d '>' -f3"
+  register: _response
+
+- name: Save Radarr API Key
+  set_fact: 
+    radarr_api_key: "{{ _response.stdout }}"

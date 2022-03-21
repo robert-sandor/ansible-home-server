@@ -1,0 +1,22 @@
+- name: Set Radarr API URL
+  set_fact:
+    radarr_api_url: "http://localhost:7878/api/v3"
+
+- name: Get Radarr API Key
+  include_tasks: tasks/api_key.yml
+
+- name: Set rootfolder
+  include_tasks: tasks/rootfolder.yml
+
+- name: Configure Jackett indexers
+  include_tasks: tasks/indexers.yml
+  vars:
+    indexer: "{{ i }}"
+  with_items: "{{ radarr_indexers }}"
+  loop_control:
+    loop_var: i
+  when: '"jackett" in services'
+
+- name: Configure qBittorrent as download client
+  include_tasks: tasks/download_client.yml
+  when: '"qbittorrent" in services'

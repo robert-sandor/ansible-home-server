@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  sonarr:
+    container_name: sonarr
+    hostname: sonarr
+    image: ghcr.io/linuxserver/sonarr:{{ sonarr_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+{% if sonarr_dark_theme %}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
+{% endif %}
+    volumes:
+      - sonarr-data:/config
+      - {{ sonarr_data_volume }}:/data
+    networks:
+      - {{ sonarr_network | default(networks[0]) }}
+    ports:
+      - 8989:8989
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.sonarr.rule=Host(`sonarr.{{ domain }}`)
+      - traefik.http.routers.sonarr.entrypoints=websecure
+      - traefik.http.services.sonarr.loadbalancer.server.port=8989
+      - traefik.http.routers.sonarr.service=sonarr
+      - traefik.http.routers.sonarr.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'watchtower' in services %}{% if sonarr_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if sonarr_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ sonarr_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  sonarr-data:
+    external: true
+  {{ sonarr_data_volume }}:
+    external: true
