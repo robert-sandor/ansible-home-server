@@ -3,12 +3,12 @@ version: "3.8"
 services:
   plex:
     container_name: plex
-    hostname: plex
+    hostname: plex@{{ domain }}
     image: plexinc/pms-docker:{{ plex_version }}
     restart: unless-stopped
     environment:
       - TZ={{ timezone }}
-      - HOSTNAME=plex.{{ domain }}
+      - HOSTNAME=plex@{{ domain }}
       - PLEX_CLAIM={{ plex_claim }}
       - ADVERTISE_IP=http://{{ ansible_facts.default_ipv4.address }}:32400
     networks:

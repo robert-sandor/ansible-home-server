@@ -12,6 +12,21 @@
       name: plex-transcode-cache
       type: local
 
+- name: Install plexapi with pip
+  pip:
+    name: plexapi
+
+- name: Get Plex Server Token
+  script:
+    cmd: scripts/plex_claim.py {{ plex_email }} {{ plex_password }}
+    executable: python3
+  when: plex_email and plex_password
+  register: _response
+
+- name: Save Plex Claim Token
+  set_fact:
+    plex_claim: "{{ _response.stdout }}"
+
 - name: Copy service docker-compose file
   include_tasks: tasks/template_compose.yml
   vars:

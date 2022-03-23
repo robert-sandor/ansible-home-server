@@ -11,3 +11,4 @@
 | [Jackett](jackett.md) | Proxy server that translates Queries from Sonarr/Radarr to tracker-site-specific queries | 9117 - UI and API | `jackett.<domain>` |
 | [Sonarr](sonarr.md) | Media management for TV Series | 8989 - UI and API | `sonarr.<domain>` |
 | [Radarr](radarr.md) | Media management for Movies | 7878 - UI and API | `radarr.<domain>` |
+| [Plex](plex.md) | Plex Media Server | 32400 - UI | `plex.<domain>` |

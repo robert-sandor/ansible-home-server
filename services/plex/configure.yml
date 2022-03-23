@@ -1,0 +1,5 @@
+- name: Run plex_bootstrap script
+  script:
+    cmd: scripts/plex_bootstrap.py {{ plex_email }} {{ plex_password }} plex@{{ domain }} {{ plex_movies_lib }} {{ plex_series_lib }} {{ plex_music_lib }}
+    executable: python3
+  when: plex_email and plex_password

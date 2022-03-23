@@ -1,5 +1,10 @@
-plex_claim: changeme # get from https://plex.tv/claim
-
 plex_version: latest
 plex_autoupdate: enable
 plex_data_volume: "{{ volumes[0].name }}"
+
+plex_email: changeme@email.com
+plex_password: p@ssw0rd
+
+plex_movies_lib: /media/movies
+plex_series_lib: /media/tv
+plex_music_lib: /media/music
