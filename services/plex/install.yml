@@ -1,12 +1,12 @@
 - name: Create docker volume for Template
-  include_tasks: tasks/local_volume.yml
+  include_tasks: ../tasks/local_volume.yml
   vars:
     volume:
       name: plex-data
       type: local
 
 - name: Create docker volume for Template
-  include_tasks: tasks/local_volume.yml
+  include_tasks: ../tasks/local_volume.yml
   vars:
     volume:
       name: plex-transcode-cache
@@ -28,11 +28,11 @@
     plex_claim: "{{ _response.stdout }}"
 
 - name: Copy service docker-compose file
-  include_tasks: tasks/template_compose.yml
+  include_tasks: ../tasks/template_compose.yml
   vars:
     service: plex
 
 - name: Start service
-  include_tasks: tasks/compose_up.yml
+  include_tasks: ../tasks/compose_up.yml
   vars:
     service: plex

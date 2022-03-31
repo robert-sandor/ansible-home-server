@@ -1,2 +1,2 @@
 - name: Start configuration
-  include_tasks: tasks/task.yml
+  include_tasks: ../tasks/task.yml

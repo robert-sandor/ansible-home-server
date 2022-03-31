@@ -1,0 +1,17 @@
+transmission_version: latest
+transmission_autoupdate: enable
+
+transmission_download_volume: smb-data
+transmission_watch_volume: local-watch
+
+transmission_user: admin
+transmission_pass: changeme
+
+transmission_config:
+  alt-speed-down: 10000
+  alt-speed-up: 10000
+  alt-speed-time-bgin: 480 # 8:00 AM
+  alt-speed-time-end: 1200 # 8:00 PM
+  alt-speed-time-enabled: true
+  cache-size-mb: 1024
+  download-dir: /downloads/downloads

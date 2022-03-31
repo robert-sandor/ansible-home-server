@@ -13,7 +13,7 @@
     present_flame_apps: "{{ _response.json.data }}"
 
 - name: Add apps
-  include_tasks: services/flame/tasks/update_app.yml
+  include_tasks: ../services/flame/tasks/update_app.yml
   vars:
     existing_apps: "{{ present_flame_apps }}"
     app: "{{ i }}"

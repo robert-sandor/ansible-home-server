@@ -10,7 +10,7 @@
       become: yes
 
     - name: Install packages and update
-      include_tasks: ./tasks/update_host.yml
+      include_tasks: ../tasks/update_host.yml
 
   roles:
     - name: geerlingguy.docker
@@ -36,14 +36,14 @@
       when: not reboot_needed
 
     - name: Setup docker networks
-      include_tasks: ./tasks/setup_docker_network.yml
+      include_tasks: ../tasks/setup_docker_network.yml
       vars:
         network: "{{ item }}"
       with_items: "{{ networks }}"
       when: networks
 
     - name: Setup docker volumes
-      include_tasks: ./tasks/create_volume.yml
+      include_tasks: ../tasks/create_volume.yml
       vars:
         volume: "{{ item }}"
       with_items: "{{ volumes }}"

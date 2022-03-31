@@ -1,9 +1,9 @@
 - name: Copy service docker-compose file
-  include_tasks: tasks/template_compose.yml
+  include_tasks: ../tasks/template_compose.yml
   vars:
     service: watchtower
 
 - name: Start service
-  include_tasks: tasks/compose_up.yml
+  include_tasks: ../tasks/compose_up.yml
   vars:
     service: watchtower

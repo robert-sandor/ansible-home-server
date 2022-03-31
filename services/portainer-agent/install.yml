@@ -1,16 +1,16 @@
 - name: Create docker volume for Portainer
-  include_tasks: tasks/local_volume.yml
+  include_tasks: ../tasks/local_volume.yml
   vars:
     volume:
       name: portainer-data
       type: local
 
 - name: Copy service docker-compose file
-  include_tasks: tasks/template_compose.yml
+  include_tasks: ../tasks/template_compose.yml
   vars:
     service: portainer-agent
 
 - name: Start service
-  include_tasks: tasks/compose_up.yml
+  include_tasks: ../tasks/compose_up.yml
   vars:
     service: portainer-agent
