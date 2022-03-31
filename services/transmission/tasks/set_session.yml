@@ -1,0 +1,14 @@
+- name: Try to set config
+  uri:
+    url: "{{ transmission_api }}"
+    user: "{{ transmission_user | default('') }}"
+    password: "{{ transmission_pass | default('') }}"
+    force_basic_auth: yes
+    method: POST
+    body_format: json
+    body:
+      method: session-set
+      arguments: "{{ transmission_config }}"
+    headers:
+      x-transmission-session-id: "{{ transmission_session_id }}"
+    status_code: 200

@@ -1,2 +1,9 @@
-- name: Start configuration
-  include_tasks: tasks/task.yml
+- name: Set Transmission API var
+  set_fact:
+    transmission_api: http://localhost:9091/transmission/rpc
+
+- name: Get Transmission Session ID
+  include_tasks: tasks/get_session.yml
+
+- name: Save Transmission Session Config
+  include_tasks: tasks/set_session.yml
