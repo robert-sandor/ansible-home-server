@@ -2,25 +2,43 @@
   become: yes
   apt:
     update_cache: yes
+  when: ansible_facts.pkg_mgr == 'apt'
 
-- name: Update host
+- name: Update host with apt
   become: yes
   apt:
     autoclean: yes
     autoremove: yes
     upgrade: dist
   register: _response
+  when: ansible_facts.pkg_mgr == 'apt'
+
+- name: Update host with dnf
+  become: yes
+  dnf:
+    name: "*"
+    state: latest
+  register: _response
+  when: ansible_facts.pkg_mgr == 'dnf'
 
 - name: Check if reboot needed
   set_fact:
     reboot_needed: "{{ _response.changed }}"
 
-- name: Install packages
+- name: Install packages with apt
   become: yes
   apt:
     pkg: "{{ packages }}"
-  when: packages
   register: _response
+  when: ansible_facts.pkg_mgr == 'apt' and packages
+
+- name: Install packages with dnf
+  become: yes
+  dnf:
+    name: "{{ packages }}"
+    state: latest
+  register: _response
+  when: ansible_facts.pkg_mgr == 'dnf' and packages
 
 - name: Check if reboot needed
   set_fact:
