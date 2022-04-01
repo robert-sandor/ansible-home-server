@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  navidrome:
+    container_name: navidrome
+    hostname: navidrome
+    image: deluan/navidrome:{{ navidrome_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+    networks:
+      - {{ navidrome_network | default(networks[0]) }}
+    ports:
+      - 4533:4533
+    volumes:
+      - navidrome-data:/data
+      - {{ navidrome_data_volume }}:/music:ro
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.navidrome.rule=Host(`navidrome.{{ domain }}`)
+      - traefik.http.routers.navidrome.entrypoints=websecure
+      - traefik.http.services.navidrome.loadbalancer.server.port=4533
+      - traefik.http.routers.navidrome.service=navidrome
+      - traefik.http.routers.navidrome.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=navidrome
+      - flame.url=navidrome.{{ domain }}
+      - flame.icon=music
+{% endif %}
+{% if 'watchtower' in services %}
+{% if navidrome_autoupdate is defined and navidrome_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if navidrome_autoupdate is not defined or navidrome_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ navidrome_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  navidrome-data:
+    external: true
+  {{ navidrome_data_volume }}:
+    external: true
