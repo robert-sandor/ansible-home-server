@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  uptimekuma:
+    container_name: uptimekuma
+    hostname: uptimekuma
+    image: louislam/uptime-kuma:{{ uptimekuma_version }}
+    restart: unless-stopped
+    networks:
+      - {{ uptimekuma_network | default(networks[0]) }}
+    ports:
+      - 3001:3001
+    volumes:
+      - uptimekuma-data:/app/data
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.uptimekuma.rule=Host(`uptimekuma.{{ domain }}`)
+      - traefik.http.routers.uptimekuma.entrypoints=websecure
+      - traefik.http.services.uptimekuma.loadbalancer.server.port=3001
+      - traefik.http.routers.uptimekuma.service=uptimekuma
+      - traefik.http.routers.uptimekuma.tls=true
+      - traefik.http.routers.uptimekuma.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=uptimekuma
+      - flame.url=uptimekuma.{{ domain }}
+      - flame.icon=eye
+{% endif %}
+{% if 'watchtower' in services and uptimekuma_autoupdate is defined %}
+{% if uptimekuma_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if uptimekuma_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ uptimekuma_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  uptimekuma-data:
+    external: true
