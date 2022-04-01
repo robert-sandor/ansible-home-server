@@ -28,6 +28,12 @@ services:
       - traefik.http.routers.jackett.service=jackett
       - traefik.http.routers.jackett.tls.certresolver={{ traefik_acme_provider }}
 {% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=Jackett
+      - flame.url=jackett.{{ domain }}
+      - flame.icon=card-search
+{% endif %}
 {% if 'watchtower' in services %}
 {% if jackett_autoupdate is defined and jackett_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true

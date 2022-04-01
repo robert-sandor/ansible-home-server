@@ -29,6 +29,12 @@ services:
       - traefik.http.routers.radarr.service=radarr
       - traefik.http.routers.radarr.tls.certresolver={{ traefik_acme_provider }}
 {% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=Radarr
+      - flame.url=radarr.{{ domain }}
+      - flame.icon=movie
+{% endif %}
 {% if 'watchtower' in services %}
 {% if radarr_autoupdate is defined and radarr_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true

@@ -29,6 +29,12 @@ services:
       - traefik.http.routers.sonarr.service=sonarr
       - traefik.http.routers.sonarr.tls.certresolver={{ traefik_acme_provider }}
 {% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=Sonarr
+      - flame.url=sonarr.{{ domain }}
+      - flame.icon=television-box
+{% endif %}
 {% if 'watchtower' in services %}
 {% if sonarr_autoupdate is defined and sonarr_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
