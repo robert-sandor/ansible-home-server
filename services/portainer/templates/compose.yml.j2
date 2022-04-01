@@ -4,14 +4,14 @@ services:
   portainer:
     container_name: portainer
     hostname: portainer
-    image: portainer/portainer-ce:{{ portainer_version }}
+    image: portainer/portainer-ce:{{ portainer_version | default('latest') }}
     restart: unless-stopped
     environment:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
     networks:
-      - {{ portainer_network }}
+      - {{ portainer_network | default(networks[0]) }}
     ports:
       - 9000:9000
     volumes:
@@ -32,15 +32,17 @@ services:
       - flame.url=portainer.{{ domain }}
       - flame.icon=docker
 {% endif %}
-{% if 'watchtower' in services %}{% if portainer_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if portainer_autoupdate is defined and portainer_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if portainer_autoupdate == "monitor" %}
+{% if portainer_autoupdate is not defined or portainer_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
-{% endif %}{% endif %}
+{% endif %}
+{% endif %}
 
 networks:
-  {{ portainer_network }}:
+  {{ portainer_network | default(networks[0]) }}:
     external: true
 
 volumes:

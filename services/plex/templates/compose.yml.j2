@@ -4,7 +4,7 @@ services:
   plex:
     container_name: plex
     hostname: plex@{{ domain }}
-    image: plexinc/pms-docker:{{ plex_version }}
+    image: plexinc/pms-docker:{{ plex_version | default('latest') }}
     restart: unless-stopped
     environment:
       - TZ={{ timezone }}
@@ -29,12 +29,14 @@ services:
       - traefik.http.routers.plex.service=plex
       - traefik.http.routers.plex.tls.certresolver={{ traefik_acme_provider }}
 {% endif %}
-{% if 'watchtower' in services %}{% if plex_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if plex_autoupdate is defined and plex_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if plex_autoupdate == "monitor" %}
+{% if plex_autoupdate is not defined or plex_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
-{% endif %}{% endif %}
+{% endif %}
+{% endif %}
 
 networks:
   {{ plex_network | default(networks[0]) }}:

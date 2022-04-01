@@ -4,13 +4,13 @@ services:
   sonarr:
     container_name: sonarr
     hostname: sonarr
-    image: ghcr.io/linuxserver/sonarr:{{ sonarr_version }}
+    image: ghcr.io/linuxserver/sonarr:{{ sonarr_version | default('latest') }}
     restart: unless-stopped
     environment:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-{% if sonarr_dark_theme %}
+{% if sonarr_dark_theme is not defined or sonarr_dark_theme is true %}
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
 {% endif %}
     volumes:
@@ -29,10 +29,11 @@ services:
       - traefik.http.routers.sonarr.service=sonarr
       - traefik.http.routers.sonarr.tls.certresolver={{ traefik_acme_provider }}
 {% endif %}
-{% if 'watchtower' in services %}{% if sonarr_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if sonarr_autoupdate is defined and sonarr_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if sonarr_autoupdate == "monitor" %}
+{% if sonarr_autoupdate is not defined or sonarr_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}{% endif %}
 

@@ -29,7 +29,7 @@
     headers:
       Referer: "{{ qbt_referer }}"
   register: _response
-  when: qbt_cookie == "" and qbt_config.web_ui_username and qbt_config.web_ui_password
+  when: qbt_cookie == "" and qbt_config is defined and qbt_config.web_ui_username is defined and qbt_config.web_ui_password is defined
   retries: 10
   delay: 10
   until: _response.status != -1 and _response.status < 500 and _response.status != 404 
@@ -37,4 +37,4 @@
 - name: Save qbittorrent cookie
   set_fact:
     qbt_cookie: "{{ _response.cookies_string }}"
-  when: qbt_cookie == ""
+  when: qbt_cookie == "" and _response.changed

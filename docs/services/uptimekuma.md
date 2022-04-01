@@ -6,9 +6,9 @@
 
 | Variable | Example/Allowd values | Description |
 |----------|-----------------------|-------------|
-| `uptimekuma_version` | `latest` | The version of Uptime Kuma to use. You can see the versions by checking [github](https://github.com/louislam/uptime-kuma/releases) |
+| `uptimekuma_version` | `latest` | The version of Uptime Kuma to use. You can see the versions by checking [github](https://github.com/louislam/uptime-kuma/releases). Defaults to `latest` |
 | `uptimekuma_network` | `core` | The network name that Uptime Kuma should attach to. For access from [Traefik](traefik.md) it should share the same network. This defaults to the first network defined in the [host config](../host_vars.md) |
-| `uptimekuma_autoupdate` | `enable` / `disable` / `monitor` | Whether to auto update or monitor only |
+| `uptimekuma_autoupdate` | `enable` / `disable` / `monitor` | Whether to auto update or monitor only. Defaults to `monitor` |
 
 # App configuration
 

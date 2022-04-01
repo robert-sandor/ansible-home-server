@@ -4,13 +4,13 @@ services:
   radarr:
     container_name: radarr
     hostname: radarr
-    image: ghcr.io/linuxserver/radarr:{{ radarr_version }}
+    image: ghcr.io/linuxserver/radarr:{{ radarr_version | default('latest') }}
     restart: unless-stopped
     environment:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-{% if radarr_dark_theme %}
+{% if radarr_dark_theme is not defined or radarr_dark_theme is true %}
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:radarr
 {% endif %}
     volumes:
@@ -29,12 +29,14 @@ services:
       - traefik.http.routers.radarr.service=radarr
       - traefik.http.routers.radarr.tls.certresolver={{ traefik_acme_provider }}
 {% endif %}
-{% if 'watchtower' in services %}{% if radarr_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if radarr_autoupdate is defined and radarr_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if radarr_autoupdate == "monitor" %}
+{% if radarr_autoupdate is not defined or radarr_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
-{% endif %}{% endif %}
+{% endif %}
+{% endif %}
 
 networks:
   {{ radarr_network | default(networks[0]) }}:

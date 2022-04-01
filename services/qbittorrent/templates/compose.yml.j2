@@ -4,7 +4,7 @@ services:
   qbittorrent:
     container_name: qbittorrent
     hostname: qbittorrent
-    image: ghcr.io/linuxserver/qbittorrent:{{ qbt_version }}
+    image: ghcr.io/linuxserver/qbittorrent:{{ qbt_version | default('latest') }}
     restart: unless-stopped
     environment:
       - PUID={{ ansible_facts.user_uid }}
@@ -35,12 +35,14 @@ services:
       - flame.url=qbt.{{ domain }}
       - flame.icon=download
 {% endif %}
-{% if 'watchtower' in services %}{% if qbt_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if qbt_autoupdate is defined and qbt_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if qbt_autoupdate == "monitor" %}
+{% if qbt_autoupdate is not defined or qbt_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
-{% endif %}{% endif %}
+{% endif %}
+{% endif %}
 
 networks:
   {{ qbt_network | default(networks[0]) }}:

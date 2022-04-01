@@ -2,18 +2,18 @@
 
 [Flame](https://github.com/pawelmalak/flame) is an application dashboard and startpage for the home server. It can be configured to host link to apps in docker/kubernetes, and also bookmarks for various sites. For this deployment, only docker is supported, deployed apps on the same host will be automatically added.
 
-**Note**: Since Flame is an app that changes regularly, this implementation was tested with version `v2.2.1`. If issues are encountered with later versions, fix the version to the tested version and please open an issue to address and fix.
+**Note**: Since Flame is an app that changes regularly, this implementation was tested with version `v2.3.0`. If issues are encountered with later versions, fix the version to the tested version and please open an issue to address and fix.
 
 ## Configuration
 
 | Variable | Required | Example | Description |
 |----------|----------|---------|-------------|
-| flame_version | yes | `latest` | Flame version - available version can be found [here](https://github.com/pawelmalak/flame/releases)
-| flame_network | no | `latest` | Network that flame will attach itself to. For access from [Traefik](traefik.md) it should share the same network. This defaults to the first network defined in the [host config](../host_vars.md)
+| flame_version | no | `latest` | Flame version - available version can be found [here](https://github.com/pawelmalak/flame/releases). Defaults to `latest` - note: if API issues are encountered check above what version was tested, and set this to that version |
+| flame_network | no | `core` | Network that flame will attach itself to. For access from [Traefik](traefik.md) it should share the same network. This defaults to the first network defined in the [host config](../host_vars.md) |
 | flame_password | yes | `p@ssw0rd` | Password for the admin user for Flame
-| flame_autoupdate | no | `enable` / `disable` / `monitor` | Whether to auto update or monitor updates for Flame, if [watchtower](watchtower.md) is installed
-| flame_config | no | [Flame Config](#flame-config) | The Flame app configuration
-| flame_apps | no | List of [Flame Apps](#apps) | List of additional flame apps to add to the dashboard
+| flame_autoupdate | no | `enable` / `disable` / `monitor` | Whether to auto update or monitor updates for Flame, if [watchtower](watchtower.md) is installed. Defaults to `monitor` |
+| flame_config | no | [Flame Config](#flame-config) | The Flame app configuration |
+| flame_apps | no | List of [Flame Apps](#apps) | List of additional flame apps to add to the dashboard |
 
 ## Flame Config
 

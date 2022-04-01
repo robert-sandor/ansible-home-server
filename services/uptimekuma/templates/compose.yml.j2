@@ -4,7 +4,7 @@ services:
   uptimekuma:
     container_name: uptimekuma
     hostname: uptimekuma
-    image: louislam/uptime-kuma:{{ uptimekuma_version }}
+    image: louislam/uptime-kuma:{{ uptimekuma_version | default('latest') }}
     restart: unless-stopped
     networks:
       - {{ uptimekuma_network | default(networks[0]) }}
@@ -28,11 +28,11 @@ services:
       - flame.url=uptimekuma.{{ domain }}
       - flame.icon=eye
 {% endif %}
-{% if 'watchtower' in services and uptimekuma_autoupdate is defined %}
-{% if uptimekuma_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if uptimekuma_autoupdate is defined and uptimekuma_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if uptimekuma_autoupdate == "monitor" %}
+{% if uptimekuma_autoupdate is not defined or uptimekuma_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}{% endif %}
 

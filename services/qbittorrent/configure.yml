@@ -8,10 +8,12 @@
 
 - name: Configure preferences
   include_tasks: tasks/preferences.yml
+  when: qbt_config
 
 - name: Configure categories
   include_tasks: tasks/categories.yml
+  when: qbt_categories
 
 - name: Configure VueTorrent
   include_tasks: tasks/vuetorrent.yml
-  when: qbt_vuetorrent
+  when: qbt_vuetorrent is not defined or qbt_vuetorrent

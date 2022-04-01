@@ -11,6 +11,14 @@
   set_fact:
     qbt_not_configured: "{{ _response.json | json_query('[?name == `qbittorrent`]') | length() == 0 }}"
 
+- name: Set qBittorrent variables
+  set_fact:
+    sonarr_qbt_host: "{{ sonarr_qbt_host | default('qbittorrent') }}"
+    sonarr_qbt_port: "{{ sonarr_qbt_port | default(8082) }}"
+    sonarr_qbt_use_ssl: "{{ sonarr_qbt_use_ssl | default(true if sonarr_qbt_port is defined and sonarr_qbt_port == 443 else false) }}"
+    sonarr_qbt_username: "{{ sonarr_qbt_username | default(qbt_config.web_ui_username if qbt_config is defined and qbt_config.web_ui_username is defined else 'admin') }}"
+    sonarr_qbt_password: "{{ sonarr_qbt_password | default(qbt_config.web_ui_password if qbt_config is defined and qbt_config.web_ui_password is defined else 'adminadmin') }}"
+
 - name: Add qBittorrent download client if not configured
   ansible.builtin.uri:
     url: "{{ sonarr_api_url }}/downloadclient?apiKey={{ sonarr_api_key }}"
@@ -20,21 +28,21 @@
       enable: true
       protocol: torrent
       priority: 1
-      removeCompletedDownloads: false
+      removeCompletedDownloads: "{{ sonarr_qbt_remove_completed_downloads | default(false) }}"
       removeFailedDownloads: true
       name: qbittorrent
       fields:
         - name: host
-          value: qbittorrent
+          value: "{{ sonarr_qbt_host }}"
         - name: port
-          value: 8082
+          value: "{{ sonarr_qbt_port }}"
         - name: useSsl
-          value: false
+          value: "{{ sonarr_qbt_use_ssl }}"
         - name: urlBase
         - name: username
-          value: "{{ qbt_config.web_ui_username | default('admin') }}"
+          value: "{{ sonarr_qbt_username }}"
         - name: password
-          value: "{{ qbt_config.web_ui_password | default('adminadmin') }}"
+          value: "{{ sonarr_qbt_password }}"
         - name: tvCategory
           value: "{{ sonarr_qbt_category }}"
         - name: tvImportedCategory
@@ -59,20 +67,3 @@
   retries: 10
   delay: 10
   until: _response.status != -1 and _response.status < 500 and _response.status != 404 
-
-# - name: Add qbittorrent remote mapping
-#   ansible.builtin.uri:
-#     url: "{{ sonarr_api_url }}/remotepathmapping?apiKey={{ sonarr_api_key }}"
-#     method: POST
-#     body_format: json
-#     body:
-#       host: qbittorrent
-#       remotePath: "{{ sonarr_remote_path_qbt }}"
-#       localPath: "{{ sonarr_remote_path_qbt }}"
-#     status_code: 201
-#     validate_certs: "{{ validate_certificates }}"
-#   when: qbt_not_configured
-#   register: _response
-#   retries: 10
-#   delay: 10
-#   until: _response.status != -1 and _response.status < 500 and _response.status != 404 

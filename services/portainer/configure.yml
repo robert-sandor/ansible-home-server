@@ -10,7 +10,7 @@
 
 - name: Set dark mode for admin user
   include_tasks: tasks/enable_dark_mode.yml
-  when: portainer_enable_dark_mode
+  when: portainer_enable_dark_mode is not defined or portainer_enable_dark_mode is true
 
 - name: Configure additional agents
   include_tasks: tasks/configure_agent.yml

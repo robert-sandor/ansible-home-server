@@ -4,13 +4,13 @@ services:
   jackett:
     container_name: jackett
     hostname: jackett
-    image: ghcr.io/linuxserver/jackett:{{ jackett_version }}
+    image: ghcr.io/linuxserver/jackett:{{ jackett_version | default('latest') }}
     restart: unless-stopped
     environment:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-{% if jackett_dark_theme %}
+{% if jackett_dark_theme is not defined or jackett_dark_theme is true %}
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:jackett
 {% endif %}
     volumes:
@@ -28,12 +28,14 @@ services:
       - traefik.http.routers.jackett.service=jackett
       - traefik.http.routers.jackett.tls.certresolver={{ traefik_acme_provider }}
 {% endif %}
-{% if 'watchtower' in services %}{% if jackett_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if jackett_autoupdate is defined and jackett_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if jackett_autoupdate == "monitor" %}
+{% if jackett_autoupdate is not defined or jackett_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
-{% endif %}{% endif %}
+{% endif %}
+{% endif %}
 
 
 networks:

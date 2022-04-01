@@ -6,12 +6,12 @@
 
 | Variable | Required | Example | Description |
 |----------|----------|---------|-------------|
-| `transmission_version` | yes | `latest` | Transmission version - available version can be found [on linuxserver's documentation page](https://docs.linuxserver.io/images/docker-transmission) |
-| `transmission_network` | no | `core-network` | Network that Transmission will attach itself to. For access from [Traefik](traefik.md) it should share the same network. This defaults to the first network defined in the [host config](../host_vars.md) |
-| `transmission_autoupdate` | no | `enable` / `disable` / `monitor` | Whether to auto update or monitor updates for Transmission, if [watchtower](watchtower.md) is installed, defaults to `disable` |
+| `transmission_version` | no | `latest` | Transmission version - available version can be found [on linuxserver's documentation page](https://docs.linuxserver.io/images/docker-transmission). Defaults to `latest`. |
+| `transmission_network` | no | `core` | Network that Transmission will attach itself to. For access from [Traefik](traefik.md) it should share the same network. This defaults to the first network defined in the [host config](../host_vars.md) |
+| `transmission_autoupdate` | no | `enable` / `disable` / `monitor` | Whether to auto update or monitor updates for Transmission, if [watchtower](watchtower.md) is installed, defaults to `monitor` |
 | `transmission_download_volume` | yes | `host-volume` | A docker volume, ideally NFS/SMB, created through [Volume Configuration](../volume_config.md), for where Transmission will download the data |
 | `transmission_watch_volume` | yes | `watch-volume` | A docker volume, ideally NFS/SMB, created through [Volume Configuration](../volume_config.md), where Tranmission will watch for `.torrent` files |
-| `transmission_config` | yes | Configuration map for Transmission | Session configuration for Transmission |
+| `transmission_config` | no | Configuration map for Transmission | Session configuration for Transmission. See [below](#session-configuration) |
 
 # Volume mappings
 

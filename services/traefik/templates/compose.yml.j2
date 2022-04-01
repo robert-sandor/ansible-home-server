@@ -4,13 +4,13 @@ services:
   traefik:
     container_name: traefik
     hostname: traefik
-    image: traefik:{{ traefik_version }}
+    image: traefik:{{ traefik_version | default('latest') }}
     restart: unless-stopped
     command:
       - "--api=true"
-      - "--accesslog={{ traefik_access_logs | ternary('true', 'false') }}"
+      - "--accesslog={{ traefik_access_logs | default(false) }}"
       - "--providers.docker=true"
-      - "--providers.docker.network={{ traefik_network }}"
+      - "--providers.docker.network={{ traefik_network | default(networks[0]) }}"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
 {% if traefik_https %}
@@ -25,7 +25,7 @@ services:
 {% endif %}
 {% endif %}
 {% if traefik_metrics %}
-      - "--metrics.prometheus={{ traefik_metrics | ternary('true', 'false') }}"
+      - "--metrics.prometheus=true"
       - "--entryPoints.metrics.address=:8081"
       - "--metrics.prometheus.entryPoint=metrics"
 {% endif %}
@@ -33,11 +33,13 @@ services:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-{% if traefik_acme %}{% for e in traefik_acme_env %}
+{% if traefik_acme and traefik_acme_env is defined %}
+{% for e in traefik_acme_env %}
       - {{ e }}={{ traefik_acme_env[e] }}
-{% endfor %}{% endif %}
+{% endfor %}
+{% endif %}
     networks:
-      - {{ traefik_network }}
+      - {{ traefik_network | default(networks[0]) }}
     ports:
       - 80:80
       - 443:443
@@ -61,15 +63,17 @@ services:
       - flame.url=traefik.{{ domain }}
       - flame.icon=traffic-light
 {% endif %}
-{% if 'watchtower' in services %}{% if traefik_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if traefik_autoupdate is defined and traefik_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if traefik_autoupdate == "monitor" %}
+{% if traefik_autoupdate is not defined or traefik_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
-{% endif %}{% endif %}
+{% endif %}
+{% endif %}
 
 networks:
-  {{ traefik_network }}:
+  {{ traefik_network | default(networks[0]) }}:
     external: true
 
 volumes:

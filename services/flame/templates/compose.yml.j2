@@ -4,7 +4,7 @@ services:
   flame:
     container_name: flame
     hostname: flame
-    image: pawelmalak/flame:{{ flame_version }}
+    image: pawelmalak/flame:{{ flame_version | default('latest') }}
     restart: unless-stopped
     environment:
       - PUID={{ ansible_facts.user_uid }}
@@ -27,12 +27,14 @@ services:
       - traefik.http.routers.flame.service=flame
       - traefik.http.routers.flame.tls.certresolver={{ traefik_acme_provider }}
 {% endif %}
-{% if 'watchtower' in services %}{% if flame_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if flame_autoupdate is defined and flame_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if flame_autoupdate == "monitor" %}
+{% if flame_autoupdate is not defined or flame_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
-{% endif %}{% endif %}
+{% endif %}
+{% endif %}
 
 networks:
   {{ flame_network | default(networks[0]) }}:

@@ -50,16 +50,16 @@
       when: volumes
 
     - name: Include vars for selected services
-      include_vars: ./services/{{ item }}/vars.yml
+      include_vars: ../services/{{ item }}/vars.yml
       with_items: "{{ services }}"
       when: services
 
     - name: Start install for selected services
-      include_tasks: ./services/{{ item }}/install.yml
+      include_tasks: ../services/{{ item }}/install.yml
       with_items: "{{ services }}"
       when: services
 
     - name: Start configuration for selected services
-      include_tasks: ./services/{{ item }}/configure.yml
+      include_tasks: ../services/{{ item }}/configure.yml
       with_items: "{{ services }}"
       when: services

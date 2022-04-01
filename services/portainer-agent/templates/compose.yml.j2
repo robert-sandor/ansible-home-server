@@ -4,21 +4,23 @@ services:
   portainer-agent:
     container_name: portainer-agent
     hostname: portainer-agent
-    image: portainer/agent:{{ portainer_agent_version }}
+    image: portainer/agent:{{ portainer_agent_version | default('latest') }}
     restart: unless-stopped
     networks:
-      - {{ portainer_agent_network }}
+      - {{ portainer_agent_network | default(networks[0]) }}
     ports:
       - 9001:9001
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
     labels:
-{% if 'watchtower' in services %}{% if portainer_agent_autoupdate == "enable" %}
+{% if 'watchtower' in services %}
+{% if portainer_agent_autoupdate is defined and portainer_agent_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if portainer_agent_autoupdate == "monitor" %}
+{% if portainer_agent_autoupdate is not defined or portainer_agent_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.monitor-only=true
-{% endif %}{% endif %}
+{% endif %}
+{% endif %}
 
 networks:
   {{ portainer_agent_network }}:

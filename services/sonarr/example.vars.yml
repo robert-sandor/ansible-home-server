@@ -4,7 +4,13 @@ sonarr_dark_theme: yes
 sonarr_data_volume: "{{ volumes[0].name }}"
 
 sonarr_media_dir: series
+
+sonarr_qbt_host: some.host.local
+sonarr_qbt_port: 443
+sonarr_qbt_username: admin
+sonarr_qbt_password: changeme
 sonarr_qbt_category: series
+sonarr_qbt_remove_completed_downloads: false
 
 sonarr_indexers:
   - name: changeme

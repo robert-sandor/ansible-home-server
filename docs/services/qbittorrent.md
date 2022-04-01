@@ -7,16 +7,15 @@ This deployment uses the docker image from [linuxserver](https://docs.linuxserve
 
 | Variable | Required | Example | Description |
 |----------|----------|---------|-------------|
-| `qbt_version` | yes | `latest` | qBittorrent version - available version can be found [on linuxserver's documentation page](https://docs.linuxserver.io/images/docker-qbittorrent) |
+| `qbt_version` | no | `latest` | qBittorrent version - available version can be found [on linuxserver's documentation page](https://docs.linuxserver.io/images/docker-qbittorrent). Defaults to `latest` |
 | `qbt_network` | no | `latest` | Network that qBittorrent will attach itself to. For access from [Traefik](traefik.md) it should share the same network. This defaults to the first network defined in the [host config](../host_vars.md) |
-| `qbt_autoupdate` | no | `enable` / `disable` / `monitor` | Whether to auto update or monitor updates for qBittorrent, if [watchtower](watchtower.md) is installed, defaults to `disable` |
+| `qbt_autoupdate` | no | `enable` / `disable` / `monitor` | Whether to auto update or monitor updates for qBittorrent, if [watchtower](watchtower.md) is installed, defaults to `monitor` |
 | `qbt_download_volume` | yes | `host-volume` | A docker volume, ideally NFS/SMB, created through [Volume Configuration](../volume_config.md), for where qBittorrent will download the data |
-| `qbt_vuetorrent` | no | `yes` / `no` | Whether to download [VueTorrent](https://github.com/WDaan/VueTorrent) as an alternative web UI. | 
-| `qbt_config` | yes | Configuration map for qBittorrent | Configurations for qBittorrent. For a complete list of available configurations see the list [here](https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-application-preferences). |
+| `qbt_vuetorrent` | no | `yes` / `no` | Whether to download [VueTorrent](https://github.com/WDaan/VueTorrent) as an alternative web UI. Defaults to `yes` | 
+| `qbt_config` | no | Configuration map for qBittorrent | Configurations for qBittorrent. For a complete list of available configurations see the list [here](https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-application-preferences). |
 | `qbt_categories` | no | `name: isos`<br>`path: "/downloads/isos"` | List of categories and their download location. For integration with Sonarr and Radarr, it's recommended to have a category for each. |
 
 # Example app configuration
-
 
 ```
 web_ui_username: admin

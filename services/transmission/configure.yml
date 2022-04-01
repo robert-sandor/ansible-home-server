@@ -4,6 +4,8 @@
 
 - name: Get Transmission Session ID
   include_tasks: tasks/get_session.yml
+  when: transmission_config
 
 - name: Save Transmission Session Config
   include_tasks: tasks/set_session.yml
+  when: transmission_config
