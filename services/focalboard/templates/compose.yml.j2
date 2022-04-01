@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  focalboard:
+    container_name: focalboard
+    hostname: focalboard
+    image: mattermost/focalboard:{{ focalboard_version | default('latest') }}
+    restart: unless-stopped
+    networks:
+      - {{ focalboard_network | default(networks[0]) }}
+    ports:
+      - 8000:8000
+    volumes:
+      - focalboard-data:/data
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.focalboard.rule=Host(`focalboard.{{ domain }}`)
+      - traefik.http.routers.focalboard.entrypoints=websecure
+      - traefik.http.services.focalboard.loadbalancer.server.port=8000
+      - traefik.http.routers.focalboard.service=focalboard
+      - traefik.http.routers.focalboard.tls=true
+      - traefik.http.routers.focalboard.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=focalboard
+      - flame.url=focalboard.{{ domain }}
+      - flame.icon=clipboard-check
+{% endif %}
+{% if 'watchtower' in services %}
+{% if focalboard_autoupdate is defined and focalboard_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if focalboard_autoupdate is not defined or focalboard_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ focalboard_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  focalboard-data:
+    external: true
