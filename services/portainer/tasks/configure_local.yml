@@ -10,11 +10,11 @@
   delay: 10
   until: _response.status != -1
 
-- name: Check existing agent with same host
+- name: Check existing local endpoint
   set_fact:
     already_exists: "{{ _response.json | json_query(query) | length() > 0 }}"
   vars:
-    query: "[?contains(URL,'{{ agent.host }}')].Id"
+    query: "[?contains(URL,'unix:///var/run/docker.sock')].Id"
 
 - name: Register Portainer Agent
   uri:
@@ -22,12 +22,10 @@
     method: POST
     body_format: form-urlencoded
     body: 
-      Name: "{{ agent.name }}"
-      EndpointCreationType: "2"
-      URL: "tcp://{{ agent.host }}:9001"
-      TLS: "true"
-      TLSSkipVerify: "true"
-      TLSSkipClientVerify: "true"
+      Name: "local"
+      EndpointCreationType: "1"
+      URL: "unix:///var/run/docker.sock"
+      TLS: "false"
     headers:
       Authorization: "Bearer {{ portainer_token }}"
   register: _response

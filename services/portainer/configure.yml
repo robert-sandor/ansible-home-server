@@ -8,6 +8,9 @@
 - name: Authenticate with Portainer
   include_tasks: tasks/auth_admin_user.yml
 
+- name: Configure local environment
+  include_tasks: tasks/configure_local.yml
+
 - name: Set dark mode for admin user
   include_tasks: tasks/enable_dark_mode.yml
   when: portainer_enable_dark_mode is not defined or portainer_enable_dark_mode is true
