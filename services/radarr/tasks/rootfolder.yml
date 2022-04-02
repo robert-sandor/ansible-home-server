@@ -1,5 +1,5 @@
 - name: Get Radarr root folder
-  ansible.builtin.uri:
+  uri:
     url: "{{ radarr_api_url }}/rootFolder?apiKey={{ radarr_api_key }}"
     method: GET
   register: _response
@@ -18,7 +18,7 @@
   when: rootpath_not_set
 
 - name: Configure Radarr rootfolder
-  ansible.builtin.uri:
+  uri:
     url: "{{ radarr_api_url }}/rootFolder?apiKey={{ radarr_api_key }}"
     method: POST
     body_format: json

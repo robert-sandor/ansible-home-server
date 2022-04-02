@@ -1,5 +1,5 @@
 - name: Get sonarr indexers
-  ansible.builtin.uri:
+  uri:
     url: "{{ sonarr_api_url }}/indexer?apiKey={{ sonarr_api_key }}"
     follow_redirects: none
     method: GET
@@ -9,13 +9,13 @@
   until: _response.status != -1 and _response.status < 500 and _response.status != 404
 
 - name: Check whether Jacket indexer {{ indexer.name }} is already configured
-  ansible.builtin.set_fact:
+  set_fact:
     indexer_not_configured: "{{ _response.json | json_query(q) | length() == 0 }}"
   vars:
     q: "[?name == `{{ indexer.name }}`]"
 
 - name: Configure Jacket indexer {{ indexer.name }}
-  ansible.builtin.uri:
+  uri:
     url: "{{ sonarr_api_url }}/indexer?apiKey={{ sonarr_api_key }}"
     method: POST
     body_format: json

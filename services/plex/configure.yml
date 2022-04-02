@@ -3,3 +3,15 @@
     cmd: scripts/plex_bootstrap.py {{ plex_email }} {{ plex_password }} plex@{{ domain }} {{ plex_movies_lib }} {{ plex_series_lib }} {{ plex_music_lib }}
     executable: python3
   when: plex_email and plex_password
+
+- name: Get Plex Server Token
+  script:
+    cmd: scripts/plex_token.py {{ plex_email }} {{ plex_password }} plex@{{ domain }}
+    executable: python3
+  when: plex_email and plex_password and plex_server_token is not defined
+  register: _response
+
+- name: Save Plex Server Token
+  set_fact:
+    plex_server_token: "{{ _response.stdout }}"
+  when: _response.changed

@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  overseerr:
+    container_name: overseerr
+    hostname: overseerr
+    image: ghcr.io/linuxserver/overseerr:{{ overseerr_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+    networks:
+      - {{ overseerr_network | default(networks[0]) }}
+    ports:
+      - 5055:5055
+    volumes:
+      - overseerr-data:/config
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.overseerr.rule=Host(`overseerr.{{ domain }}`)
+      - traefik.http.routers.overseerr.entrypoints=websecure
+      - traefik.http.services.overseerr.loadbalancer.server.port=5055
+      - traefik.http.routers.overseerr.service=overseerr
+      - traefik.http.routers.overseerr.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=overseerr
+      - flame.url=overseerr.{{ domain }}
+      - flame.icon=eye
+{% endif %}
+{% if 'watchtower' in services %}
+{% if overseerr_autoupdate is defined and overseerr_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if overseerr_autoupdate is not defined or overseerr_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ overseerr_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  overseerr-data:
+    external: true

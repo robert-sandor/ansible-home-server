@@ -1,5 +1,5 @@
 - name: Get Radarr download clients
-  ansible.builtin.uri:
+  uri:
     url: "{{ radarr_api_url }}/downloadclient?apiKey={{ radarr_api_key }}"
     method: GET
   register: _response
@@ -12,7 +12,7 @@
     qbt_not_configured: "{{ _response.json | json_query('[?name == `qbittorrent`]') | length() == 0 }}"
 
 - name: Add qBittorrent download client if not configured
-  ansible.builtin.uri:
+  uri:
     url: "{{ radarr_api_url }}/downloadclient?apiKey={{ radarr_api_key }}"
     method: POST
     body_format: json
@@ -57,7 +57,7 @@
   until: _response.status != -1 and _response.status < 500 and _response.status != 404 
 
 # - name: Add qbittorrent remote mapping
-#   ansible.builtin.uri:
+#   uri:
 #     url: "{{ radarr_api_url }}/remotepathmapping?apiKey={{ radarr_api_key }}"
 #     method: POST
 #     body_format: json
@@ -66,7 +66,6 @@
 #       remotePath: "{{ radarr_remote_path_qbt }}"
 #       localPath: "{{ radarr_remote_path_qbt }}"
 #     status_code: 201
-#     validate_certs: "{{ validate_certificates }}"
 #   when: qbt_not_configured
 #   register: _response
 #   retries: 10

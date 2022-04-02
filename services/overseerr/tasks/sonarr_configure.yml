@@ -1,0 +1,6 @@
+- name: Get Configuration for Sonarr
+  include_tasks: ../services/overseerr/tasks/sonarr_get_config.yml
+
+- name: Sonarr set config
+  include_tasks: ../services/overseerr/tasks/sonarr_set_config.yml
+  when: overseerr_sonarr is defined

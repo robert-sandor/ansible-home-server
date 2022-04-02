@@ -1,5 +1,5 @@
 - name: Get Sonarr download clients
-  ansible.builtin.uri:
+  uri:
     url: "{{ sonarr_api_url }}/downloadclient?apiKey={{ sonarr_api_key }}"
     method: GET
   register: _response
@@ -20,7 +20,7 @@
     sonarr_qbt_password: "{{ sonarr_qbt_password | default(qbt_config.web_ui_password if qbt_config is defined and qbt_config.web_ui_password is defined else 'adminadmin') }}"
 
 - name: Add qBittorrent download client if not configured
-  ansible.builtin.uri:
+  uri:
     url: "{{ sonarr_api_url }}/downloadclient?apiKey={{ sonarr_api_key }}"
     method: POST
     body_format: json

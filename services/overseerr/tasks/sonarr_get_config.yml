@@ -1,0 +1,21 @@
+- name: Set host for Sonarr if on same host
+  set_fact:
+    overseerr_sonarr:
+      host: sonarr
+      url: https://sonarr.{{ domain }}
+      port: 8989
+      api_key: "{{ sonarr_api_key }}"
+      profile: "{{ overseerr_sonarr.profile | default('Any') }}"
+      language: "{{ overseerr_sonarr.language | default('English') }}"
+    when: overseerr_sonarr is defined and 'sonarr' in services
+
+- name: Set defaults for Sonarr if not configured
+  set_fact:
+    overseerr_sonarr:
+      host: sonarr
+      url: https://sonarr.{{ domain }}
+      port: 8989
+      api_key: "{{ sonarr_api_key }}"
+      profile: "Any"
+      language: "English"
+    when: overseerr_sonarr is not defined and 'sonarr' in services

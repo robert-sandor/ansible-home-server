@@ -1,0 +1,21 @@
+- name: Set host for Radarr if on same host
+  set_fact:
+    overseerr_radarr:
+      host: radarr
+      url: https://radarr.{{ domain }}
+      port: 7878
+      api_key: "{{ radarr_api_key }}"
+      profile: "{{ overseerr_radarr.profile | default('Any') }}"
+      language: "{{ overseerr_radarr.language | default('English') }}"
+    when: overseerr_radarr is defined and 'radarr' in services
+
+- name: Set defaults for Radarr if not configured
+  set_fact:
+    overseerr_radarr:
+      host: radarr
+      url: https://radarr.{{ domain }}
+      port: 7878
+      api_key: "{{ radarr_api_key }}"
+      profile: "Any"
+      language: "English"
+    when: overseerr_radarr is not defined and 'radarr' in services

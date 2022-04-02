@@ -1,0 +1,39 @@
+- name: Build discord settings
+  set_fact:
+    discord_settings:
+      enabled: yes
+      # have no idea where this is coming from, but once i do, i'll try to get it programatically
+      # this is used to control what notifications to send to discord
+      types: 222 
+      options:
+        botUsername: "{{ overseerr_discord.bot_name | default('overseerr') }}"
+        botAvatarUrl: "{{ overseerr_discord.bot_avatar | default('https://github.com/sct/overseerr/blob/develop/public/os_logo_filled.png') }}"
+        webhookUrl: "{{ overseerr_discord.webhook_url }}"
+
+- name: Test Discord notifications configuration
+  uri:
+    url: "{{ overseerr_api }}/settings/notifications/discord/test"
+    method: POST
+    body_format: json
+    headers:
+      Cookie: "connect.sid={{ overseerr_cookie }}"
+    body: "{{ discord_settings }}"
+    status_code: 204
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404
+  when: overseerr_discord.test_notification is defined and overseerr_discord.test_notification is true
+  
+- name: Set Discord notifications configuration
+  uri:
+    url: "{{ overseerr_api }}/settings/notifications/discord"
+    method: POST
+    body_format: json
+    headers:
+      Cookie: "connect.sid={{ overseerr_cookie }}"
+    body: "{{ discord_settings }}"
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404

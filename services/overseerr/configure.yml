@@ -1,0 +1,19 @@
+- name: Set overseerr_api
+  set_fact:
+    overseerr_api: "http://localhost:5055/api/v1"
+
+- name: Sign in to Overseerr
+  include_tasks: tasks/plex_sign_in.yml
+
+- name: Configure plex
+  include_tasks: tasks/plex_configure.yml
+
+- name: Configure sonarr
+  include_tasks: tasks/sonarr_configure.yml
+
+- name: Create Radarr
+  include_tasks: tasks/radarr_configure.yml
+
+- name: Configure Discord notifications
+  include_tasks: tasks/discord_configure.yml
+  when: overseerr_discord is defined

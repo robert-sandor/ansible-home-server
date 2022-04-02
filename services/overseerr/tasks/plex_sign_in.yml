@@ -1,0 +1,24 @@
+- name: Get Plex Auth Token from Plex on same host
+  set_fact:
+    overseerr_plex_auth_token: "{{ plex_server_token }}"
+  when: overseerr_plex_auth_token is not defined
+
+- name: debug
+  debug:
+    var: overseerr_plex_auth_token
+
+- name: Sign in to Overseerr using Plex Auth token
+  uri:
+    url: "{{ overseerr_api }}/auth/plex"
+    method: POST
+    body_format: json
+    body:
+      authToken: "{{ overseerr_plex_auth_token }}"
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404
+
+- name: Save Overseerr cookie
+  set_fact:
+    overseerr_cookie: "{{ _response.cookies['connect.sid'] }}"

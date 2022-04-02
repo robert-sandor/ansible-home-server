@@ -1,0 +1,6 @@
+- name: Get Configuration for Radarr
+  include_tasks: ../services/overseerr/tasks/radarr_get_config.yml
+
+- name: Radarr set config
+  include_tasks: ../services/overseerr/tasks/radarr_set_config.yml
+  when: overseerr_radarr is defined
