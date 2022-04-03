@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  mealie:
+    container_name: mealie
+    hostname: mealie
+    image: hkotel/mealie:{{ mealie_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - 
+    networks:
+      - {{ mealie_network | default(networks[0]) }}
+    ports:
+      - 8080:80
+    volumes:
+      - mealie-data:/app/data
+    labels:
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.mealie.rule=Host(`mealie.{{ domain }}`)
+      - traefik.http.routers.mealie.entrypoints=websecure
+      - traefik.http.services.mealie.loadbalancer.server.port=80
+      - traefik.http.routers.mealie.service=mealie
+      - traefik.http.routers.mealie.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=mealie
+      - flame.url=mealie.{{ domain }}
+      - flame.icon=food
+{% endif %}
+{% if 'watchtower' in services %}
+{% if mealie_autoupdate is defined and mealie_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if mealie_autoupdate is not defined or mealie_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ mealie_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  mealie-data:
+    external: true
