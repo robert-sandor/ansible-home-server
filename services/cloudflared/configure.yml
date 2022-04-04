@@ -1,0 +1,16 @@
+- name: Save tunnel token to config
+  include_tasks: tasks/copy_config.yml
+
+- name: Restart service
+  include_tasks: ../tasks/compose_restart.yml
+  vars:
+    service: cloudflared
+
+- name: Create CNAME records for services
+  include_tasks: tasks/create_cname_records.yml
+  vars:
+    hostname: "{{ i.hostname }}"
+  when: cloudflared_ingress is defined
+  with_items: "{{ cloudflared_ingress }}"
+  loop_control:
+    loop_var: i

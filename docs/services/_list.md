@@ -15,3 +15,4 @@
 | [Transmission](transmission.md) | BitTorrent client | 9091 - UI<br>51413 - P2P port | `transmission.<domain>` |
 | [Uptime Kuma](uptimekuma.md) | Service health monitoring | 3001 - UI & Webhooks | `uptimekuma.<domain>` |
 | [Mealie](mealie.md) | Recipe and meal planning | 8080 - UI | `mealie.<domain>` |
+| [Cloudflared](cloudflared.md) | Cloudflared tunnel | - | - |

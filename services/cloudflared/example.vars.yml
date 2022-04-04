@@ -1,0 +1,8 @@
+cloudflared_tunnel: 69641ee9-7a01-4065-839e-8710eb21ef5d # changeme
+
+cloudflared_ingress:
+  - hostname: mealie.{{ domain }}
+    service: https://mealie.{{ domain }}
+  - hostname: focalboard.{{ domain }}
+    service: https://focalboard.{{ domain }}
+    noTLSVerify: true

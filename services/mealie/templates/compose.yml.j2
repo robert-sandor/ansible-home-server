@@ -10,7 +10,6 @@ services:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-      - 
     networks:
       - {{ mealie_network | default(networks[0]) }}
     ports:

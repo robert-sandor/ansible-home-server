@@ -1,0 +1,4 @@
+- name: Create CNAME record for {{ hostname }}
+  community.docker.docker_container_exec:
+    container: cloudflared
+    command: "/usr/local/bin/cloudflared tunnel route dns {{ cloudflared_tunnel }} {{ hostname }}"

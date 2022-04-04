@@ -1,0 +1,14 @@
+tunnel: {{ cloudflared_tunnel }}
+
+ingress:
+{% for i in cloudflared_ingress %}
+  - hostname: {{ i.hostname }}
+{% if i.service is defined %}
+    service: {{ i.service }}
+{% else %}
+    service: https://{{ i.hostname }}
+{% endif %}
+    originRequest:
+      noTLSVerify: {{ i.noTLSVerify | default(false) }}
+{% endfor %}
+  - service: http_status:404
