@@ -1,0 +1,8 @@
+- name: Check if vars file exists for {{ service }}
+  local_action: stat path=../services/{{ service }}/vars.yml
+  become: no
+  register: _response
+
+- name: Include vars file for service {{ service }}
+  include_vars: ../services/{{ service }}/vars.yml
+  when: _response.stat.exists is defined and _response.stat.exists

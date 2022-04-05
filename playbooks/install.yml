@@ -12,11 +12,20 @@
     - name: Install packages and update
       include_tasks: ../tasks/update_host.yml
 
-    - name: Enable wireguard module
-      include_tasks: ../tasks/enable_kernel_module.yml
+    - name: Include vars for selected services
+      include_tasks: ../tasks/include_vars_if_present.yml
       vars:
-        module: wireguard
-      when: '"wireguard" in services'
+        service: "{{ item }}"
+      with_items: "{{ services }}"
+      when: services
+
+    - name: Start preconfigure for selected services
+      include_tasks: ../tasks/include_tasks_if_present.yml
+      vars:
+        service: "{{ item }}"
+        task: preconfigure
+      with_items: "{{ services }}"
+      when: services
 
   roles:
     - name: geerlingguy.docker
@@ -55,17 +64,18 @@
       with_items: "{{ volumes }}"
       when: volumes
 
-    - name: Include vars for selected services
-      include_vars: ../services/{{ item }}/vars.yml
-      with_items: "{{ services }}"
-      when: services
-
     - name: Start install for selected services
-      include_tasks: ../services/{{ item }}/install.yml
+      include_tasks: ../tasks/include_tasks_if_present.yml
+      vars:
+        service: "{{ item }}"
+        task: install
       with_items: "{{ services }}"
       when: services
 
-    - name: Start configuration for selected services
-      include_tasks: ../services/{{ item }}/configure.yml
+    - name: Start configure for selected services
+      include_tasks: ../tasks/include_tasks_if_present.yml
+      vars:
+        service: "{{ item }}"
+        task: configure
       with_items: "{{ services }}"
       when: services

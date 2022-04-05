@@ -4,10 +4,17 @@
 
   tasks:
     - name: Include vars for selected services
-      include_vars: ../services/{{ item }}/vars.yml
+      include_tasks: ../tasks/include_vars_if_present.yml
+      vars:
+        service: "{{ item }}"
       with_items: "{{ services }}"
       when: services
 
-    - name: Start configuration for selected services
-      include_tasks: ../services/{{ item }}/configure.yml
+    - name: Start configure for selected services
+      include_tasks: ../tasks/include_tasks_if_present.yml
+      vars:
+        service: "{{ item }}"
+        task: configure
       with_items: "{{ services }}"
+      when: services
+

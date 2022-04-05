@@ -1,0 +1,8 @@
+- name: Check if task {{ task }} exists for service {{ service }}
+  local_action: stat path=../services/{{ service }}/{{ task }}.yml
+  become: no
+  register: _response
+
+- name: Include task {{ task }} for service {{ service }}
+  include_tasks: ../services/{{ service }}/{{ task }}.yml
+  when: _response.stat.exists is defined and _response.stat.exists

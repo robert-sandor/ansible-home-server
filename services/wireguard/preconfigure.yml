@@ -1,0 +1,5 @@
+- name: Enable wireguard module
+  include_tasks: ../tasks/enable_kernel_module.yml
+  vars:
+    module: wireguard
+  when: '"wireguard" in services'
