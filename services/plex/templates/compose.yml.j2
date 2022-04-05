@@ -21,6 +21,7 @@ services:
       - plex-transcode-cache:/transcode
       - {{ plex_data_volume }}:/data
     labels:
+      - domain={{ domain }}
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.plex.rule=Host(`plex.{{ domain }}`)

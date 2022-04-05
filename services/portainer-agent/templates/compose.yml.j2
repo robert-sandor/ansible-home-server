@@ -13,6 +13,7 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
     labels:
+      - domain={{ domain }}
 {% if 'watchtower' in services %}
 {% if portainer_agent_autoupdate is defined and portainer_agent_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true

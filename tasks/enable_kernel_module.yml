@@ -1,0 +1,13 @@
+- name: Add module {{ module }} to /etc/modules
+  become: yes
+  lineinfile:
+    create: yes
+    path: /etc/modules-load.d/{{ module }}.conf
+    regexp: '^{{ module }}'
+    line: "{{ module }}"
+  register: _result
+
+- name: Set restart needed if changed
+  set_fact:
+    reboot_needed: yes
+  when: _result.changed

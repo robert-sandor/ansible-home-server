@@ -17,6 +17,7 @@ services:
     volumes:
       - mealie-data:/app/data
     labels:
+      - domain={{ domain }}
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.mealie.rule=Host(`mealie.{{ domain }}`)

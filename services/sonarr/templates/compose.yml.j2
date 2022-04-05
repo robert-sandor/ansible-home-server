@@ -21,6 +21,7 @@ services:
     ports:
       - 8989:8989
     labels:
+      - domain={{ domain }}
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.sonarr.rule=Host(`sonarr.{{ domain }}`)

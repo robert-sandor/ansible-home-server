@@ -23,6 +23,7 @@ services:
     networks:
       - {{ watchtower_network | default(networks[0]) }}
     labels:
+      - domain={{ domain }}
 {% if watchtower_update is defined and watchtower_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}

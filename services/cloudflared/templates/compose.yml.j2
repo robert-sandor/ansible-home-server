@@ -12,6 +12,7 @@ services:
     networks:
       - {{ cloudflared_network | default(networks[0]) }}
     labels:
+      - domain={{ domain }}
 {% if 'watchtower' in services %}
 {% if cloudflared_autoupdate is defined and cloudflared_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true

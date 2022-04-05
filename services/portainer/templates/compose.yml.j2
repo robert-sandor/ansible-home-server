@@ -18,6 +18,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data
     labels:
+      - domain={{ domain }}
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.portainer.rule=Host(`portainer.{{ domain }}`)

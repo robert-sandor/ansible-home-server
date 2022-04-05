@@ -21,6 +21,7 @@ services:
     ports:
       - 7878:7878
     labels:
+      - domain={{ domain }}
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.radarr.rule=Host(`radarr.{{ domain }}`)

@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  wireguard:
+    container_name: wireguard
+    hostname: wireguard
+    image: ghcr.io/linuxserver/wireguard:{{ wg_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - SERVERURL=wireguard.{{ domain }}
+{% if wg_peers is defined %}
+      - PEERS={{ wg_peers }}
+{% endif %}
+{% if wg_dns is defined %}
+      - PEERDNS={{ wg_dns }}
+{% endif %}
+    volumes:
+      - wireguard-data:/config
+      - /lib/modules:/lib/modules
+    networks:
+      - {{ wg_network | default(networks[0]) }}
+    ports:
+      - 51820:51820/udp
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if wg_autoupdate is defined and wg_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if wg_autoupdate is not defined or wg_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ wg_network | default(networks[0]) }}:
+    external: true
+    
+volumes:
+  wireguard-data:
+    external: true

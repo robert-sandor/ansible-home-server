@@ -13,6 +13,7 @@ services:
     volumes:
       - focalboard-data:/data
     labels:
+      - domain={{ domain }}
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.focalboard.rule=Host(`focalboard.{{ domain }}`)

@@ -52,6 +52,7 @@ services:
 {% endif %}
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
+      - domain={{ domain }}
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.{{ domain }}`)
       - traefik.http.routers.traefik.entrypoints=websecure

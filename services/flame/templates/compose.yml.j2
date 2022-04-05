@@ -19,6 +19,7 @@ services:
     ports:
       - 5005:5005
     labels:
+      - domain={{ domain }}
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.flame.rule=Host(`{{ domain }}`)

@@ -20,6 +20,7 @@ services:
     ports:
       - 9117:9117
     labels:
+      - domain={{ domain }}
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.jackett.rule=Host(`jackett.{{ domain }}`)
