@@ -1,0 +1,5 @@
+no-resolv
+
+{% if dnsmasq_local_routing is defined %}{% for routing in dnsmasq_local_routing %}
+address=/{{ routing.hostname }}/{{ routing.ip }}
+{% endfor %}{% endif %}
