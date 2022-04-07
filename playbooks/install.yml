@@ -2,6 +2,8 @@
 
   hosts: all
 
+  gather_facts: yes
+
   pre_tasks:
 
     - name: Set timezone to {{ timezone }}

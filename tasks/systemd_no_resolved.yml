@@ -1,0 +1,38 @@
+- name: Create /etc/systemd/resolved.conf.d
+  file:
+    path: "/etc/systemd/resolved.conf.d"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Disable SystemD Resolved DNS Stub Listener
+  copy:
+    dest: "/etc/systemd/resolved.conf.d/noresolved.conf"
+    content: |
+      [Resolve]
+      DNSStubListener=no
+    owner: root
+    group: root
+    mode: '0644'
+  register: _result
+
+- name: Restart SystemD Resolved
+  systemd:
+    name: systemd-resolved
+    state: restarted
+  when: _result.changed
+
+- name: Remove existing symlink for /etc/resolv.conf
+  file:
+    path: "/etc/resolv.conf"
+    state: absent
+
+- name: Create symlink for /etc/resolv.conf
+  file:
+    state: link
+    src: "/run/systemd/resolve/resolv.conf"
+    dest: "/etc/resolv.conf"
+    owner: root
+    group: root
+    mode: '0644'

@@ -2,6 +2,8 @@
 
   hosts: all
 
+  gather_facts: yes
+
   tasks:
     - name: Setup docker networks
       include_tasks: ../tasks/setup_docker_network.yml

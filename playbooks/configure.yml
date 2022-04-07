@@ -2,6 +2,8 @@
 
   hosts: all
 
+  gather_facts: yes
+
   tasks:
     - name: Include vars for selected services
       include_tasks: ../tasks/include_vars_if_present.yml
