@@ -1,0 +1,25 @@
+- name: Set vars
+  set_fact:
+    adguard_api: "http://localhost:3000/control"
+    adguard_default_ratelimit: 50
+    adguard_default_cache_size_mb: 32
+    adguard_default_dns:
+      - 'https://dns.cloudflare.com/dns-query'
+    adguard_default_bootstrap:
+      - '1.1.1.1'
+      - '9.9.9.9'
+    adguard_default_filters:
+      - name: 'AdGuard DNS filter'
+        url: 'https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt'
+
+- name: Initialize Adguard and login
+  include_tasks: tasks/init.yml
+
+- name: Configure DNS
+  include_tasks: tasks/dns_config.yml
+
+- name: Configure Filters
+  include_tasks: tasks/filters.yml
+
+- name: Configure Rewrites
+  include_tasks: tasks/rewrites.yml

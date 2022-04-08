@@ -17,4 +17,4 @@
 | [Mealie](mealie.md) | Recipe and meal planning | 8080 - UI | `mealie.<domain>` |
 | [Cloudflared](cloudflared.md) | Cloudflared tunnel | - | - |
 | [Wireguard](wireguard.md) | Wireguard VPN | 51820 - UDP tunnel | - |
-| [Adguard](adguard.md) | Network-wide Ad blocker | 53 - DNS<br>8083 - UI | `adguard.<domain>` |
+| [Adguard](adguard.md) | Network-wide Ad blocker | 53 - DNS<br>3000 - UI | `adguard.<domain>` |
