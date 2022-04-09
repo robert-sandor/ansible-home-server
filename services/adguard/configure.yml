@@ -5,6 +5,7 @@
     adguard_default_cache_size_mb: 32
     adguard_default_dns:
       - 'https://dns.cloudflare.com/dns-query'
+      - 'https://dns.quad9.net/dns-query'
     adguard_default_bootstrap:
       - '1.1.1.1'
       - '9.9.9.9'

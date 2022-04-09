@@ -10,13 +10,12 @@ services:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-      - SERVERURL=wireguard.{{ domain }}
-{% if wg_peers is defined %}
-      - PEERS={{ wg_peers }}
-{% endif %}
-{% if wg_dns is defined %}
-      - PEERDNS={{ wg_dns }}
-{% endif %}
+      - SERVERURL={{ wg_server_url | default('wireguard.' + domain) }}
+      - SERVERPORT={{ wg_server_port | default(51820) }}
+      - PEERS={{ wg_peers | default(1) }}
+      - PEERDNS={{ wg_dns | default('auto') }}
+      - INTERNAL_SUBNET={{ wg_subnet | default('10.13.13.0') }}
+      - ALLOWEDIPS={{ wg_allowed_ips | default('0.0.0.0/0') }}
     volumes:
       - wireguard-data:/config
       - /lib/modules:/lib/modules
