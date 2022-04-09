@@ -6,6 +6,8 @@ services:
     hostname: adguard
     image: adguard/adguardhome:{{ adguard_version | default('latest') }}
     restart: unless-stopped
+    environment:
+      TZ: {{ timezone }}
     volumes:
       - adguard-data:/opt/adguardhome/work
       - adguard-conf-data:/opt/adguardhome/conf

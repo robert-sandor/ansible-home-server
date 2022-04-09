@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  pihole:
+    container_name: pihole
+    hostname: pihole
+    image: pihole/pihole:{{ pihole_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      TZ: {{ timezone }}
+      ServerIP: {{ ansible_facts.default_ipv4.address }}
+      PIHOLE_DNS_: "{{ pihole_dns_list | default(['1.1.1.1']) | join(';') }}"
+      AMDIN_EMAIL: "{{ pihole_admin_email | default(ansible_facts.user_id + '@' + domain) }}"
+      DNSSEC: "{{ pihole_enable_dnssec | default(false) }}"
+      CUSTOM_CACHE_SIZE: {{ pihole_cache_size | default(10000) }}
+      WEBUIBOXEDLAYOUT: "{{ pihole_ui_layout | default('boxed') }}"
+      WEBTHEME: "{{ pihole_webui_theme | default('default-dark') }}"
+      TEMPERATUREUNIT: "{{ pihole_temperature_unit | default('c') }}"
+      DNSMASQ_LISTENING: "{{ pihole_dnsmasq_listening | default('all') }}"
+    volumes:
+      - pihole-data:/etc/pihole
+      - pihole-dnsmasq-data:/etc/dnsmasq.d
+    networks:
+      - {{ pihole_network | default(networks[0]) }}
+    ports:
+    # DNS
+      - 53:53/tcp
+      - 53:53/udp
+    # UI
+      - 8053:80
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.pihole.rule=Host(`pihole.{{ domain }}`)
+      - traefik.http.routers.pihole.entrypoints=websecure
+      - traefik.http.services.pihole.loadbalancer.server.port=80
+      - traefik.http.routers.pihole.service=pihole
+      - traefik.http.routers.pihole.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=pihole
+      - flame.url=pihole.{{ domain }}/admin
+      - flame.icon=fruit-grapes
+{% endif %}
+{% if 'watchtower' in services %}
+{% if pihole_autoupdate is defined and pihole_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if pihole_autoupdate is not defined or pihole_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ pihole_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  pihole-data:
+    external: true
+  pihole-dnsmasq-data:
+    external: true

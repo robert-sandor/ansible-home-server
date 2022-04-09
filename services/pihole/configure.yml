@@ -1,0 +1,40 @@
+- name: Wait for pihole to be healthy
+  community.docker.docker_container_info:
+    name: pihole
+  register: result
+  until: result.container.State.Health.Status == "healthy"
+  delay: 10
+  retries: 20
+
+- name: Change the pihole admin password
+  community.docker.docker_container_exec:
+    container: pihole
+    command: "pihole -a -p {{ pihole_password }}"
+
+- name: Add allowed domains to pihole
+  community.docker.docker_container_exec:
+    container: pihole
+    command: "pihole -w {{ pihole_allowed_domains | join(' ') }}"
+  when: pihole_allowed_domains is defined and pihole_allowed_domains | length > 0
+
+- name: Add blocked domains to pihole
+  community.docker.docker_container_exec:
+    container: pihole
+    command: "pihole -b {{ pihole_blocked_domains | join(' ') }}"
+  when: pihole_blocked_domains is defined and pihole_blocked_domains | length > 0
+
+- name: Template local-routing configuration
+  template:
+    src: templates/10-local-domain.conf.j2
+    dest: "{{ project_dir }}/pihole/10-local-domain.conf"
+    mode: '0644'
+  when: pihole_local_routing is defined and pihole_local_routing | length > 0
+
+- name: Copy config file to docker volume
+  shell: "docker cp {{ project_dir }}/pihole/10-local-domain.conf pihole:/etc/dnsmasq.d"
+  when: pihole_local_routing is defined and pihole_local_routing | length > 0
+
+- name: Restart pihole DNS
+  community.docker.docker_container_exec:
+    container: pihole
+    command: "pihole restartdns"
