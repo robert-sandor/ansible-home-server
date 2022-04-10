@@ -23,3 +23,4 @@
 | [Mealie](mealie.md) | Recipe and meal planning | 8080 - UI | `mealie.<domain>` |
 | [Focalboard](focalboard.md) | OSS alternative to Trello and similar | 8000 - UI | `focalboard.<domain>` |
 | [Navidrome](navidrome.md) | Music server, similar to Spotify | 4533 - UI | `navidrome.<domain>` |
+| [Cyberchef](cyberchef.md) | String manipulation tool | 8001 - UI | `cyberchef.<domain>`
