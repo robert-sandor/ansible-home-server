@@ -16,7 +16,7 @@ services:
       - PASS={{ transmission_pass }}
 {% endif %}
     volumes:
-      - transmission-data:/config
+      - {{ project_dir }}/transmission/data:/config
       - {{ transmission_download_volume }}:/downloads
       - {{ transmission_watch_volume }}:/watch
     networks:
@@ -54,8 +54,6 @@ networks:
     external: true
 
 volumes:
-  transmission-data:
-    external: true
   {{ transmission_download_volume }}:
     external: true
   {{ transmission_watch_volume }}:

@@ -1,9 +1,8 @@
-- name: Create docker volume for ACME
-  include_tasks: ../tasks/local_volume.yml
+- name: Create folder for ACME data
+  include_tasks: ../tasks/create_service_dir.yml
   vars:
-    volume:
-      name: acme-data
-      type: local
+    service: traefik
+    dir: acme-data
   when: traefik_acme
 
 - name: Copy service docker-compose file

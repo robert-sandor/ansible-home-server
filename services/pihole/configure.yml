@@ -26,15 +26,6 @@
 - name: Template local-routing configuration
   template:
     src: templates/10-local-domain.conf.j2
-    dest: "{{ project_dir }}/pihole/10-local-domain.conf"
+    dest: "{{ project_dir }}/pihole/dnsmasq.d/10-local-domain.conf"
     mode: '0644'
   when: pihole_local_routing is defined and pihole_local_routing | length > 0
-
-- name: Copy config file to docker volume
-  shell: "docker cp {{ project_dir }}/pihole/10-local-domain.conf pihole:/etc/dnsmasq.d"
-  when: pihole_local_routing is defined and pihole_local_routing | length > 0
-
-- name: Restart pihole DNS
-  community.docker.docker_container_exec:
-    container: pihole
-    command: "pihole restartdns"

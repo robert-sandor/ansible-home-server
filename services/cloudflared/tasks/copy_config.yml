@@ -1,15 +1,7 @@
 - name: Template config file
   template:
     src: ../services/cloudflared/templates/config.yml.j2
-    dest: "{{ project_dir }}/cloudflared/config.yml"
+    dest: "{{ project_dir }}/cloudflared/data/config.yml"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"
     mode: '0644'
-
-- name: Copy config file to docker volume
-  shell: "docker cp {{ project_dir }}/cloudflared/config.yml cloudflared:/etc/cloudflared"
-
-- name: Remove temp config file
-  file:
-    state: absent
-    path: "{{ project_dir }}/cloudflared/config.yml"

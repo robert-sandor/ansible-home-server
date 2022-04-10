@@ -20,6 +20,6 @@
   vars:
     agent: "{{ i }}"
   with_items: "{{ portainer_agents }}"
-  when: portainer_agents
+  when: portainer_agents is defined and portainer_agents | length() > 0
   loop_control:
     loop_var: i

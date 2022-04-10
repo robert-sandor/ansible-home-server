@@ -12,7 +12,7 @@ services:
       - TZ={{ timezone }}
       - PASSWORD={{ flame_password }}
     volumes:    
-      - flame-data:/app/data
+      - {{ project_dir }}/flame/data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - {{ flame_network | default(networks[0]) }}
@@ -39,8 +39,4 @@ services:
 
 networks:
   {{ flame_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  flame-data:
     external: true

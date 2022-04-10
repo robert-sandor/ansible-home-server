@@ -1,0 +1,13 @@
+- name: Check if dir exists
+  stat:
+    path: "{{ project_dir }}/{{ service }}/{{ dir }}"
+  register: _stat
+
+- name: Create dir in service folder if not exists
+  file:
+    path: "{{ project_dir }}/{{ service }}/{{ dir }}"
+    state: directory
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0755'
+  when: not _stat.stat.exists

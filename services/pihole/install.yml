@@ -1,16 +1,14 @@
-- name: Create docker volume for Pihole
-  include_tasks: ../tasks/local_volume.yml
+- name: Create data directory
+  include_tasks: ../tasks/create_service_dir.yml
   vars:
-    volume:
-      name: pihole-data
-      type: local
+    service: pihole
+    dir: data
 
-- name: Create docker volume for Pihole
-  include_tasks: ../tasks/local_volume.yml
+- name: Create dnsmasq.d directory
+  include_tasks: ../tasks/create_service_dir.yml
   vars:
-    volume:
-      name: pihole-dnsmasq-data
-      type: local
+    service: pihole
+    dir: dnsmasq.d
 
 - name: Copy service docker-compose file
   include_tasks: ../tasks/template_compose.yml

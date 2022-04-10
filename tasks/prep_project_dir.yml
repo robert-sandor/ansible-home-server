@@ -1,0 +1,9 @@
+- name: Create project folder
+  file:
+    path: "{{ project_dir }}"
+    state: directory
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0755'
+
+# TODO - add NFS/SMB support

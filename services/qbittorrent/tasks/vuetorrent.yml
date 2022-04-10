@@ -1,16 +1,8 @@
 - name: Get VueTorrent in temp folder
   git:
     repo: https://github.com/WDaan/VueTorrent.git
-    dest: "~/vuetorrent"
+    dest: "{{ project_dir }}/qbittorrent/data/vuetorrent"
     version: latest-release
-
-- name: Copy VueTorrent to Qbittorrent volume
-  shell: "docker cp ~/vuetorrent qbittorrent:/config/vuetorrent"
-
-- name: Delete VueTorrent temp folder
-  file:
-    state: absent
-    path: ~/vuetorrent
 
 - name: Create QBittorrent preferences request body
   set_fact:

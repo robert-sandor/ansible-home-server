@@ -1,16 +1,14 @@
-- name: Create docker volume for Adguard Data
-  include_tasks: ../tasks/local_volume.yml
+- name: Create work directory
+  include_tasks: ../tasks/create_service_dir.yml
   vars:
-    volume:
-      name: adguard-data
-      type: local
+    service: adguard
+    dir: work
 
-- name: Create docker volume for Adguard Config
-  include_tasks: ../tasks/local_volume.yml
+- name: Create config directory
+  include_tasks: ../tasks/create_service_dir.yml
   vars:
-    volume:
-      name: adguard-conf-data
-      type: local
+    service: adguard
+    dir: conf
 
 - name: Copy service docker-compose file
   include_tasks: ../tasks/template_compose.yml

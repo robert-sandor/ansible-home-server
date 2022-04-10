@@ -13,7 +13,7 @@ services:
     ports:
       - 4533:4533
     volumes:
-      - navidrome-data:/data
+      - {{ project_dir }}/navidrome/data:/data
       - {{ navidrome_data_volume }}:/music:ro
     labels:
       - domain={{ domain }}
@@ -45,7 +45,5 @@ networks:
     external: true
 
 volumes:
-  navidrome-data:
-    external: true
   {{ navidrome_data_volume }}:
     external: true

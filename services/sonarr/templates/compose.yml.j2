@@ -14,7 +14,7 @@ services:
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
 {% endif %}
     volumes:
-      - sonarr-data:/config
+      - {{ project_dir }}/sonarr/data:/config
       - {{ sonarr_data_volume }}:/data
     networks:
       - {{ sonarr_network | default(networks[0]) }}
@@ -49,7 +49,5 @@ networks:
     external: true
 
 volumes:
-  sonarr-data:
-    external: true
   {{ sonarr_data_volume }}:
     external: true

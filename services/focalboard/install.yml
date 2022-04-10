@@ -1,9 +1,8 @@
-- name: Create docker volume for Template
-  include_tasks: ../tasks/local_volume.yml
+- name: Create data directory
+  include_tasks: ../tasks/create_service_dir.yml
   vars:
-    volume:
-      name: focalboard-data
-      type: local
+    service: focalboard
+    dir: data
 
 - name: Copy service docker-compose file
   include_tasks: ../tasks/template_compose.yml

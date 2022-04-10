@@ -9,7 +9,6 @@ traefik_acme: yes
 traefik_acme_staging: yes
 traefik_acme_email: email@example.com
 traefik_acme_provider: cloudflare
-traefik_acme_volume: acme-data
 traefik_acme_env:
   CF_API_EMAIL: email@example.com
   CF_DNS_API_TOKEN: <cloudflare_token>

@@ -16,7 +16,7 @@ services:
       - 9000:9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer-data:/data
+      - {{ project_dir }}/portainer/data:/data
     labels:
       - domain={{ domain }}
 {% if 'traefik' in services %}
@@ -44,8 +44,4 @@ services:
 
 networks:
   {{ portainer_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  portainer-data:
     external: true

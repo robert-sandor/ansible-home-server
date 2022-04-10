@@ -11,7 +11,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - focalboard-data:/data
+      - {{ project_dir }}/focalboard/data:/data
     labels:
       - domain={{ domain }}
 {% if 'traefik' in services %}
@@ -39,8 +39,4 @@ services:
 
 networks:
   {{ focalboard_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  focalboard-data:
     external: true

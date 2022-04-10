@@ -15,7 +15,7 @@ services:
     ports:
       - 5055:5055
     volumes:
-      - overseerr-data:/config
+      - {{ project_dir }}/overseerr/data:/config
     labels:
       - domain={{ domain }}
 {% if 'traefik' in services %}
@@ -42,8 +42,4 @@ services:
 
 networks:
   {{ overseerr_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  overseerr-data:
     external: true

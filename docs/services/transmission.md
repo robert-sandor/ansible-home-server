@@ -16,7 +16,7 @@
 # Volume mappings
 
 The image for Transmission exposes 3 volumes. Here are their internal mapping:
-- `/config` - this is where Transmission files are stored - this is mapped to a volume called `transmission-data` by the playbook
+- `/config` - this is where Transmission files are stored - this is mapped to a directory in `<project_dir>/transmission/data`
 - `/downloads` - this is where Transmission expects to download the files - this should ideally be a large NFS/SMB share - the name of this share is given by `transmission_download_volume` config
 - `/watch` - this is where Transmission will watch for `.torrent` files - this is optional, but should be mapped to a local volume, whose name is given by `transmission_watch_volume` config - this can also be mapped to a remote NFS/SMB share if the feature is desired
 

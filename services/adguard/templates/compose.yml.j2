@@ -9,8 +9,8 @@ services:
     environment:
       TZ: {{ timezone }}
     volumes:
-      - adguard-data:/opt/adguardhome/work
-      - adguard-conf-data:/opt/adguardhome/conf
+      - {{ project_dir }}/adguard/work:/opt/adguardhome/work
+      - {{ project_dir }}/adguard/conf:/opt/adguardhome/conf
     networks:
       - {{ adguard_network | default(networks[0]) }}
     ports:
@@ -46,10 +46,4 @@ services:
 
 networks:
   {{ adguard_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  adguard-data:
-    external: true
-  adguard-conf-data:
     external: true

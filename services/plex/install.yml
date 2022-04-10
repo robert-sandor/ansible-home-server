@@ -1,9 +1,8 @@
-- name: Create docker volume for Template
-  include_tasks: ../tasks/local_volume.yml
+- name: Create data directory
+  include_tasks: ../tasks/create_service_dir.yml
   vars:
-    volume:
-      name: plex-data
-      type: local
+    service: plex
+    dir: data
 
 - name: Create docker volume for Template
   include_tasks: ../tasks/local_volume.yml

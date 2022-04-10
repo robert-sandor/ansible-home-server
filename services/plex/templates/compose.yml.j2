@@ -17,7 +17,7 @@ services:
       - 32400:32400/tcp
       - 32400:32400/udp
     volumes:
-      - plex-data:/config
+      - {{ project_dir }}/plex/data:/config
       - plex-transcode-cache:/transcode
       - {{ plex_data_volume }}:/data
     labels:
@@ -50,8 +50,6 @@ networks:
     external: true
 
 volumes:
-  plex-data:
-    external: true
   plex-transcode-cache: 
     external: true
   {{ plex_data_volume }}:

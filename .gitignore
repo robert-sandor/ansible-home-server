@@ -17,3 +17,10 @@ host_vars/*
 
 # ignore all debug playbooks
 debug
+
+# ignore all PEM cert files
+*.pem
+
+# Ignore cloudflared tunnel files
+services/cloudflared/scripts/.cloudflared
+services/cloudflared/files

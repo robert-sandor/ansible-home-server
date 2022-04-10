@@ -48,7 +48,7 @@ services:
 {% endif %}
     volumes:
 {% if traefik_acme %}
-      - acme-data:/letsencrypt
+      - {{ project_dir}}/traefik/acme-data:/letsencrypt
 {% endif %}
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
@@ -76,9 +76,3 @@ services:
 networks:
   {{ traefik_network | default(networks[0]) }}:
     external: true
-
-volumes:
-{% if traefik_acme %}
-  acme-data:
-    external: true
-{% endif %}

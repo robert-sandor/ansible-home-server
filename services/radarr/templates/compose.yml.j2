@@ -14,7 +14,7 @@ services:
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:radarr
 {% endif %}
     volumes:
-      - radarr-data:/config
+      - {{ project_dir }}/radarr/data:/config
       - {{ radarr_data_volume }}:/data
     networks:
       - {{ radarr_network | default(networks[0]) }}
@@ -50,7 +50,5 @@ networks:
     external: true
 
 volumes:
-  radarr-data:
-    external: true
   {{ radarr_data_volume }}:
     external: true

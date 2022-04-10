@@ -17,7 +17,7 @@ services:
       - INTERNAL_SUBNET={{ wg_subnet | default('10.13.13.0') }}
       - ALLOWEDIPS={{ wg_allowed_ips | default('0.0.0.0/0') }}
     volumes:
-      - wireguard-data:/config
+      - {{ project_dir }}/wireguard/data:/config
       - /lib/modules:/lib/modules
     networks:
       - {{ wg_network | default(networks[0]) }}
@@ -41,8 +41,4 @@ services:
 
 networks:
   {{ wg_network | default(networks[0]) }}:
-    external: true
-    
-volumes:
-  wireguard-data:
     external: true

@@ -10,6 +10,7 @@
       method: session-get
     status_code: 409
   register: _response
+  no_log: yes
 
 - name: Save Transmission Session ID
   set_fact:

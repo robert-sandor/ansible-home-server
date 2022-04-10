@@ -7,7 +7,7 @@ services:
     image: 4km3/dnsmasq:{{ dnsmasq_version | default('latest') }}
     restart: unless-stopped
     volumes:
-      - ./dnsmasq.conf:/etc/dnsmasq.conf:ro
+      - {{ project_dir }}/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:ro
     networks:
       - {{ dnsmasq_network | default(networks[0]) }}
     ports:

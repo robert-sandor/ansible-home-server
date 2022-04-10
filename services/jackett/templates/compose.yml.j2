@@ -14,7 +14,7 @@ services:
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:jackett
 {% endif %}
     volumes:
-      - jackett-data:/config
+      - {{ project_dir }}/jackett/data:/config
     networks:
       - {{ jackett_network | default(networks[0]) }}
     ports:
@@ -48,7 +48,3 @@ services:
 networks:
   {{ jackett_network | default(networks[0]) }}:
     external: true 
-
-volumes:
-  jackett-data:
-    external: true

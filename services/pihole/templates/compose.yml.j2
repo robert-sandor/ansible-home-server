@@ -18,8 +18,8 @@ services:
       TEMPERATUREUNIT: "{{ pihole_temperature_unit | default('c') }}"
       DNSMASQ_LISTENING: "{{ pihole_dnsmasq_listening | default('all') }}"
     volumes:
-      - pihole-data:/etc/pihole
-      - pihole-dnsmasq-data:/etc/dnsmasq.d
+      - {{ project_dir }}/pihole/data:/etc/pihole
+      - {{ project_dir }}/pihole/dnsmasq.d:/etc/dnsmasq.d
     networks:
       - {{ pihole_network | default(networks[0]) }}
     ports:
@@ -55,10 +55,4 @@ services:
 
 networks:
   {{ pihole_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  pihole-data:
-    external: true
-  pihole-dnsmasq-data:
     external: true

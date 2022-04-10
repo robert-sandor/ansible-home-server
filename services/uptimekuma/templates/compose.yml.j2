@@ -11,7 +11,7 @@ services:
     ports:
       - 3001:3001
     volumes:
-      - uptimekuma-data:/app/data
+      - {{ project_dir }}/uptimekuma/data:/app/data
     labels:
       - domain={{ domain }}
 {% if 'traefik' in services %}
@@ -39,8 +39,4 @@ services:
 
 networks:
   {{ uptimekuma_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  uptimekuma-data:
     external: true

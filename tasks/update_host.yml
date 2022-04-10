@@ -44,3 +44,23 @@
   set_fact:
     reboot_needed: "{{ _response.changed }}"
   when: not reboot_needed
+
+- name: Check for SELinux config file
+  stat:
+    path: /etc/selinux/config
+  register: _result
+
+- name: Disable SELinux if enabled
+  become: yes
+  lineinfile:
+    create: yes
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: "SELINUX=disabled"
+  register: _result
+  when: _result.stat.exists
+
+- name: Check if reboot needed
+  set_fact:
+    reboot_needed: "{{ _result.changed }}"
+  when: not reboot_needed

@@ -14,6 +14,9 @@
     - name: Install packages and update
       include_tasks: ../tasks/update_host.yml
 
+    - name: Prepare project folder
+      include_tasks: ../tasks/prep_project_dir.yml
+
     - name: Include vars for selected services
       include_tasks: ../tasks/include_vars_if_present.yml
       vars:
