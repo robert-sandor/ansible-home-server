@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  jellyfin:
+    container_name: jellyfin
+    hostname: jellyfin
+    image: jellyfin/jellyfin:{{ jellyfin_version | default('latest') }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    environment:
+      - TZ={{ timezone }}
+    networks:
+      - {{ jellyfin_network | default(networks[0]) }}
+    ports:
+      - 8096:8096
+    volumes:
+      - {{ project_dir }}/jellyfin/data:/config
+      - jellyfin-transcode-cache:/transcode
+      - {{ jellyfin_media_path }}:/media
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.jellyfin.rule=Host(`jellyfin.{{ domain }}`)
+      - traefik.http.routers.jellyfin.entrypoints=websecure
+      - traefik.http.services.jellyfin.loadbalancer.server.port=8096
+      - traefik.http.routers.jellyfin.service=jellyfin
+      - traefik.http.routers.jellyfin.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=jellyfin
+      - flame.url=jellyfin.{{ domain }}
+      - flame.icon=shark-fin
+{% endif %}
+{% if 'watchtower' in services %}
+{% if jellyfin_autoupdate is defined and jellyfin_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if jellyfin_autoupdate is not defined or jellyfin_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ jellyfin_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  jellyfin-transcode-cache: 
+    external: true

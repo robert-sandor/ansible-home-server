@@ -1,0 +1,22 @@
+- name: Create data directory
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: jellyfin
+    dir: data
+
+- name: Create docker volume for Template
+  include_tasks: ../tasks/local_volume.yml
+  vars:
+    volume:
+      name: jellyfin-transcode-cache
+      type: local
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: jellyfin
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: jellyfin
