@@ -6,6 +6,7 @@ services:
     hostname: focalboard
     image: mattermost/focalboard:{{ focalboard_version | default('latest') }}
     restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - {{ focalboard_network | default(networks[0]) }}
     ports:

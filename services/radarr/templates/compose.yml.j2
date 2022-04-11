@@ -15,7 +15,7 @@ services:
 {% endif %}
     volumes:
       - {{ project_dir }}/radarr/data:/config
-      - {{ radarr_data_volume }}:/data
+      - {{ radarr_data_path }}:/data
     networks:
       - {{ radarr_network | default(networks[0]) }}
     ports:
@@ -47,8 +47,4 @@ services:
 
 networks:
   {{ radarr_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  {{ radarr_data_volume }}:
     external: true

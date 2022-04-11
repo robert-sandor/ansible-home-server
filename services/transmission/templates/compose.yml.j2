@@ -17,8 +17,8 @@ services:
 {% endif %}
     volumes:
       - {{ project_dir }}/transmission/data:/config
-      - {{ transmission_download_volume }}:/downloads
-      - {{ transmission_watch_volume }}:/watch
+      - {{ transmission_download_path }}:/downloads
+      - {{ transmission_watch_path }}:/watch
     networks:
       - {{ transmission_network | default(networks[0]) }}
     ports:
@@ -51,10 +51,4 @@ services:
 
 networks:
   {{ transmission_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  {{ transmission_download_volume }}:
-    external: true
-  {{ transmission_watch_volume }}:
     external: true

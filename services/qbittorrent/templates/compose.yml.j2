@@ -13,7 +13,7 @@ services:
       - WEBUI_PORT=8082
     volumes:
       - {{ project_dir }}/qbittorrent/data:/config
-      - {{ qbt_download_volume }}:/data
+      - {{ qbt_download_path }}:/downloads
     networks:
       - {{ qbt_network | default(networks[0]) }}
     ports:
@@ -47,8 +47,4 @@ services:
 
 networks:
   {{ qbt_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  {{ qbt_download_volume }}:
     external: true

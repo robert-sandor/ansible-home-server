@@ -6,6 +6,7 @@ services:
     hostname: navidrome
     image: deluan/navidrome:{{ navidrome_version | default('latest') }}
     restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     environment:
       - TZ={{ timezone }}
     networks:
@@ -14,7 +15,7 @@ services:
       - 4533:4533
     volumes:
       - {{ project_dir }}/navidrome/data:/data
-      - {{ navidrome_data_volume }}:/music:ro
+      - {{ navidrome_media_path }}:/music:ro
     labels:
       - domain={{ domain }}
 {% if 'traefik' in services %}
@@ -42,8 +43,4 @@ services:
 
 networks:
   {{ navidrome_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  {{ navidrome_data_volume }}:
     external: true

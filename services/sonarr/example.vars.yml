@@ -1,7 +1,7 @@
 sonarr_version: latest
 sonarr_autoupdate: monitor
 sonarr_dark_theme: yes
-sonarr_data_volume: "{{ volumes[0].name }}"
+sonarr_data_path: "/home/user/data"
 
 sonarr_media_dir: series
 

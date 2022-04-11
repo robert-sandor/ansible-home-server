@@ -9,8 +9,8 @@
 | `transmission_version` | no | `latest` | Transmission version - available version can be found [on linuxserver's documentation page](https://docs.linuxserver.io/images/docker-transmission). Defaults to `latest`. |
 | `transmission_network` | no | `core` | Network that Transmission will attach itself to. For access from [Traefik](traefik.md) it should share the same network. This defaults to the first network defined in the [host config](../host_vars.md) |
 | `transmission_autoupdate` | no | `enable` / `disable` / `monitor` | Whether to auto update or monitor updates for Transmission, if [watchtower](watchtower.md) is installed, defaults to `monitor` |
-| `transmission_download_volume` | yes | `host-volume` | A docker volume, ideally NFS/SMB, created through [Volume Configuration](../volume_config.md), for where Transmission will download the data |
-| `transmission_watch_volume` | yes | `watch-volume` | A docker volume, ideally NFS/SMB, created through [Volume Configuration](../volume_config.md), where Tranmission will watch for `.torrent` files |
+| `transmission_download_path` | yes | `host-volume` | A path on the host, where transmission will download the files. This can be an NFS/SMB share. |
+| `transmission_watch_path` | yes | `watch-volume` | A path on the host, where transmission will watch for files to downloads. This can be an NFS/SMB share. |
 | `transmission_config` | no | Configuration map for Transmission | Session configuration for Transmission. See [below](#session-configuration) |
 
 # Volume mappings

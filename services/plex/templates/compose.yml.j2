@@ -19,7 +19,7 @@ services:
     volumes:
       - {{ project_dir }}/plex/data:/config
       - plex-transcode-cache:/transcode
-      - {{ plex_data_volume }}:/data
+      - {{ plex_media_path }}:/media
     labels:
       - domain={{ domain }}
 {% if 'traefik' in services %}
@@ -51,6 +51,4 @@ networks:
 
 volumes:
   plex-transcode-cache: 
-    external: true
-  {{ plex_data_volume }}:
     external: true

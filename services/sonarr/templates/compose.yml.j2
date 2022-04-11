@@ -15,7 +15,7 @@ services:
 {% endif %}
     volumes:
       - {{ project_dir }}/sonarr/data:/config
-      - {{ sonarr_data_volume }}:/data
+      - {{ sonarr_data_path }}:/data
     networks:
       - {{ sonarr_network | default(networks[0]) }}
     ports:
@@ -46,8 +46,4 @@ services:
 
 networks:
   {{ sonarr_network | default(networks[0]) }}:
-    external: true
-
-volumes:
-  {{ sonarr_data_volume }}:
     external: true

@@ -5,19 +5,22 @@
   gather_facts: yes
 
   tasks:
+    - name: Default networks
+      set_fact:
+        networks: "{{ networks | default(['main']) }}"
+
     - name: Setup docker networks
       include_tasks: ../tasks/setup_docker_network.yml
       vars:
         network: "{{ item }}"
       with_items: "{{ networks }}"
-      when: networks
 
     - name: Setup docker volumes
       include_tasks: ../tasks/create_volume.yml
       vars:
         volume: "{{ item }}"
       with_items: "{{ volumes }}"
-      when: volumes
+      when: volumes is defined and volumes | length > 0
 
     - name: Include vars for selected services
       include_tasks: ../tasks/include_vars_if_present.yml

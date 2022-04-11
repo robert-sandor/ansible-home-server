@@ -1,0 +1,17 @@
+- name: Ensure mount path {{ mount.path }} exists
+  become: yes
+  file:
+    path: "{{ mount.path }}"
+    state: directory
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0755'
+
+- name: Create mount with type {{ mount.type }}
+  include_tasks: "{{ mount_tasks[mount.type] }}"
+  vars:
+    mount_tasks:
+      nfs: ../tasks/mount_nfs.yml
+      nfs4: ../tasks/mount_nfs.yml
+      cifs: ../tasks/mount_cifs.yml
+      smb: ../tasks/mount_cifs.yml

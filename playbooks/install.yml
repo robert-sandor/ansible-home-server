@@ -17,6 +17,14 @@
     - name: Prepare project folder
       include_tasks: ../tasks/prep_project_dir.yml
 
+    - name: Setup mounts
+      include_tasks: ../tasks/mounts.yml
+      vars:
+        name: "{{ item.key }}"
+        mount: "{{ item.value }}"
+      with_items: "{{ mounts | dict2items }}"
+      when: mounts
+
     - name: Include vars for selected services
       include_tasks: ../tasks/include_vars_if_present.yml
       vars:
@@ -65,19 +73,22 @@
       meta: reset_connection
       when: not reboot_needed
 
+    - name: Default networks
+      set_fact:
+        networks: "{{ networks | default(['main']) }}"
+
     - name: Setup docker networks
       include_tasks: ../tasks/setup_docker_network.yml
       vars:
         network: "{{ item }}"
       with_items: "{{ networks }}"
-      when: networks
 
     - name: Setup docker volumes
       include_tasks: ../tasks/create_volume.yml
       vars:
         volume: "{{ item }}"
       with_items: "{{ volumes }}"
-      when: volumes
+      when: volumes is defined and volumes | length > 0
 
     - name: Start install for selected services
       include_tasks: ../tasks/include_tasks_if_present.yml
