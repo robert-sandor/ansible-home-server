@@ -8,7 +8,7 @@
   include_tasks: ../tasks/local_volume.yml
   vars:
     volume:
-      name: jellyfin-transcode-cache
+      name: jellyfin-cache
       type: local
 
 - name: Copy service docker-compose file

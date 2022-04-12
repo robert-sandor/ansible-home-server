@@ -1,0 +1,99 @@
+version: "3.8"
+
+services:
+  nc-mariadb:
+    container_name: nc-mariadb
+    hostname: nc-mariadb
+    image: mariadb:{{ nc_mariadb_version | default('latest') }}
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    environment:
+      - TZ={{ timezone }}
+      - MARIADB_ROOT_PASSWORD=root@mariadb
+      - MARIADB_DATABASE=nextcloud
+      - MARIADB_USER=nextcloud
+      - MARIADB_PASSWORD=nextcloud
+    networks:
+      - {{ nc_network | default(networks[0]) }}
+    volumes:
+      - {{ project_dir }}/nextcloud/mariadb-data:/var/lib/mysql
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if nextcloud_autoupdate is defined and nextcloud_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if nextcloud_autoupdate is not defined or nextcloud_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+  nc-redis:
+    container_name: nc-redis
+    hostname: nc-redis
+    image: redis:{{ nc_redis_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+    networks:
+      - {{ nc_network | default(networks[0]) }}
+    volumes:
+      - {{ project_dir }}/nextcloud/redis-data:/data
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if nextcloud_autoupdate is defined and nextcloud_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if nextcloud_autoupdate is not defined or nextcloud_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+  nextcloud:
+    container_name: nextcloud
+    hostname: nextcloud
+    image: nextcloud:{{ nc_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_HOST=nc-mariadb
+      - REDIS_HOST=nc-redis
+    networks:
+      - {{ nc_network | default(networks[0]) }}
+    ports:
+      - 8800:80
+    volumes:
+      - {{ project_dir }}/nextcloud/data:/var/www/html
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.nextcloud.rule=Host(`nextcloud.{{ domain }}`)
+      - traefik.http.routers.nextcloud.entrypoints=websecure
+      - traefik.http.services.nextcloud.loadbalancer.server.port=80
+      - traefik.http.routers.nextcloud.service=nextcloud
+      - traefik.http.routers.nextcloud.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=nextcloud
+      - flame.url=nextcloud.{{ domain }}
+      - flame.icon=cloud
+{% endif %}
+{% if 'watchtower' in services %}
+{% if nextcloud_autoupdate is defined and nextcloud_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if nextcloud_autoupdate is not defined or nextcloud_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ nc_network | default(networks[0]) }}:
+    external: true
+    

@@ -15,7 +15,7 @@ services:
       - 8096:8096
     volumes:
       - {{ project_dir }}/jellyfin/data:/config
-      - jellyfin-transcode-cache:/transcode
+      - jellyfin-cache:/cache
       - {{ jellyfin_media_path }}:/media
     labels:
       - domain={{ domain }}
@@ -47,5 +47,5 @@ networks:
     external: true
 
 volumes:
-  jellyfin-transcode-cache: 
+  jellyfin-cache: 
     external: true

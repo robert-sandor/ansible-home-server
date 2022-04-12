@@ -1,0 +1,27 @@
+- name: Create data directory
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: nextcloud
+    dir: data
+
+- name: Create data directory
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: nextcloud
+    dir: mariadb-data
+
+- name: Create data directory
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: nextcloud
+    dir: redis-data
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: nextcloud
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: nextcloud
