@@ -17,6 +17,10 @@ services:
       - {{ project_dir }}/jellyfin/data:/config
       - jellyfin-cache:/cache
       - {{ jellyfin_media_path }}:/media
+{% if 'intel' in jellyfin_hw_decode %}
+    device:
+      - /dev/dri:/dev/dri
+{% endif %}
     labels:
       - domain={{ domain }}
 {% if 'traefik' in services %}

@@ -20,6 +20,10 @@ services:
       - {{ project_dir }}/plex/data:/config
       - plex-transcode-cache:/transcode
       - {{ plex_media_path }}:/media
+{% if 'intel' in plex_hw_decode %}
+    device:
+      - /dev/dri:/dev/dri
+{% endif %}
     labels:
       - domain={{ domain }}
 {% if 'traefik' in services %}
