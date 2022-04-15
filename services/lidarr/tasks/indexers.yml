@@ -8,13 +8,13 @@
   delay: 10
   until: _response.status != -1 and _response.status < 500 and _response.status != 404
 
-- name: Check whether Jacket indexer {{ indexer.name }} is already configured
+- name: Check whether Jackett indexer {{ indexer.name }} is already configured
   set_fact:
     indexer_not_configured: "{{ _response.json | json_query(q) | length() == 0 }}"
   vars:
     q: "[?name == `{{ indexer.name }}`]"
 
-- name: Configure Jacket indexer {{ indexer.name }}
+- name: Configure Jackett indexer {{ indexer.name }}
   uri:
     url: "{{ lidarr_api_url }}/indexer?apiKey={{ lidarr_api_key }}"
     method: POST

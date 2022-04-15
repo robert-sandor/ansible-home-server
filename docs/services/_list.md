@@ -18,9 +18,15 @@
 | [Jackett](jackett.md) | Proxy server that translates Queries from Sonarr/Radarr to tracker-site-specific queries | 9117 - UI and API | `jackett.<domain>` |
 | [Sonarr](sonarr.md) | Media manager for TV Series | 8989 - UI and API | `sonarr.<domain>` |
 | [Radarr](radarr.md) | Media manager for Movies | 7878 - UI and API | `radarr.<domain>` |
+| [Lidarr](lidarr.md) | Media manager for Music | 8686 - UI and API | `lidarr.<domain>` |
 | [Plex](plex.md) | Media Server | 32400 - UI | `plex.<domain>` |
 | [Overseerr](overseerr.md) | Request management and media discovery tool | 5055 - UI | `overseerr.<domain>` |
 | [Mealie](mealie.md) | Recipe and meal planning | 8080 - UI | `mealie.<domain>` |
 | [Focalboard](focalboard.md) | OSS alternative to Trello and similar | 8000 - UI | `focalboard.<domain>` |
 | [Navidrome](navidrome.md) | Music server, similar to Spotify | 4533 - UI | `navidrome.<domain>` |
-| [Cyberchef](cyberchef.md) | String manipulation tool | 8001 - UI | `cyberchef.<domain>`
+| [Cyberchef](cyberchef.md) | String manipulation tool | 8001 - UI | `cyberchef.<domain>` |
+| [InfluxDB](influxdb.md) | Metrics, monioring and alerts | 8086 - UI | `influxdb.<domain>` |
+| [Telegraf](telegraf.md) | Collector for influxDB | - | - |
+| [Jellyfin](jellyfin.md) | Media Server | 8096 - UI | `jellyfin.<domain>` |
+| [Nextcloud](nextcloud.md) | Personal cloud | 8800 - UI | `nextcloud.<domain>` |
+| [Tdarr](tdarr.md) | Library transcoding | 8265 - UI | `tdarr.<domain>` |
