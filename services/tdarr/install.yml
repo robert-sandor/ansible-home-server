@@ -1,0 +1,40 @@
+- name: Create data folder for Tdarr
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: tdarr
+    dir: data
+
+- name: Create server folder for Tdarr
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: tdarr
+    dir: server
+
+- name: Create configs folder for Tdarr
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: tdarr
+    dir: configs
+
+- name: Create logs folder for Tdarr
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: tdarr
+    dir: logs
+
+- name: Create docker volume for Tdarr Cache
+  include_tasks: ../tasks/local_volume.yml
+  vars:
+    volume:
+      name: tdarr-cache
+      type: local
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: tdarr
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: tdarr

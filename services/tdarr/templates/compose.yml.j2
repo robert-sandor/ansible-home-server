@@ -1,0 +1,102 @@
+version: "3.8"
+
+services:
+  tdarr-server:
+    container_name: tdarr-server
+    hostname: tdarr-server
+    image: haveagitgat/tdarr:{{ tdarr_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - UMASK_SET=002
+      - serverIP=tdarr-server
+      - serverPort=8266
+      - webUIPort=8265
+    networks:
+      - {{ tdarr_network | default(networks[0]) }}
+    ports:
+      - 8265:8265
+    volumes:
+      - {{ project_dir }}/tdarr/server:/app/server
+      - {{ project_dir }}/tdarr/configs:/app/configs
+      - {{ project_dir }}/tdarr/logs:/app/logs
+      - {{ tdarr_media_path }}:/data
+      - tdarr-cache:/temp
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.tdarr.rule=Host(`tdarr.{{ domain }}`)
+      - traefik.http.routers.tdarr.entrypoints=websecure
+      - traefik.http.services.tdarr.loadbalancer.server.port=8265
+      - traefik.http.routers.tdarr.service=tdarr
+      - traefik.http.routers.tdarr.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=tdarr
+      - flame.url=tdarr.{{ domain }}
+      - flame.icon=code-equal
+{% endif %}
+{% if 'watchtower' in services %}
+{% if tdarr_autoupdate is defined and tdarr_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if tdarr_autoupdate is not defined or tdarr_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+  tdarr-node:
+    container_name: tdarr-node
+    hostname: tdarr-node
+    image: haveagitgat/tdarr_node:{{ tdarr_version | default('latest') }}
+    restart: unless-stopped
+{% if tdarr_hw_decode is defined and 'nvidia' in tdarr_hw_decode %}
+    runtime: nvidia
+{% endif %}
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - UMASK_SET=002
+      - nodeID=tdarr-node.{{ domain }}
+      - nodeIP=tdarr-node
+      - nodePort=8267
+      - serverIP=tdarr-server
+      - serverPort=8266
+{% if tdarr_hw_decode is defined and 'nvidia' in tdarr_hw_decode %}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+{% endif %}
+    networks:
+      - {{ tdarr_network | default(networks[0]) }}
+    volumes:
+      - {{ project_dir }}/tdarr/configs:/app/configs
+      - {{ project_dir }}/tdarr/logs:/app/logs
+      - {{ tdarr_media_path }}:/data
+      - tdarr-cache:/temp
+{% if tdarr_hw_decode is defined and 'intel' in tdarr_hw_decode %}
+    devices:
+      - /dev/dri:/dev/dri
+{% endif %}
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if tdarr_autoupdate is defined and tdarr_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if tdarr_autoupdate is not defined or tdarr_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ tdarr_network | default(networks[0]) }}:
+    external: true
+    
+volumes:
+  tdarr-cache:
+    external: true
