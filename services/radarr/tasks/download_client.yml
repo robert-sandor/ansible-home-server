@@ -37,7 +37,7 @@
       - name: password
         value: "{{ radarr_dc_password }}"
       - name: movieCategory
-        value: "{{ radarr_dc_category | default('series') }}"
+        value: "{{ radarr_dc_category | default('movies') }}"
       - name: recentMoviePriority
         value: 0
       - name: olderMoviePriority

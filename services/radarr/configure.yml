@@ -19,4 +19,4 @@
 
 - name: Configure qBittorrent as download client
   include_tasks: tasks/download_client.yml
-  when: '"qbittorrent" in services'
+  when: radarr_dc is defined

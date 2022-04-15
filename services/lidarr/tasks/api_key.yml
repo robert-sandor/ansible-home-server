@@ -1,0 +1,9 @@
+- name: Get API Key for Lidarr
+  community.docker.docker_container_exec:
+    container: lidarr
+    command: /bin/bash -c "cat /config/config.xml | grep ApiKey | tr '<' '>' | cut -d '>' -f3"
+  register: _response
+
+- name: Save Lidarr API Key
+  set_fact: 
+    lidarr_api_key: "{{ _response.stdout }}"

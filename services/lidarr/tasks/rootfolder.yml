@@ -1,0 +1,36 @@
+- name: Get Lidarr root folder
+  uri:
+    url: "{{ lidarr_api_url }}/rootFolder?apiKey={{ lidarr_api_key }}"
+    method: GET
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+
+- name: Check if a rootfolder is configured
+  set_fact:
+    rootpath_not_set: "{{ _response.json | json_query('[*].path') | length() == 0 }}"
+
+- name: Ensure rootfolder exists
+  community.docker.docker_container_exec:
+    container: lidarr
+    command: /bin/bash -c "mkdir -p /data/{{ lidarr_media_dir }}"
+  when: rootpath_not_set
+
+- name: Configure Lidarr rootfolder
+  uri:
+    url: "{{ lidarr_api_url }}/rootFolder?apiKey={{ lidarr_api_key }}"
+    method: POST
+    body_format: json
+    body:
+      path: "/data/{{ lidarr_media_dir }}"
+      name: music
+      defaultTags: []
+      defaultMetadataProfileId: 1
+      defaultQualityProfileId: 1
+    status_code: 201
+  when: rootpath_not_set
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
