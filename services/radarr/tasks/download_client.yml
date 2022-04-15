@@ -7,9 +7,63 @@
   delay: 10
   until: _response.status != -1 and _response.status < 500 and _response.status != 404 
 
-- name: Check if Download client already configured
+- name: Check if download client {{ radarr_dc }} configured
   set_fact:
-    qbt_not_configured: "{{ _response.json | json_query('[?name == `qbittorrent`]') | length() == 0 }}"
+    _radarr_dc_not_configured: "{{ _response.json | json_query(q) | length() == 0 }}"
+  vars:
+    q: "[?name == `{{ radarr_dc }}`]"
+
+- name: Set download client {{ radarr_dc }} variables
+  set_fact:
+    radarr_dc_host: "{{ radarr_dc_host | default(radarr_dc) }}"
+    radarr_dc_port: "{{ radarr_dc_port | default('8082' if 'qbittorrent' in radarr_dc else '9091') }}"
+    radarr_dc_use_ssl: "{{ radarr_dc_use_ssl | default(true if radarr_dc_port is defined and radarr_dc_port == 443 else false) }}"
+    radarr_dc_username: "{{ radarr_dc_username | default('') }}"
+    radarr_dc_password: "{{ radarr_dc_password | default('') }}"
+
+- name: Set common download client fields
+  set_fact:
+    _dc_fields:
+      - name: host
+        value: "{{ radarr_dc_host }}"
+      - name: port
+        value: "{{ radarr_dc_port }}"
+      - name: useSsl
+        value: "{{ radarr_dc_use_ssl }}"
+      - name: urlBase
+        value: "{{ '' if 'qbittorrent' in radarr_dc else '/transmission/' }}"
+      - name: username
+        value: "{{ radarr_dc_username }}"
+      - name: password
+        value: "{{ radarr_dc_password }}"
+      - name: movieCategory
+        value: "{{ radarr_dc_category | default('series') }}"
+      - name: recentMoviePriority
+        value: 0
+      - name: olderMoviePriority
+        value: 0
+
+- name: Set additional fields for qbittorrent
+  set_fact: 
+    _dc_fields: "{{ _dc_fields + additional_fields }}"
+  vars:
+    additional_fields:
+      - name: movieImportedCategory
+      - name: recentMoviePriority
+        value: 0
+      - name: olderMoviePriority
+        value: 0
+      - name: initialState
+        value: 0
+
+- name: Set additional fields for transmission
+  set_fact: 
+    _dc_fields: "{{ _dc_fields + additional_fields }}"
+  vars:
+    additional_fields:
+      - name: movieDirectory
+      - name: addPaused
+        value: false
 
 - name: Add qBittorrent download client if not configured
   uri:
@@ -20,54 +74,38 @@
       enable: true
       protocol: torrent
       priority: 1
-      removeCompletedDownloads: false
+      removeCompletedDownloads: "{{ radarr_dc_remove_completed_downloads | default(false) }}"
       removeFailedDownloads: true
-      name: qbittorrent
-      fields:
-        - name: host
-          value: qbittorrent
-        - name: port
-          value: 8082
-        - name: useSsl
-          value: false
-        - name: urlBase
-        - name: username
-          value: "{{ qbt_config.web_ui_username | default('admin') }}"
-        - name: password
-          value: "{{ qbt_config.web_ui_password | default('adminadmin') }}"
-        - name: movieCategory
-          value: "{{ radarr_qbt_category }}"
-        - name: movieImportedCategory
-        - name: recentMoviePriority
-          value: 0
-        - name: olderMoviePriority
-          value: 0
-        - name: initialState
-          value: 0
-      implementationName: qBittorrent
-      implementation: QBittorrent
-      configContract: QBittorrentSettings
-      infoLink: 'https://wiki.servarr.com/radarr/supported#qbittorrent'
+      name: "{{ radarr_dc }}"
+      fields: "{{ _dc_fields }}"
+      implementationName: "{{ 'qBittorrent' if 'qbittorrent' in radarr_dc else 'Transmission' }}"
+      implementation: "{{ 'QBittorrent' if 'qbittorrent' in radarr_dc else 'Transmission' }}"
+      configContract: "{{ 'QBittorrentSettings' if 'qbittorrent' in radarr_dc else 'TransmissionSettings' }}"
+      infoLink: 'https://wiki.servarr.com/radarr/supported#{{ radarr_dc }}'
       tags: []
     status_code: 201
-  when: qbt_not_configured
+  when: _radarr_dc_not_configured
   register: _response
   retries: 10
   delay: 10
   until: _response.status != -1 and _response.status < 500 and _response.status != 404 
 
-# - name: Add qbittorrent remote mapping
-#   uri:
-#     url: "{{ radarr_api_url }}/remotepathmapping?apiKey={{ radarr_api_key }}"
-#     method: POST
-#     body_format: json
-#     body:
-#       host: qbittorrent
-#       remotePath: "{{ radarr_remote_path_qbt }}"
-#       localPath: "{{ radarr_remote_path_qbt }}"
-#     status_code: 201
-#   when: qbt_not_configured
-#   register: _response
-#   retries: 10
-#   delay: 10
-#   until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+- name: Default remote mapping
+  set_fact:
+    radarr_dc_mapping: "{{ sonarr_dc_mapping | default('/downloads:/data/downloads') }}"
+
+- name: Add remote mapping for download client {{ radarr_dc }}
+  uri:
+    url: "{{ radarr_api_url }}/remotepathmapping?apiKey={{ radarr_api_key }}"
+    method: POST
+    body_format: json
+    body:
+      host: "{{ radarr_dc }}"
+      remotePath: "{{ radarr_dc_mapping.split(':')[0] }}"
+      localPath: "{{ radarr_dc_mapping.split(':')[1] }}"
+    status_code: 201
+  when: _radarr_dc_not_configured
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 

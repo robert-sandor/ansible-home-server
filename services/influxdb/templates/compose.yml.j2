@@ -7,7 +7,7 @@ services:
     image: influxdb:{{ influxdb_version | default('latest') }}
     restart: unless-stopped
     environment:
-      - TZ={{ timezone }}
+      - TZ={{ timezone }} 
     networks:
       - {{ influxdb_network | default(networks[0]) }}
     ports:

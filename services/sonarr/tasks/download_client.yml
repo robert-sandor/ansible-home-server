@@ -7,19 +7,65 @@
   delay: 10
   until: _response.status != -1 and _response.status < 500 and _response.status != 404 
 
-- name: Check if Download client already configured
+- name: Check if download client {{ sonarr_dc }} already configured
   set_fact:
-    qbt_not_configured: "{{ _response.json | json_query('[?name == `qbittorrent`]') | length() == 0 }}"
+    _sonarr_dc_not_configured: "{{ _response.json | json_query(q) | length() == 0 }}"
+  vars:
+    q: "[?name == `{{ sonarr_dc }}`]"
 
-- name: Set qBittorrent variables
+- name: Set download client {{ sonarr_dc }} variables
   set_fact:
-    sonarr_qbt_host: "{{ sonarr_qbt_host | default('qbittorrent') }}"
-    sonarr_qbt_port: "{{ sonarr_qbt_port | default(8082) }}"
-    sonarr_qbt_use_ssl: "{{ sonarr_qbt_use_ssl | default(true if sonarr_qbt_port is defined and sonarr_qbt_port == 443 else false) }}"
-    sonarr_qbt_username: "{{ sonarr_qbt_username | default(qbt_config.web_ui_username if qbt_config is defined and qbt_config.web_ui_username is defined else 'admin') }}"
-    sonarr_qbt_password: "{{ sonarr_qbt_password | default(qbt_config.web_ui_password if qbt_config is defined and qbt_config.web_ui_password is defined else 'adminadmin') }}"
+    sonarr_dc_host: "{{ sonarr_dc_host | default(sonarr_dc) }}"
+    sonarr_dc_port: "{{ sonarr_dc_port | default('8082' if 'qbittorrent' in sonarr_dc else '9091') }}"
+    sonarr_dc_use_ssl: "{{ sonarr_dc_use_ssl | default(true if sonarr_dc_port is defined and sonarr_dc_port == 443 else false) }}"
+    sonarr_dc_username: "{{ sonarr_dc_username | default('') }}"
+    sonarr_dc_password: "{{ sonarr_dc_password | default('') }}"
 
-- name: Add qBittorrent download client if not configured
+- name: Set common download client fields
+  set_fact:
+    _dc_fields:
+      - name: host
+        value: "{{ sonarr_dc_host }}"
+      - name: port
+        value: "{{ sonarr_dc_port }}"
+      - name: useSsl
+        value: "{{ sonarr_dc_use_ssl }}"
+      - name: urlBase
+        value: "{{ '' if 'qbittorrent' in sonarr_dc else '/transmission/' }}"
+      - name: username
+        value: "{{ sonarr_dc_username }}"
+      - name: password
+        value: "{{ sonarr_dc_password }}"
+      - name: tvCategory
+        value: "{{ sonarr_dc_category | default('series') }}"
+      - name: recentTvPriority
+        value: 0
+      - name: olderTvPriority
+        value: 0
+
+- name: Set additional fields for qbittorrent
+  set_fact: 
+    _dc_fields: "{{ _dc_fields + additional_fields }}"
+  vars:
+    additional_fields:
+      - name: tvImportedCategory
+      - name: initialState
+        value: 0
+      - name: sequentialOrder
+        value: false
+      - name: firstAndLast
+        value: false
+
+- name: Set additional fields for transmission
+  set_fact: 
+    _dc_fields: "{{ _dc_fields + additional_fields }}"
+  vars:
+    additional_fields:
+      - name: tvDirectory
+      - name: addPaused
+        value: false
+
+- name: Add download client {{ sonarr_dc }} if not configured
   uri:
     url: "{{ sonarr_api_url }}/downloadclient?apiKey={{ sonarr_api_key }}"
     method: POST
@@ -28,41 +74,37 @@
       enable: true
       protocol: torrent
       priority: 1
-      removeCompletedDownloads: "{{ sonarr_qbt_remove_completed_downloads | default(false) }}"
+      removeCompletedDownloads: "{{ sonarr_dc_remove_completed_downloads | default(false) }}"
       removeFailedDownloads: true
-      name: qbittorrent
-      fields:
-        - name: host
-          value: "{{ sonarr_qbt_host }}"
-        - name: port
-          value: "{{ sonarr_qbt_port }}"
-        - name: useSsl
-          value: "{{ sonarr_qbt_use_ssl }}"
-        - name: urlBase
-        - name: username
-          value: "{{ sonarr_qbt_username }}"
-        - name: password
-          value: "{{ sonarr_qbt_password }}"
-        - name: tvCategory
-          value: "{{ sonarr_qbt_category }}"
-        - name: tvImportedCategory
-        - name: recentTvPriority
-          value: 0
-        - name: olderTvPriority
-          value: 0
-        - name: initialState
-          value: 0
-        - name: sequentialOrder
-          value: false
-        - name: firstAndLast
-          value: false
-      implementationName: qBittorrent
-      implementation: QBittorrent
-      configContract: QBittorrentSettings
-      infoLink: 'https://wiki.servarr.com/sonarr/supported#qbittorrent'
+      name: "{{ sonarr_dc }}"
+      fields: "{{ _dc_fields }}"
+      implementationName: "{{ 'qBittorrent' if 'qbittorrent' in sonarr_dc else 'Transmission' }}"
+      implementation: "{{ 'QBittorrent' if 'qbittorrent' in sonarr_dc else 'Transmission' }}"
+      configContract: "{{ 'QBittorrentSettings' if 'qbittorrent' in sonarr_dc else 'TransmissionSettings' }}"
+      infoLink: 'https://wiki.servarr.com/sonarr/supported#{{ sonarr_dc }}'
       tags: []
     status_code: 201
-  when: qbt_not_configured
+  when: _sonarr_dc_not_configured
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+
+- name: Default remote mapping
+  set_fact:
+    sonarr_dc_mapping: "{{ sonarr_dc_mapping | default('/downloads:/data/downloads') }}"
+
+- name: Add remote mapping for download client {{ sonarr_dc }}
+  uri:
+    url: "{{ sonarr_api_url }}/remotepathmapping?apiKey={{ sonarr_api_key }}"
+    method: POST
+    body_format: json
+    body:
+      host: "{{ sonarr_dc }}"
+      remotePath: "{{ sonarr_dc_mapping.split(':')[0] }}"
+      localPath: "{{ sonarr_dc_mapping.split(':')[1] }}"
+    status_code: 201
+  when: _sonarr_dc_not_configured
   register: _response
   retries: 10
   delay: 10
