@@ -4,10 +4,11 @@ services:
   jellyfin:
     container_name: jellyfin
     hostname: jellyfin
-    image: jellyfin/jellyfin:{{ jellyfin_version | default('latest') }}
+    image: linuxserver/jellyfin:{{ jellyfin_version | default('latest') }}
     restart: unless-stopped
-    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
     networks:
       - {{ jellyfin_network | default(networks[0]) }}
@@ -18,7 +19,7 @@ services:
       - jellyfin-cache:/cache
       - {{ jellyfin_media_path }}:/media
 {% if 'intel' in jellyfin_hw_decode %}
-    device:
+    devices:
       - /dev/dri:/dev/dri
 {% endif %}
     labels:

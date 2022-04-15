@@ -2,7 +2,7 @@
 
   hosts: all
 
-  gather_facts: yes
+  gather_facts: true
 
   tasks:
     - name: Include vars for selected services

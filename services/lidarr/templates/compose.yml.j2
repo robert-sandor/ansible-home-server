@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  lidarr:
+    container_name: lidarr
+    hostname: lidarr
+    image: ghcr.io/linuxserver/lidarr:{{ lidarr_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+{% if lidarr_dark_theme is not defined or lidarr_dark_theme is true %}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:lidarr
+{% endif %}
+    volumes:
+      - {{ project_dir }}/lidarr/data:/config
+      - {{ lidarr_data_path }}:/data
+    networks:
+      - {{ lidarr_network | default(networks[0]) }}
+    ports:
+      - 8686:8686
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.lidarr.rule=Host(`lidarr.{{ domain }}`)
+      - traefik.http.routers.lidarr.entrypoints=websecure
+      - traefik.http.services.lidarr.loadbalancer.server.port=8686
+      - traefik.http.routers.lidarr.service=lidarr
+      - traefik.http.routers.lidarr.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=lidarr
+      - flame.url=lidarr.{{ domain }}
+      - flame.icon=headphones
+{% endif %}
+{% if 'watchtower' in services %}
+{% if lidarr_autoupdate is defined and lidarr_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if lidarr_autoupdate is not defined or lidarr_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ lidarr_network | default(networks[0]) }}:
+    external: true

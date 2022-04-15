@@ -2,14 +2,14 @@
 
   hosts: all
 
-  gather_facts: yes
+  gather_facts: true
 
   pre_tasks:
 
     - name: Set timezone to {{ timezone }}
       timezone:
         name: "{{ timezone }}"
-      become: yes
+      become: true
 
     - name: Install packages and update
       include_tasks: ../tasks/update_host.yml
@@ -41,22 +41,22 @@
       when: services
 
   roles:
-    - name: geerlingguy.docker
-      become: yes
+    - role: geerlingguy.docker
+      become: true
       vars:
         docker_install_compose: false
         docker_users: "{{ ansible_facts.user_id }}"
       when: '"x86_64" in ansible_architecture'
       
-    - name: geerlingguy.docker_arm
-      become: yes
+    - role: geerlingguy.docker_arm
+      become: true
       vars:
         docker_install_compose: false
         docker_users: "{{ ansible_facts.user_id }}"
       when: '"arm" in ansible_architecture or "aarch64" in ansible_architecture'
 
-    - name: geerlingguy.pip
-      become: yes
+    - role: geerlingguy.pip
+      become: true
       vars:
         pip_install_packages:
           - name: docker
@@ -65,7 +65,7 @@
 
   tasks:
     - name: Reboot host
-      become: yes
+      become: true
       reboot:
       when: reboot_needed
 

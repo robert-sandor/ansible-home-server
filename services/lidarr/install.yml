@@ -1,0 +1,15 @@
+- name: Create data directory
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: lidarr
+    dir: data
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: lidarr
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: lidarr
