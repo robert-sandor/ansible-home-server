@@ -1,3 +1,9 @@
+- name: Create folder for Template
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: template
+    dir: data
+
 - name: Create docker volume for Template
   include_tasks: ../tasks/local_volume.yml
   vars:

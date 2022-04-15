@@ -6,11 +6,18 @@ services:
     hostname: plex@{{ domain }}
     image: plexinc/pms-docker:{{ plex_version | default('latest') }}
     restart: unless-stopped
+{% if plex_hw_decode is defined and 'nvidia' in plex_hw_decode %}
+    runtime: nvidia
+{% endif %}
     environment:
       - TZ={{ timezone }}
       - HOSTNAME=plex@{{ domain }}
       - PLEX_CLAIM={{ plex_claim }}
       - ADVERTISE_IP=http://{{ ansible_facts.default_ipv4.address }}:32400
+{% if plex_hw_decode is defined and 'nvidia' in plex_hw_decode %}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+{% endif %}
     networks:
       - {{ plex_network | default(networks[0]) }}
     ports:
@@ -20,7 +27,7 @@ services:
       - {{ project_dir }}/plex/data:/config
       - plex-transcode-cache:/transcode
       - {{ plex_media_path }}:/media
-{% if 'intel' in plex_hw_decode %}
+{% if plex_hw_decode is defined and 'intel' in plex_hw_decode %}
     device:
       - /dev/dri:/dev/dri
 {% endif %}

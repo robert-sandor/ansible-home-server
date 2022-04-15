@@ -10,7 +10,7 @@
     resolved_running: "{{ ansible_facts.services['systemd-resolved.service'].status == 'enabled' }}"
 
 - name: Disable SystemD stub resolver
-  become: yes
+  become: true
   import_tasks: ../tasks/systemd_no_resolved.yml
   when: resolved_running
 

@@ -1,0 +1,23 @@
+- name: Stat telegraf config file
+  stat:
+    path: "{{ project_dir }}/telegraf/telegraf.conf"
+  register: _stat
+
+- name: Generate default telegraf config file
+  community.docker.docker_container:
+    name: telegraf
+    image: telegraf
+    command: telegraf config
+    cleanup: true
+    detach: false
+  when: not _stat.stat.exists
+  register: _config
+
+- name: Write default telegraf config file
+  copy:
+    dest: "{{ project_dir }}/telegraf/telegraf.conf"
+    content: "{{ _config.container.Output }}"
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0644'
+  when: not _stat.stat.exists

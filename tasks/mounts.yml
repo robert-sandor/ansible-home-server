@@ -1,5 +1,5 @@
 - name: Ensure mount path {{ mount.path }} exists
-  become: yes
+  become: true
   file:
     path: "{{ mount.path }}"
     state: directory

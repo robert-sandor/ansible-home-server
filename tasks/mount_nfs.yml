@@ -1,5 +1,5 @@
 - name: Mount NFS volume {{ mount.path }}
-  become: yes
+  become: true
   ansible.posix.mount:
     src: "{{ mount.host }}:{{ mount.device }}"
     path: "{{ mount.path }}"

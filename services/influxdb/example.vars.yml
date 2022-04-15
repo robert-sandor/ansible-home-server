@@ -1,0 +1,4 @@
+influxdb_user: user
+influxdb_pass: changeme
+influxdb_org: home
+influxdb_bucket: home

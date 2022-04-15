@@ -1,11 +1,11 @@
 - name: Check for updates
-  become: yes
+  become: true
   apt:
     update_cache: yes
   when: ansible_facts.pkg_mgr == 'apt'
 
 - name: Update host with apt
-  become: yes
+  become: true
   apt:
     autoclean: yes
     autoremove: yes
@@ -14,7 +14,7 @@
   when: ansible_facts.pkg_mgr == 'apt'
 
 - name: Update host with dnf
-  become: yes
+  become: true
   dnf:
     name: "*"
     state: latest
@@ -26,14 +26,14 @@
     reboot_needed: "{{ _response.changed }}"
 
 - name: Install packages with apt
-  become: yes
+  become: true
   apt:
     pkg: "{{ packages }}"
   register: _response
   when: ansible_facts.pkg_mgr == 'apt' and packages
 
 - name: Install packages with dnf
-  become: yes
+  become: true
   dnf:
     name: "{{ packages }}"
     state: latest
@@ -51,7 +51,7 @@
   register: _result
 
 - name: Disable SELinux if enabled
-  become: yes
+  become: true
   lineinfile:
     create: yes
     path: /etc/selinux/config

@@ -1,0 +1,22 @@
+- name: Get group id of group docker
+  group:
+    name: docker
+    state: present
+  register: _output
+
+- name: Save group id of group docker
+  set_fact:
+    docker_gid: "{{ _output.gid }}"
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: telegraf
+
+- name: Ensure config files exists
+  include_tasks: tasks/ensure_config.yml
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: telegraf

@@ -1,5 +1,5 @@
 - name: Add module {{ module }} to /etc/modules
-  become: yes
+  become: true
   lineinfile:
     create: yes
     path: /etc/modules-load.d/{{ module }}.conf

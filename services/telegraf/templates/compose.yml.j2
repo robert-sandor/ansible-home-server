@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  telegraf:
+    container_name: telegraf
+    hostname: telegraf
+    image: telegraf:{{ telegraf_version | default('latest') }}
+    restart: unless-stopped
+    user: "telegraf:{{ docker_gid }}"
+    environment:
+      - TZ={{ timezone }}
+    networks:
+      - {{ telegraf_network | default(networks[0]) }}
+    volumes:
+      - {{ project_dir }}/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if telegraf_autoupdate is defined and telegraf_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if telegraf_autoupdate is not defined or telegraf_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ telegraf_network | default(networks[0]) }}:
+    external: true

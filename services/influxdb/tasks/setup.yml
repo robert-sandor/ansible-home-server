@@ -1,0 +1,10 @@
+- name: Stat influxdb config file
+  stat: 
+    path: "{{ project_dir }}/influxdb/config/influx-configs"
+  register: _stat
+
+- name: Setup influxdb
+  community.docker.docker_container_exec:
+    container: influxdb
+    command: "influx setup -f -u {{ influxdb_user }} -p {{ influxdb_pass }} -o {{ influxdb_org | default('home') }} -b {{ influxdb_bucket | default('home') }}"
+  when: not _stat.stat.exists

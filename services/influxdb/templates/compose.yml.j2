@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  influxdb:
+    container_name: influxdb
+    hostname: influxdb
+    image: influxdb:{{ influxdb_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+    networks:
+      - {{ influxdb_network | default(networks[0]) }}
+    ports:
+      - 8086:8086
+    volumes:
+      - {{ project_dir }}/influxdb/data:/var/lib/influxdb2
+      - {{ project_dir }}/influxdb/config:/etc/influxdb2
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.influxdb.rule=Host(`influxdb.{{ domain }}`)
+      - traefik.http.routers.influxdb.entrypoints=websecure
+      - traefik.http.services.influxdb.loadbalancer.server.port=8086
+      - traefik.http.routers.influxdb.service=influxdb
+      - traefik.http.routers.influxdb.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=influxdb
+      - flame.url=influxdb.{{ domain }}
+      - flame.icon=gauge
+{% endif %}
+{% if 'watchtower' in services %}
+{% if influxdb_autoupdate is defined and influxdb_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if influxdb_autoupdate is not defined or influxdb_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ influxdb_network | default(networks[0]) }}:
+    external: true
