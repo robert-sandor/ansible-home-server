@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  readarr:
+    container_name: readarr
+    hostname: readarr
+    image: ghcr.io/linuxserver/readarr:{{ readarr_version | default('develop') }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+{% if readarr_dark_theme is not defined or readarr_dark_theme is true %}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:readarr
+{% endif %}
+    volumes:
+      - {{ project_dir }}/readarr/data:/config
+      - {{ readarr_data_path }}:/data
+    networks:
+      - {{ readarr_network | default(networks[0]) }}
+    ports:
+      - 8787:8787
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.readarr.rule=Host(`readarr.{{ domain }}`)
+      - traefik.http.routers.readarr.entrypoints=websecure
+      - traefik.http.services.readarr.loadbalancer.server.port=8787
+      - traefik.http.routers.readarr.service=readarr
+      - traefik.http.routers.readarr.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=readarr
+      - flame.url=readarr.{{ domain }}
+      - flame.icon=book-open-page-variant
+{% endif %}
+{% if 'watchtower' in services %}
+{% if readarr_autoupdate is defined and readarr_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if readarr_autoupdate is not defined or readarr_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ readarr_network | default(networks[0]) }}:
+    external: true

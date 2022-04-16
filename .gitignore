@@ -12,7 +12,7 @@ host_vars/*
 !host_vars/README.md
 
 # ignore all vars.yml files for each individual service
-services/**/*.yml
+services/*/*.yml
 !services/**/install.yml
 !services/**/preconfigure.yml
 !services/**/configure.yml
@@ -28,3 +28,6 @@ debug
 # Ignore cloudflared tunnel files
 services/cloudflared/scripts/.cloudflared
 services/cloudflared/files
+
+# Ignore telegraf conf
+services/telegraf/files/telegraf.conf

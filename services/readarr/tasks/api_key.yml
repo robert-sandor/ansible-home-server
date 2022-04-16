@@ -1,0 +1,9 @@
+- name: Get API Key for Readarr
+  community.docker.docker_container_exec:
+    container: readarr
+    command: /bin/bash -c "cat /config/config.xml | grep ApiKey | tr '<' '>' | cut -d '>' -f3"
+  register: _response
+
+- name: Save readarr API Key
+  set_fact: 
+    readarr_api_key: "{{ _response.stdout }}"

@@ -1,0 +1,111 @@
+- name: Get readarr download clients
+  uri:
+    url: "{{ readarr_api_url }}/downloadclient?apiKey={{ readarr_api_key }}"
+    method: GET
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+
+- name: Check if download client {{ readarr_dc }} already configured
+  set_fact:
+    _readarr_dc_not_configured: "{{ _response.json | json_query(q) | length() == 0 }}"
+  vars:
+    q: "[?name == `{{ readarr_dc }}`]"
+
+- name: Set download client {{ readarr_dc }} variables
+  set_fact:
+    readarr_dc_host: "{{ readarr_dc_host | default(readarr_dc) }}"
+    readarr_dc_port: "{{ readarr_dc_port | default('8082' if 'qbittorrent' in readarr_dc else '9091') }}"
+    readarr_dc_use_ssl: "{{ readarr_dc_use_ssl | default(true if readarr_dc_port is defined and readarr_dc_port == 443 else false) }}"
+    readarr_dc_username: "{{ readarr_dc_username | default('') }}"
+    readarr_dc_password: "{{ readarr_dc_password | default('') }}"
+
+- name: Set common download client fields
+  set_fact:
+    _dc_fields:
+      - name: host
+        value: "{{ readarr_dc_host }}"
+      - name: port
+        value: "{{ readarr_dc_port }}"
+      - name: useSsl
+        value: "{{ readarr_dc_use_ssl }}"
+      - name: urlBase
+        value: "{{ '' if 'qbittorrent' in readarr_dc else '/transmission/' }}"
+      - name: username
+        value: "{{ readarr_dc_username }}"
+      - name: password
+        value: "{{ readarr_dc_password }}"
+      - name: musicCategory
+        value: "{{ readarr_dc_category | default('music') }}"
+      - name: recentTvPriority
+        value: 0
+      - name: olderTvPriority
+        value: 0
+
+- name: Set additional fields for qbittorrent
+  set_fact: 
+    _dc_fields: "{{ _dc_fields + additional_fields }}"
+  vars:
+    additional_fields:
+      - name: musicImportedCategory
+      - name: initialState
+        value: 0
+      - name: sequentialOrder
+        value: false
+      - name: firstAndLast
+        value: false
+
+- name: Set additional fields for transmission
+  set_fact: 
+    _dc_fields: "{{ _dc_fields + additional_fields }}"
+  vars:
+    additional_fields:
+      - name: tvDirectory
+      - name: addPaused
+        value: false
+
+- name: Add download client {{ readarr_dc }} if not configured
+  uri:
+    url: "{{ readarr_api_url }}/downloadclient?apiKey={{ readarr_api_key }}"
+    method: POST
+    body_format: json
+    body:
+      enable: true
+      protocol: torrent
+      priority: 1
+      removeCompletedDownloads: "{{ readarr_dc_remove_completed_downloads | default(false) }}"
+      removeFailedDownloads: true
+      name: "{{ readarr_dc }}"
+      fields: "{{ _dc_fields }}"
+      implementationName: "{{ 'qBittorrent' if 'qbittorrent' in readarr_dc else 'Transmission' }}"
+      implementation: "{{ 'QBittorrent' if 'qbittorrent' in readarr_dc else 'Transmission' }}"
+      configContract: "{{ 'QBittorrentSettings' if 'qbittorrent' in readarr_dc else 'TransmissionSettings' }}"
+      infoLink: 'https://wiki.servarr.com/readarr/supported_{{ readarr_dc }}'
+      tags: []
+    status_code: 201
+  when: _readarr_dc_not_configured
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+
+- name: Default remote mapping
+  set_fact:
+    readarr_dc_mapping: "{{ readarr_dc_mapping | default('/downloads:/data/downloads') }}"
+
+- name: Add remote mapping for download client {{ readarr_dc }}
+  uri:
+    url: "{{ readarr_api_url }}/remotepathmapping?apiKey={{ readarr_api_key }}"
+    method: POST
+    body_format: json
+    body:
+      host: "{{ readarr_dc }}"
+      remotePath: "{{ readarr_dc_mapping.split(':')[0] }}"
+      localPath: "{{ readarr_dc_mapping.split(':')[1] }}"
+    status_code: 201
+  when: _readarr_dc_not_configured
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
