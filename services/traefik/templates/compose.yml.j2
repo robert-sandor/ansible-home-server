@@ -40,6 +40,9 @@ services:
 {% endif %}
     networks:
       - {{ traefik_network | default(networks[0]) }}
+    dns:
+      - '1.1.1.1'
+      - '9.9.9.9'
     ports:
       - 80:80
       - 443:443
