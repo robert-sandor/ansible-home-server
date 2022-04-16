@@ -30,7 +30,7 @@
   apt:
     pkg: "{{ packages }}"
   register: _response
-  when: ansible_facts.pkg_mgr == 'apt' and packages
+  when: ansible_facts.pkg_mgr == 'apt' and packages is defined
 
 - name: Install packages with dnf
   become: true
@@ -38,7 +38,7 @@
     name: "{{ packages }}"
     state: latest
   register: _response
-  when: ansible_facts.pkg_mgr == 'dnf' and packages
+  when: ansible_facts.pkg_mgr == 'dnf' and packages is defined
 
 - name: Check if reboot needed
   set_fact:

@@ -13,10 +13,10 @@ services:
       - "--providers.docker.network={{ traefik_network | default(networks[0]) }}"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-{% if traefik_https %}
+{% if traefik_https is defined and traefik_https %}
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.websecure.address=:443"
-{% if traefik_acme %}
+{% if traefik_acme is defined and traefik_acme %}
       - "--certificatesresolvers.{{ traefik_acme_provider }}.acme.dnschallenge=true"
       - "--certificatesresolvers.{{ traefik_acme_provider }}.acme.dnschallenge.provider={{ traefik_acme_provider }}"
       - "--certificatesresolvers.{{ traefik_acme_provider }}.acme.email={{ traefik_acme_email }}"
@@ -24,7 +24,7 @@ services:
       - "--certificatesresolvers.{{ traefik_acme_provider }}.acme.caserver=https://acme{% if traefik_acme_staging %}-staging{% endif %}-v02.api.letsencrypt.org/directory"
 {% endif %}
 {% endif %}
-{% if traefik_metrics %}
+{% if traefik_metrics is defined and traefik_metrics %}
       - "--metrics.prometheus=true"
       - "--entryPoints.metrics.address=:8081"
       - "--metrics.prometheus.entryPoint=metrics"

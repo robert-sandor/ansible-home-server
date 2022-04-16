@@ -4,6 +4,22 @@
 
   gather_facts: true
 
+  pre_tasks:
+    - name: Include vars for selected services
+      include_tasks: ../tasks/include_vars_if_present.yml
+      vars:
+        service: "{{ item }}"
+      with_items: "{{ services }}"
+      when: services
+
+    - name: Include host-specific vars for selected services
+      include_tasks: ../tasks/include_vars_if_present.yml
+      vars:
+        service: "{{ item }}"
+        file: "{{ inventory_hostname }}"
+      with_items: "{{ services }}"
+      when: services
+
   tasks:
     - name: Default networks
       set_fact:
@@ -21,13 +37,6 @@
         volume: "{{ item }}"
       with_items: "{{ volumes }}"
       when: volumes is defined and volumes | length > 0
-
-    - name: Include vars for selected services
-      include_tasks: ../tasks/include_vars_if_present.yml
-      vars:
-        service: "{{ item }}"
-      with_items: "{{ services }}"
-      when: services
 
     - name: Start install for selected services
       include_tasks: ../tasks/include_tasks_if_present.yml

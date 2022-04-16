@@ -23,12 +23,20 @@
         name: "{{ item.key }}"
         mount: "{{ item.value }}"
       with_items: "{{ mounts | dict2items }}"
-      when: mounts
+      when: mounts is defined
 
     - name: Include vars for selected services
       include_tasks: ../tasks/include_vars_if_present.yml
       vars:
         service: "{{ item }}"
+      with_items: "{{ services }}"
+      when: services
+
+    - name: Include host-specific vars for selected services
+      include_tasks: ../tasks/include_vars_if_present.yml
+      vars:
+        service: "{{ item }}"
+        file: "{{ inventory_hostname }}"
       with_items: "{{ services }}"
       when: services
 
