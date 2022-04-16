@@ -7,17 +7,19 @@ services:
     image: plexinc/pms-docker:{{ plex_version | default('latest') }}
     restart: unless-stopped
 {% if plex_hw_decode is defined and 'nvidia' in plex_hw_decode %}
-    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [video]
 {% endif %}
     environment:
       - TZ={{ timezone }}
       - HOSTNAME=plex@{{ domain }}
       - PLEX_CLAIM={{ plex_claim }}
       - ADVERTISE_IP=http://{{ ansible_facts.default_ipv4.address }}:32400
-{% if plex_hw_decode is defined and 'nvidia' in plex_hw_decode %}
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=all
-{% endif %}
     networks:
       - {{ plex_network | default(networks[0]) }}
     ports:

@@ -55,7 +55,13 @@ services:
     image: haveagitgat/tdarr_node:{{ tdarr_version | default('latest') }}
     restart: unless-stopped
 {% if tdarr_hw_decode is defined and 'nvidia' in tdarr_hw_decode %}
-    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [video]
 {% endif %}
     environment:
       - PUID={{ ansible_facts.user_uid }}
@@ -67,10 +73,6 @@ services:
       - nodePort=8267
       - serverIP=tdarr-server
       - serverPort=8266
-{% if tdarr_hw_decode is defined and 'nvidia' in tdarr_hw_decode %}
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=all
-{% endif %}
     networks:
       - {{ tdarr_network | default(networks[0]) }}
     volumes:

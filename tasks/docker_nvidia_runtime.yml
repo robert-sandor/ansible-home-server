@@ -1,0 +1,20 @@
+---
+- name: Add Nvidia Docker GPG Key
+  shell: 'curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | apt-key add -'
+  become: true
+
+- name: Add Nvidia Docker Repository
+  shell: 'curl -s -L https://nvidia.github.io/nvidia-docker/{{ ansible_distribution|lower }}{{ ansible_distribution_version }}/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list'
+  become: true
+
+- name: Update cache and install nvidia-container-toolkit
+  become: true
+  apt:
+    update_cache: yes
+    pkg: nvidia-container-toolkit
+
+- name: Restart docker
+  become: true
+  systemd:
+    name: docker
+    state: restarted

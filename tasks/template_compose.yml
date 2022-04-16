@@ -13,3 +13,4 @@
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"
     mode: '0644'
+  register: _compose_file

@@ -14,6 +14,10 @@
     - name: Install packages and update
       include_tasks: ../tasks/update_host.yml
 
+    - name: Install Nvidia Runtime if applicable
+      include_tasks: ../tasks/docker_nvidia_runtime.yml
+      when: nvidia_runtime is defined
+
     - name: Prepare project folder
       include_tasks: ../tasks/prep_project_dir.yml
 

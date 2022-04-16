@@ -2,24 +2,10 @@
   become: true
   apt:
     update_cache: yes
-  when: ansible_facts.pkg_mgr == 'apt'
-
-- name: Update host with apt
-  become: true
-  apt:
     autoclean: yes
     autoremove: yes
     upgrade: dist
   register: _response
-  when: ansible_facts.pkg_mgr == 'apt'
-
-- name: Update host with dnf
-  become: true
-  dnf:
-    name: "*"
-    state: latest
-  register: _response
-  when: ansible_facts.pkg_mgr == 'dnf'
 
 - name: Check if reboot needed
   set_fact:
@@ -29,38 +15,10 @@
   become: true
   apt:
     pkg: "{{ packages }}"
+  when: packages is defined
   register: _response
-  when: ansible_facts.pkg_mgr == 'apt' and packages is defined
-
-- name: Install packages with dnf
-  become: true
-  dnf:
-    name: "{{ packages }}"
-    state: latest
-  register: _response
-  when: ansible_facts.pkg_mgr == 'dnf' and packages is defined
 
 - name: Check if reboot needed
   set_fact:
     reboot_needed: "{{ _response.changed }}"
-  when: not reboot_needed
-
-- name: Check for SELinux config file
-  stat:
-    path: /etc/selinux/config
-  register: _result
-
-- name: Disable SELinux if enabled
-  become: true
-  lineinfile:
-    create: yes
-    path: /etc/selinux/config
-    regexp: '^SELINUX='
-    line: "SELINUX=disabled"
-  register: _result
-  when: _result.stat.exists
-
-- name: Check if reboot needed
-  set_fact:
-    reboot_needed: "{{ _result.changed }}"
   when: not reboot_needed

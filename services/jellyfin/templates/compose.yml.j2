@@ -7,16 +7,18 @@ services:
     image: linuxserver/jellyfin:{{ jellyfin_version | default('latest') }}
     restart: unless-stopped
 {% if jellyfin_hw_decode is defined and 'nvidia' in jellyfin_hw_decode %}
-    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [video]
 {% endif %}
     environment:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-{% if jellyfin_hw_decode is defined and 'nvidia' in jellyfin_hw_decode %}
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=all
-{% endif %}
     networks:
       - {{ jellyfin_network | default(networks[0]) }}
     ports:
