@@ -1,0 +1,24 @@
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: filebrowser
+
+- name: Create database file for filebrowser
+  include_tasks: ../tasks/create_service_file.yml
+  vars:
+    service: filebrowser
+    file: filebrowser.db
+
+- name: Create config file for filebrowser
+  copy:
+    dest: "{{ project_dir }}/filebrowser/filebrowser.json"
+    content: "{}"
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0644'
+  when: not _stat.stat.exists
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: filebrowser

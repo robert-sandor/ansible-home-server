@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  filebrowser:
+    container_name: filebrowser
+    hostname: filebrowser
+    image: filebrowser/filebrowser:{{ filebrowser_version | default('latest') }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks:
+      - {{ filebrowser_network | default(networks[0]) }}
+    ports:
+      - 8083:80
+    volumes:
+      - {{ project_dir }}/filebrowser/filebrowser.db:/database.db
+      - {{ project_dir }}/filebrowser/filebrowser.json:/.filebrowser.json
+      - {{ project_dir }}:/srv
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.filebrowser.rule=Host(`filebrowser.{{ domain }}`)
+      - traefik.http.routers.filebrowser.entrypoints=websecure
+      - traefik.http.services.filebrowser.loadbalancer.server.port=80
+      - traefik.http.routers.filebrowser.service=filebrowser
+      - traefik.http.routers.filebrowser.tls=true
+      - traefik.http.routers.filebrowser.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=filebrowser
+      - flame.url=filebrowser.{{ domain }}
+      - flame.icon=file
+{% endif %}
+{% if 'watchtower' in services %}
+{% if filebrowser_autoupdate is defined and filebrowser_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if filebrowser_autoupdate is not defined or filebrowser_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ filebrowser_network | default(networks[0]) }}:
+    external: true
