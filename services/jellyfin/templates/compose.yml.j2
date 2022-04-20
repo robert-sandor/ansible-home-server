@@ -23,6 +23,8 @@ services:
       - {{ jellyfin_network | default(networks[0]) }}
     ports:
       - 8096:8096
+      - 7359:7359/udp # Allows clients to discover Jellyfin on the local network.
+      - 1902:1900/udp # Service discovery used by DNLA and clients.
     volumes:
       - {{ project_dir }}/jellyfin/data:/config
       - jellyfin-cache:/cache

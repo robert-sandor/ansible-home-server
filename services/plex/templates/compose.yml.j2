@@ -18,13 +18,14 @@ services:
     environment:
       - TZ={{ timezone }}
       - HOSTNAME=plex@{{ domain }}
-      - PLEX_CLAIM={{ plex_claim }}
+      - PLEX_CLAIM=$PLEX_CLAIM
       - ADVERTISE_IP=http://{{ ansible_facts.default_ipv4.address }}:32400
     networks:
       - {{ plex_network | default(networks[0]) }}
     ports:
       - 32400:32400/tcp
       - 32400:32400/udp
+      - 1901:1900/udp # DLNA
     volumes:
       - {{ project_dir }}/plex/data:/config
       - plex-transcode-cache:/transcode

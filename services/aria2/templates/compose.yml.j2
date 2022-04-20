@@ -1,0 +1,97 @@
+version: "3.8"
+
+services:
+  aria2:
+    container_name: aria2
+    hostname: aria2
+    image: p3terx/aria2-pro:{{ aria2_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - UMASK_SET=022
+      - RPC_PORT=6800
+      - RPC_SECRET=$ARIA2_RPC_SECRET
+      - RPC_SECURE=true
+      - LISTEN_PORT=6888
+      - DISK_CACHE=64M
+      - IPV6_MODE=false
+    networks:
+      - {{ aria2_network | default(networks[0]) }}
+    ports:
+      - 6800:6800
+      - 6888:6888
+      - 6888:6888/udp
+    volumes:
+      - {{ project_dir }}/aria2/config:/config
+      - {{ aria2_download_path }}:/downloads
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.aria2.rule=Host(`aria2.{{ domain }}`)
+      - traefik.http.routers.aria2.entrypoints=websecure
+      - traefik.http.services.aria2.loadbalancer.server.port=6800
+      - traefik.http.routers.aria2.service=aria2
+      - traefik.http.routers.aria2.tls=true
+      - traefik.http.routers.aria2.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'watchtower' in services %}
+{% if aria2_autoupdate is defined and aria2_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if aria2_autoupdate is not defined or aria2_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+  ariang:
+    container_name: ariang
+    hostname: ariang
+    image: p3terx/ariang:{{ aria2_version | default('latest') }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    environment:
+      - TZ={{ timezone }}
+    networks:
+      - {{ aria2_network | default(networks[0]) }}
+    ports:
+      - 6880:6880
+    volumes:
+      - {{ aria2_download_path }}:/downloads
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.ariang.rule=Host(`ariang.{{ domain }}`)
+      - traefik.http.routers.ariang.entrypoints=websecure
+      - traefik.http.services.ariang.loadbalancer.server.port=6880
+      - traefik.http.routers.ariang.service=ariang
+      - traefik.http.routers.ariang.tls=true
+      - traefik.http.routers.ariang.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=ariang
+      - flame.url=ariang.{{ domain }}
+      - flame.icon=download
+{% endif %}
+{% if 'watchtower' in services %}
+{% if aria2_autoupdate is defined and aria2_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if aria2_autoupdate is not defined or aria2_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ aria2_network | default(networks[0]) }}:
+    external: true

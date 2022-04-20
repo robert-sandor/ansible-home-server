@@ -15,16 +15,26 @@
   pip:
     name: plexapi
 
+- name: Check for existing .env file
+  stat:
+    path: "{{ project_dir }}/plex/.env"
+  register: _stat
+
 - name: Get Plex Server Token
   script:
     cmd: scripts/plex_claim.py {{ plex_email }} {{ plex_password }}
     executable: python3
-  when: plex_email and plex_password
   register: _response
+  when: not _stat.stat.exists and plex_email and plex_password
 
-- name: Save Plex Claim Token
-  set_fact:
-    plex_claim: "{{ _response.stdout }}"
+- name: Create .env file for plex
+  copy:
+    dest: "{{ project_dir }}/plex/.env"
+    content: "PLEX_CLAIM=\"{{ _response.stdout }}\""
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0644'
+  when: not _stat.stat.exists and _response.changed
 
 - name: Copy service docker-compose file
   include_tasks: ../tasks/template_compose.yml

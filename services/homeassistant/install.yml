@@ -1,0 +1,15 @@
+- name: Create folder for Template
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: homeassistant
+    dir: config
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: homeassistant
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: homeassistant

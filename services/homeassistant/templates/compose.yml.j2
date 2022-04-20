@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    hostname: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:{{ homeassistant_version | default ('latest') }}
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    volumes:
+      - {{ project_dir }}/homeassistant/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.homeassistant.rule=Host(`home.{{ domain }}`)
+      - traefik.http.routers.homeassistant.entrypoints=websecure
+      - traefik.http.services.homeassistant.loadbalancer.server.port=8123
+      - traefik.http.routers.homeassistant.service=homeassistant
+      - traefik.http.routers.homeassistant.tls=true
+      - traefik.http.routers.homeassistant.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=homeassistant
+      - flame.url=home.{{ domain }}:8123
+      - flame.icon=home
+{% endif %}
+{% if 'watchtower' in services %}
+{% if homeassistant_autoupdate is defined and homeassistant_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if homeassistant_autoupdate is not defined or homeassistant_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ homeassistant_network | default(networks[0]) }}:
+    external: true

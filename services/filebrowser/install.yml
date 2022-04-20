@@ -9,6 +9,11 @@
     service: filebrowser
     file: filebrowser.db
 
+- name: Check for existing file
+  stat:
+    path: "{{ project_dir }}/filebrowser/filebrowser.json"
+  register: _stat
+
 - name: Create config file for filebrowser
   copy:
     dest: "{{ project_dir }}/filebrowser/filebrowser.json"
