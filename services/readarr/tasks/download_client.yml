@@ -74,7 +74,7 @@
       enable: true
       protocol: torrent
       priority: 1
-      removeCompletedDownloads: "{{ readarr_dc_remove_completed_downloads | default(false) }}"
+      removeCompletedDownloads: "{{ readarr_dc_remove_completed_downloads | default(true) }}"
       removeFailedDownloads: true
       name: "{{ readarr_dc }}"
       fields: "{{ _dc_fields }}"
