@@ -68,6 +68,9 @@ services:
       - 8800:80
     volumes:
       - {{ project_dir }}/nextcloud/data:/var/www/html
+    depends_on:
+      - nc-mariadb
+      - nc-redis
     labels:
       - domain={{ domain }}
 {% if 'traefik' in services %}

@@ -63,6 +63,8 @@ services:
       - 6880:6880
     volumes:
       - {{ aria2_download_path }}:/downloads
+    depends_on:
+      - aria2
     logging:
       driver: json-file
       options:
