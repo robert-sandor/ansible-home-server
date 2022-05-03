@@ -33,6 +33,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if flame_autoupdate is not defined or flame_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 {% endif %}

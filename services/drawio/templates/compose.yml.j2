@@ -1,0 +1,97 @@
+version: "3.8"
+
+services:
+  drawio-export:
+    container_name: drawio-export
+    hostname: drawio-export
+    image: jgraph/export-server:{{ drawio_version | default('latest') }}
+    restart: unless-stopped
+    networks:
+      - {{ drawio_network | default(networks[0]) }}
+    expose:
+      - 8000
+    volumes: 
+      - {{ project_dir }}/drawio/fonts:/usr/share/fonts/drawio
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if drawio_autoupdate is defined and drawio_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if drawio_autoupdate is not defined or drawio_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+  drawio-plantuml:
+    container_name: drawio-plantuml
+    hostname: drawio-plantuml
+    image: jgraph/plantuml-server:{{ drawio_version | default('latest') }}
+    restart: unless-stopped
+    networks:
+      - {{ drawio_network | default(networks[0]) }}
+    ports:
+      - 8079:8080
+    volumes: 
+      - {{ project_dir }}/drawio/fonts:/usr/share/fonts/drawio
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if drawio_autoupdate is defined and drawio_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if drawio_autoupdate is not defined or drawio_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+  drawio:
+    container_name: drawio
+    hostname: drawio
+    image: jgraph/drawio:{{ drawio_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+      - EXPORT_URL=http://drawio-export:8000/
+      - PLANTUML_URL=http://drawio-plantuml:8080/
+    networks:
+      - {{ drawio_network | default(networks[0]) }}
+    ports:
+      - 8085:8080
+    volumes:
+      - {{ project_dir }}/drawio/config/PostConfig.js:/usr/local/tomcat/webapps/draw/js/PostConfig.js
+      - {{ project_dir }}/drawio/config/PreConfig.js:/usr/local/tomcat/webapps/draw/js/PreConfig.js
+    depends_on:
+      - drawio-export
+      - drawio-plantuml
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.drawio.rule=Host(`drawio.{{ domain }}`)
+      - traefik.http.routers.drawio.entrypoints=websecure
+      - traefik.http.services.drawio.loadbalancer.server.port=8080
+      - traefik.http.routers.drawio.service=drawio
+      - traefik.http.routers.drawio.tls=true
+      - traefik.http.routers.drawio.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=drawio
+      - flame.url=drawio.{{ domain }}
+      - flame.icon=lead-pencil
+{% endif %}
+{% if 'watchtower' in services %}
+{% if drawio_autoupdate is defined and drawio_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if drawio_autoupdate is not defined or drawio_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ drawio_network | default(networks[0]) }}:
+    external: true

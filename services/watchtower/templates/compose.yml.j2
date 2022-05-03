@@ -28,6 +28,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if watchtower_update is not defined or watchtower_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 

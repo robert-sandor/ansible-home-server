@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  homer:
+    container_name: homer
+    hostname: homer
+    image: b4bz/homer:{{ homer_version | default('latest') }}
+    restart: unless-stopped
+    environment: 
+      - INIT_ASSETS=0
+    volumes:    
+      - {{ project_dir }}/homer/assets:/www/assets
+    networks:
+      - {{ homer_network | default(networks[0]) }}
+    ports:
+      - 8084:8080
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.homer.rule=Host(`homer.{{ domain }}`)
+      - traefik.http.routers.homer.entrypoints=websecure
+      - traefik.http.services.homer.loadbalancer.server.port=8080
+      - traefik.http.routers.homer.service=homer
+      - traefik.http.routers.homer.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=Homer
+      - flame.url=homer.{{ domain }}
+      - flame.icon=card-search
+{% endif %}
+{% if 'watchtower' in services %}
+{% if homer_autoupdate is defined and homer_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if homer_autoupdate is not defined or homer_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ homer_network | default(networks[0]) }}:
+    external: true

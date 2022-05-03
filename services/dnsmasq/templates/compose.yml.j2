@@ -6,13 +6,13 @@ services:
     hostname: dnsmasq
     image: 4km3/dnsmasq:{{ dnsmasq_version | default('latest') }}
     restart: unless-stopped
-    volumes:
-      - {{ project_dir }}/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:ro
     networks:
       - {{ dnsmasq_network | default(networks[0]) }}
     ports:
       - 53:53/tcp
       - 53:53/udp
+    volumes:
+      - {{ project_dir }}/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:ro
     labels:
       - domain={{ domain }}
 {% if 'watchtower' in services %}
@@ -20,6 +20,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if dnsmasq_autoupdate is not defined or dnsmasq_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 {% endif %}

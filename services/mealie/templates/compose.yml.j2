@@ -37,6 +37,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if mealie_autoupdate is not defined or mealie_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 {% endif %}

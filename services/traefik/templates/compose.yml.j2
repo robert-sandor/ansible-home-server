@@ -72,6 +72,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if traefik_autoupdate is not defined or traefik_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 {% endif %}

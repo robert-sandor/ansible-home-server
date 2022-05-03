@@ -41,6 +41,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if sonarr_autoupdate is not defined or sonarr_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}{% endif %}
 

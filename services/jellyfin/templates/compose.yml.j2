@@ -54,6 +54,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if jellyfin_autoupdate is not defined or jellyfin_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 {% endif %}

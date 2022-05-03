@@ -18,6 +18,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if cloudflared_autoupdate is not defined or cloudflared_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 {% endif %}

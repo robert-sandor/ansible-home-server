@@ -46,6 +46,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if aria2_autoupdate is not defined or aria2_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}{% endif %}
 
@@ -91,6 +92,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if aria2_autoupdate is not defined or aria2_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}{% endif %}
 

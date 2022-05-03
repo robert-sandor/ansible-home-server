@@ -55,6 +55,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if plex_autoupdate is not defined or plex_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 {% endif %}

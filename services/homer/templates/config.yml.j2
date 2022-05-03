@@ -1,0 +1,39 @@
+---
+title: "{{ domain }}"
+subtitle: "dashboard"
+
+header: false
+
+columns: "4"
+
+defaults:
+  layout: list
+  colorTheme: dark
+
+theme: default
+
+colors:
+  dark:
+    highlight-primary: "#222222"
+    highlight-secondary: "#2b2b2b"
+    highlight-hover: "#333333"
+    text: "#aaaaaa"
+    text-title: "#db6909"
+    text-subtitle: "#aaaaaa"
+    link: "#db6909"
+    link-hover: "#db6909"
+
+services:
+{% for category in homer_services %}
+  - name: "{{ category.name | capitalize() }}"
+    items:
+{% for item in category.links %}
+      - name: "{{ item.name | capitalize() }}"
+        subtitle: "{{ item.description | default(item.url) }}"
+        url: "{{ item.url }}"
+{% if item.icon is defined %}
+        icon: "{{ item.icon }}"
+{% endif %}
+{% endfor %}
+
+{% endfor %}

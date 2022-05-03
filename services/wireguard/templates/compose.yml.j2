@@ -35,6 +35,7 @@ services:
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
 {% if wg_autoupdate is not defined or wg_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 {% endif %}
