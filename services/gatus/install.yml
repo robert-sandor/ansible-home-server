@@ -1,0 +1,17 @@
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: gatus
+
+- name: Template config
+  template:
+    src: ../services/gatus/templates/config.yaml.j2
+    dest: "{{ project_dir }}/gatus/config.yaml"
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0644'
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: gatus

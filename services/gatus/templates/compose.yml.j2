@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  gatus:
+    container_name: gatus
+    hostname: gatus
+    image: twinproduction/gatus:{{ gatus_version | default('latest') }}
+    restart: unless-stopped
+    volumes:    
+      - {{ project_dir }}/gatus/config.yaml:/config/config.yaml
+    networks:
+      - {{ gatus_network | default(networks[0]) }}
+    ports:
+      - 8087:8080
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.gatus.rule=Host(`gatus.{{ domain }}`)
+      - traefik.http.routers.gatus.entrypoints=websecure
+      - traefik.http.services.gatus.loadbalancer.server.port=8080
+      - traefik.http.routers.gatus.service=gatus
+      - traefik.http.routers.gatus.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=gatus
+      - flame.url=gatus.{{ domain }}
+      - flame.icon=check-all
+{% endif %}
+{% if 'watchtower' in services %}
+{% if gatus_autoupdate is defined and gatus_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if gatus_autoupdate is not defined or gatus_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ gatus_network | default(networks[0]) }}:
+    external: true

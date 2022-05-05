@@ -1,0 +1,48 @@
+ui:
+  title: "{{ domain }} health"
+
+alerting:
+  discord:
+    webhook-url: "{{ gatus_discord_webhook }}"
+
+endpoints:
+{% for group in (gatus_http | dict2items) %}
+
+{% for endpoint in (group.value | dict2items) %}
+
+  - name: {{ endpoint.key }} @ {{ domain }}
+    group: {{ group.key }}
+    url: {{ endpoint.value.url | default('https://' + endpoint.key + '.' + domain) }}
+    interval: {{ endpoint.value.interval | default('5m') }}
+    conditions:
+      - "[STATUS] == {{ endpoint.value.status | default(200) }}"
+      - "[RESPONSE_TIME] < {{ endpoint.value.response_time | default(300) }}"
+    alerts:
+      - type: discord
+        enabled: {{ endpoint.value.alert | default(true) }}
+        send-on-resolved: true
+        description: "{{ endpoint.key }} @ {{ domain }} is down"
+{% endfor %}
+{% endfor %}
+
+{% for group in (gatus_dns | dict2items) %}
+
+{% for query in group.value.queries %}
+
+  - name: {{ query.name }} @ {{ group.value.url }}
+    group: {{ group.key }}
+    url: {{ group.value.url }}
+    interval: {{ query.interval | default('5m') }}
+    dns:
+      query-type: {{ query.type | default('A') }}
+      query-name: {{ query.name }}
+    conditions:
+      - "[BODY] == {{ query.ip }}"
+      - "[DNS_RCODE] == NOERROR"
+    alerts:
+      - type: discord
+        enabled: {{ query.alert | default(true) }}
+        send-on-resolved: true
+        description: "DNS for {{ query.name }} on host {{ group.value.url }} is not returning expected value."
+{% endfor %}
+{% endfor %}
