@@ -12,9 +12,11 @@
   apt:
     update_cache: yes
     pkg: nvidia-container-toolkit
+  register: _result
 
 - name: Restart docker
   become: true
   systemd:
     name: docker
     state: restarted
+  when: _result.changed

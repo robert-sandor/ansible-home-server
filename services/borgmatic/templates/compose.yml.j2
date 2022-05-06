@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  borgmatic:
+    container_name: borgmatic
+    hostname: borgmatic
+    image: b3vis/borgmatic:{{ borgmatic_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+      - BORG_PASSPHRASE=${BORG_PASSPHRASE}
+    volumes:
+      - {{ borgmatic_backup_path | default(project_dir) }}:/mnt/source:ro
+      - {{ borgmatic_repo_path }}:/mnt/borg-repository
+      - {{ project_dir }}/borgmatic/borgmatic.d:/etc/borgmatic.d
+      - {{ project_dir }}/borgmatic/config:/root/.config/borg
+      - {{ project_dir }}/borgmatic/ssh:/root/.ssh
+      - borgmatic-cache:/root/.cache/borg
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - {{ borgmatic_network | default(networks[0]) }}
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if borgmatic_autoupdate is defined and borgmatic_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if borgmatic_autoupdate is not defined or borgmatic_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+networks:
+  {{ borgmatic_network | default(networks[0]) }}:
+    external: true
+
+volumes:
+  borgmatic-cache:
+    external: true

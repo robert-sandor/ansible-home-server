@@ -1,0 +1,47 @@
+- name: Create folders for Borgmatic
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: borgmatic
+    dir: "{{ item }}"
+  with_items:
+    - borgmatic.d
+    - config
+    - ssh
+
+- name: Create docker volume for Template
+  include_tasks: ../tasks/local_volume.yml
+  vars:
+    volume:
+      name: borgmatic-cache
+      type: local
+
+- name: Write crontab file
+  copy:
+    content: "{{ borgmatic_cron_schedule | default('0 3 * * *') }} PATH=$PATH:/usr/bin /usr/bin/borgmatic --stats -v 0 2>&1"
+    dest: "{{ project_dir }}/borgmatic/borgmatic.d/crontab.txt"
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0644'
+
+- name: Template config
+  template:
+    src: ../services/borgmatic/templates/config.yml.j2
+    dest: "{{ project_dir }}/borgmatic/borgmatic.d/config.yml"
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0644'
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: borgmatic
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: borgmatic
+
+- name: Init borg repository if not already done
+  community.docker.docker_container_exec:
+    container: borgmatic
+    command: 'sh -c "borgmatic --init --encryption repokey-blake2"'

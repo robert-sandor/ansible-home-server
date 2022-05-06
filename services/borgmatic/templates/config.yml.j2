@@ -1,0 +1,49 @@
+location:
+    source_directories:
+{% for service in borgmatic_services_to_backup %}
+        - /mnt/source/{{ service }}
+{% endfor %}
+    repositories:
+        - /mnt/borg-repository
+    one_file_system: true
+
+storage:
+    compression: lz4
+    archive_name_format: 'appdata-backup-{{ hostname }}-{now}'
+
+retention:
+    keep_daily: 3
+    keep_weekly: 4
+    keep_monthly: 6
+    keep_yearly: 3
+    prefix: 'appdata-backup-{{ hostname }}-'
+
+consistency:
+    checks:
+        - repository
+        - archives
+    check_last: 3
+    prefix: 'appdata-backup-{{ hostname }}-'
+
+hooks:
+    before_everything:
+        - echo "Stopping containers..."
+{% for container_name in borgmatic_services_to_stop %}
+{% if 'borgmatic' not in container_name %}
+        - curl -sf -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/{{ container_name }}/stop && echo 'Stopped {{ container_name }}.' || echo 'Failed to stop {{ container_name }}.'
+{% endif %}
+{% endfor %}
+        - echo "Containers stopped."
+        - echo "Starting a backup job."
+    after_everything:
+        - echo "Starting containers..."
+{% for container_name in borgmatic_services_to_stop %}
+{% if 'borgmatic' not in container_name %}
+        - curl -sf -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/{{ container_name }}/start && echo 'Started {{ container_name }}.' || echo 'Failed to start {{ container_name }}.'
+{% endif %}
+{% endfor %}
+        - echo "Containers started."
+    after_backup:
+        - echo "Backup created successfully."
+    on_error:
+        - echo "Error while creating a backup."
