@@ -6,11 +6,11 @@
 
 | Variable | Required | Example | Description |
 |----------|----------|---------|-------------|
+| adguard_user | yes | `admin` | Username for the account to access Adguard Home |
+| adguard_pass | yes | `p@ssw0rd` | Password for the account to access Adguard Home |
 | adguard_version | no | `latest` | Adguard Home version - available version can be found [here](https://hub.docker.com/r/adguard/adguardhome/tags). Defaults to `latest` |
 | adguard_network | no | `core` | Network that Adguard Home will attach itself to. For access from [Traefik](traefik.md) it should share the same network. This defaults to the first network defined in the [host config](../host_vars.md) |
 | adguard_autoupdate | no | `enable` / `disable` / `monitor` | Whether to auto update or monitor updates for Adguard Home, if [watchtower](watchtower.md) is installed. Defaults to `monitor` |
-| adguard_user | yes | `admin` | Username for the account to access Adguard Home |
-| adguard_pass | yes | `p@ssw0rd` | Password for the account to access Adguard Home |
 | adguard_ratelimit | no | `20` | The amount of requests per second a client is allowed to make until they're rate limited. Defaults to `50` |
 | adguard_cache_size_mb | no | `4` | Cache size in MiB. This number will be converted to bytes by multiplying with `1024 * 1024`. Defaults to `32` |
 | adguard_dns | no | `[ 'https://dns.cloudflare.com/dns-query' ]` | List of upstream DNS servers for Adguard to use. For more info on how these can be configured, see [official documentation](https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration#upstreams) and the list of known [providers](https://kb.adguard.com/en/general/dns-providers). Defaults to Cloudflare's DNS over HTTPS endpoint `https://dns.cloudflare.com/dns-query` and Quad9's DNS over HTTPS endpoint `https://dns.quad9.net/dns-query` |

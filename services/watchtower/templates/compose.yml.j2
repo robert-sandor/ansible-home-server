@@ -11,7 +11,7 @@ services:
       - "--schedule={{ watchtower_schedule }}"
       - "--label-enable"
       - "--no-startup-message"
-{% if watchtower_discord %}
+{% if watchtower_discord is defined and watchtower_discord %}
       - "--notifications=slack"
       - "--notification-slack-hook-url={{ watchtower_discord_hook }}"
       - "--notification-slack-identifier=watchtower-{{ domain }}"
