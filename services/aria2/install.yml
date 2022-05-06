@@ -12,7 +12,7 @@
 - name: Create .env file for aria2
   copy:
     dest: "{{ project_dir }}/aria2/.env"
-    content: "ARIA2_RPC_SECRET=\"{{ lookup('community.general.random_string', length=16, base64=true) }}\""
+    content: "ARIA2_RPC_SECRET=\"{{ aria2_rpc_secret }}\""
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"
     mode: '0644'

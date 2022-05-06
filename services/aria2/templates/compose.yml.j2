@@ -53,7 +53,7 @@ services:
   ariang:
     container_name: ariang
     hostname: ariang
-    image: p3terx/ariang:{{ aria2_version | default('latest') }}
+    image: p3terx/ariang:{{ ariang_version | default('latest') }}
     restart: unless-stopped
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     environment:
@@ -88,10 +88,10 @@ services:
       - flame.icon=download
 {% endif %}
 {% if 'watchtower' in services %}
-{% if aria2_autoupdate is defined and aria2_autoupdate == "enable" %}
+{% if ariang_autoupdate is defined and ariang_autoupdate == "enable" %}
       - com.centurylinklabs.watchtower.enable=true
 {% endif %}
-{% if aria2_autoupdate is not defined or aria2_autoupdate == "monitor" %}
+{% if ariang_autoupdate is not defined or ariang_autoupdate == "monitor" %}
       - com.centurylinklabs.watchtower.enable=true
       - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}{% endif %}
