@@ -1,4 +1,4 @@
-- name: Create folder for Template
+- name: Create folder for Homer
   include_tasks: ../tasks/create_service_dir.yml
   vars:
     service: homer

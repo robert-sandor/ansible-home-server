@@ -6,8 +6,10 @@ services:
     hostname: gatus
     image: twinproduction/gatus:{{ gatus_version | default('latest') }}
     restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     volumes:    
       - {{ project_dir }}/gatus/config.yaml:/config/config.yaml
+      - {{ project_dir }}/gatus/data:/data
     networks:
       - {{ gatus_network | default(networks[0]) }}
     ports:
