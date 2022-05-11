@@ -4,4 +4,5 @@
     project_src: "{{ project_dir }}/{{ service }}"
     pull: yes
     remove_orphans: yes
+    restarted: "{{ restart | default(false) }}"
   when: _compose_file is not defined or _compose_file.changed or always_update

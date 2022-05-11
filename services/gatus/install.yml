@@ -21,3 +21,4 @@
   include_tasks: ../tasks/compose_up.yml
   vars:
     service: gatus
+    restart: true
