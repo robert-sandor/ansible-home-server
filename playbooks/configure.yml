@@ -12,6 +12,22 @@
       with_items: "{{ services }}"
       when: services
 
+    - name: Include group-specific vars for selected services
+      include_tasks: ../tasks/include_vars_if_present.yml
+      vars:
+        service: "{{ item[1] }}"
+        file: "{{ item[0] }}"
+      loop: "{{ group_names | difference(['ungrouped']) | product(services) }}"
+      when: services
+
+    - name: Include host-specific vars for selected services
+      include_tasks: ../tasks/include_vars_if_present.yml
+      vars:
+        service: "{{ item }}"
+        file: "{{ inventory_hostname }}"
+      with_items: "{{ services }}"
+      when: services
+
     - name: Start configure for selected services
       include_tasks: ../tasks/include_tasks_if_present.yml
       vars:

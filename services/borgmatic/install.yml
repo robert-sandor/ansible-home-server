@@ -17,7 +17,7 @@
 
 - name: Write crontab file
   copy:
-    content: "{{ borgmatic_cron_schedule | default('0 3 * * *') }} PATH=$PATH:/usr/bin /usr/bin/borgmatic --stats -v 0 2>&1"
+    content: "{{ borgmatic_cron_schedule | default('0 3 * * *') }} PATH=$PATH:/usr/bin /usr/bin/borgmatic --stats -v 0 2>&1\n"
     dest: "{{ project_dir }}/borgmatic/borgmatic.d/crontab.txt"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"
@@ -31,6 +31,14 @@
     group: "{{ ansible_facts.user_id }}"
     mode: '0644'
 
+- name: Write .env file
+  copy:
+    content: "BORG_PASSPHRASE={{ borg_pass }}\n"
+    dest: "{{ project_dir }}/borgmatic/.env"
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0600'
+
 - name: Copy service docker-compose file
   include_tasks: ../tasks/template_compose.yml
   vars:
@@ -40,6 +48,7 @@
   include_tasks: ../tasks/compose_up.yml
   vars:
     service: borgmatic
+    restart: true
 
 - name: Init borg repository if not already done
   community.docker.docker_container_exec:

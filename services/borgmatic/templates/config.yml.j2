@@ -4,11 +4,11 @@ location:
         - /mnt/source/{{ service }}
 {% endfor %}
     repositories:
-        - /mnt/borg-repository
+        - /mnt/borg-repository/{{ hostname }}
     one_file_system: true
 
 storage:
-    compression: lz4
+    compression: zstd
     archive_name_format: 'appdata-backup-{{ hostname }}-{now}'
 
 retention:
