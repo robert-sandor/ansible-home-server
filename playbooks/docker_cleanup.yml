@@ -1,0 +1,23 @@
+- name: Docker cleanup
+
+  hosts: all
+
+  tasks:
+    - name: Prune everything (including non-dangling images)
+      community.docker.docker_prune:
+        containers: yes
+        images: yes
+        images_filters:
+          dangling: false
+        networks: yes
+        volumes: yes
+        builder_cache: yes
+      register: _prune_result
+
+    - name: Print saved space
+      debug:
+        msg: "Reclaimed\ 
+            - volumes: {{ _prune_result.volumes_space_reclaimed | human_readable }}\ 
+            - images: {{ _prune_result.images_space_reclaimed | human_readable }}\ 
+            - containers: {{ _prune_result.containers_space_reclaimed | human_readable }}\ 
+            - builder_cache: {{ _prune_result.builder_cache_space_reclaimed | human_readable }}"
