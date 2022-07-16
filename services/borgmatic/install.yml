@@ -2,11 +2,13 @@
   include_tasks: ../tasks/create_service_dir.yml
   vars:
     service: borgmatic
-    dir: "{{ item }}"
+    dir: "{{ directory }}"
   with_items:
     - borgmatic.d
     - config
     - ssh
+  loop_control:
+    loop_var: directory
 
 - name: Create docker volume for Template
   include_tasks: ../tasks/local_volume.yml

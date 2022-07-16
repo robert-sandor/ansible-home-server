@@ -17,8 +17,10 @@
 
 - name: Build new list of rewrites
   set_fact:
-    adguard_updated_rewrites: "{{ adguard_updated_rewrites | default([]) + [{'domain': item.split('|')[0], 'answer': item.split('|')[1]}] }}"
+    adguard_updated_rewrites: "{{ adguard_updated_rewrites | default([]) + [{'domain': rewrite.split('|')[0], 'answer': rewrite.split('|')[1]}] }}"
   with_items: "{{ adguard_rewrites | default([]) }}"
+  loop_control:
+    loop_var: rewrite
 
 - name: Remove rewrites
   uri:

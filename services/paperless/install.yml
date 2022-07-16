@@ -1,0 +1,55 @@
+- name: Create directories for paperless
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: paperless
+    dir: "{{ d }}"
+  with_items:
+    - postgres-data
+    - redis-data
+    - data
+    - media
+  loop_control:
+    loop_var: d
+
+- name: Create dir in service folder if not exists
+  file:
+    path: "{{ d }}"
+    state: directory
+  with_items:
+    - "{{ paperless_export_dir }}"
+    - "{{ paperless_consume_dir }}"
+  loop_control:
+    loop_var: d
+
+- name: Check for existing .paperless.env file
+  stat:
+    path: "{{ project_dir }}/paperless/.paperless.env"
+  register: _stat
+
+- name: Create .paperless.env file
+  copy:
+    dest: "{{ project_dir }}/paperless/.paperless.env"
+    content: |
+      USERMAP_UID={{ ansible_facts.user_uid }}
+      USERMAP_GID={{ ansible_facts.user_gid }}
+      PAPERLESS_OCR_LANGUAGES={{ paperless_ocr_languages | default('') }}
+      PAPERLESS_URL=https://paperless.{{ domain }}
+      PAPERLESS_SECRET_KEY={{ lookup('community.general.random_string', length=48, base64=True) }}
+      PAPERLESS_TIME_ZONE={{ timezone }}
+      PAPERLESS_OCR_LANGUAGE={{ paperless_default_ocr_language | default('eng') }}
+      PAPERLESS_CONSUMER_POLLING=60
+    owner: "{{ ansible_facts.user_id }}"
+    group: "{{ ansible_facts.user_id }}"
+    mode: '0644'
+  when: not _stat.stat.exists
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: paperless
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: paperless
+    restart: true

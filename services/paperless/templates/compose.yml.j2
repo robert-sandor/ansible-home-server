@@ -1,0 +1,158 @@
+version: "3.8"
+
+services:
+  paperless-postgres:
+    container_name: paperless-postgres
+    hostname: paperless-postgres
+    image: postgres:13
+    restart: unless-stopped
+    environment:
+      TZ: "{{ timezone }}"
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+    networks:
+      - {{ paperless_network | default(networks[0]) }}
+    volumes:
+      - {{ project_dir }}/paperless/postgres-data:/var/lib/postgresql/data
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if paperless_autoupdate is defined and paperless_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if paperless_autoupdate is not defined or paperless_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+  paperless-redis:
+    container_name: paperless-redis
+    hostname: paperless-redis
+    image: redis:6.0
+    restart: unless-stopped
+    environment:
+      TZ: "{{ timezone }}"
+    networks:
+      - {{ paperless_network | default(networks[0]) }}
+    volumes:
+      - {{ project_dir }}/paperless/redis-data:/data
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if paperless_autoupdate is defined and paperless_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if paperless_autoupdate is not defined or paperless_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+  paperless-gotenberg:
+    container_name: paperless-gotenberg
+    hostname: paperless-gotenberg
+    image: gotenberg/gotenberg:7.4
+    restart: unless-stopped
+    command:
+      - "gotenberg"
+      - "--chromium-disable-routes=true"
+    environment:
+      TZ: "{{ timezone }}"
+    networks:
+      - {{ paperless_network | default(networks[0]) }}
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if paperless_autoupdate is defined and paperless_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if paperless_autoupdate is not defined or paperless_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+  paperless-tika:
+    container_name: paperless-tika
+    hostname: paperless-tika
+    image: ghcr.io/paperless-ngx/tika:latest
+    restart: unless-stopped
+    environment:
+      TZ: "{{ timezone }}"
+    networks:
+      - {{ paperless_network | default(networks[0]) }}
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if paperless_autoupdate is defined and paperless_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if paperless_autoupdate is not defined or paperless_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+  paperless-web:
+    container_name: paperless-web
+    hostname: paperless-web
+    image: ghcr.io/paperless-ngx/paperless-ngx:{{ paperless_version | default('latest') }}
+    restart: unless-stopped
+    depends_on:
+      - paperless-postgres
+      - paperless-redis
+      - paperless-tika
+      - paperless-gotenberg
+    env_file: .paperless.env
+    environment:
+      TZ: "{{ timezone }}"
+      PAPERLESS_REDIS: redis://paperless-redis:6379
+      PAPERLESS_DBHOST: paperless-postgres
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
+    networks:
+      - {{ paperless_network | default(networks[0]) }}
+    ports:
+      - 8002:8000
+    volumes:
+      - {{ project_dir }}/paperless/data:/usr/src/paperless/data
+      - {{ project_dir }}/paperless/media:/usr/src/paperless/media
+      - {{ paperless_export_dir }}:/usr/src/paperless/export
+      - {{ paperless_consume_dir }}:/usr/src/paperless/consume
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.paperless.rule=Host(`paperless.{{ domain }}`)
+      - traefik.http.routers.paperless.entrypoints=websecure
+      - traefik.http.services.paperless.loadbalancer.server.port=8000
+      - traefik.http.routers.paperless.service=paperless
+      - traefik.http.routers.paperless.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=paperless
+      - flame.url=paperless.{{ domain }}
+      - flame.icon=paperclip
+{% endif %}
+{% if 'watchtower' in services %}
+{% if paperless_autoupdate is defined and paperless_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if paperless_autoupdate is not defined or paperless_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ paperless_network | default(networks[0]) }}:
+    external: true
