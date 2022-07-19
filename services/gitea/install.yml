@@ -1,0 +1,21 @@
+- name: Create data directory
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: gitea
+    dir: data
+
+- name: Create db directory
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: gitea
+    dir: db
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: gitea
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: gitea
