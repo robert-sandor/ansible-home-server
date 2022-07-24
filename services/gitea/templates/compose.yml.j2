@@ -23,7 +23,7 @@ services:
       - {{ gitea_network | default(networks[0]) }}
     ports:
       - 3000:3000
-      - 222:22
+      - "222:22"
     volumes:
       - {{ project_dir }}/gitea/data:/data
       - /etc/timezone:/etc/timezone:ro
