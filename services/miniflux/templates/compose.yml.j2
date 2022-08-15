@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  miniflux:
+    container_name: miniflux
+    hostname: miniflux
+    image: miniflux/miniflux:{{ miniflux_version | default('latest') }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    environment:
+      - DATABASE_URL=postgres://miniflux:miniflux@miniflux-postgres/miniflux?sslmode=disable
+      - RUN_MIGRATIONS=1
+      - CREATE_ADMIN=1
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=miniflux
+    networks:
+      - {{ miniflux_network | default(networks[0]) }}
+    ports:
+      - 8088:8080
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in services %}
+      - traefik.enable=true
+      - traefik.http.routers.miniflux.rule=Host(`miniflux.{{ domain }}`)
+      - traefik.http.routers.miniflux.entrypoints=websecure
+      - traefik.http.services.miniflux.loadbalancer.server.port=8080
+      - traefik.http.routers.miniflux.service=miniflux
+      - traefik.http.routers.miniflux.tls=true
+      - traefik.http.routers.miniflux.tls.certresolver={{ traefik_acme_provider }}
+{% endif %}
+{% if 'flame' in services %}
+      - flame.type=application
+      - flame.name=miniflux
+      - flame.url=miniflux.{{ domain }}
+      - flame.icon=rss
+{% endif %}
+{% if 'watchtower' in services %}
+{% if miniflux_autoupdate is defined and miniflux_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if miniflux_autoupdate is not defined or miniflux_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}{% endif %}
+
+  db:
+    container_name: miniflux-postgres
+    hostname: miniflux-postgres
+    image: postgres:{{ miniflux_postgres_version | default('latest') }}
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=miniflux
+      - POSTGRES_PASSWORD=miniflux
+    networks:
+      - {{ miniflux_network | default(networks[0]) }}
+    volumes:
+      - {{ project_dir }}/miniflux/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "miniflux"]
+      interval: 10s
+      start_period: 30s
+    labels:
+      - domain={{ domain }}
+{% if 'watchtower' in services %}
+{% if miniflux_autoupdate is defined and miniflux_autoupdate == "enable" %}
+      - com.centurylinklabs.watchtower.enable=true
+{% endif %}
+{% if miniflux_autoupdate is not defined or miniflux_autoupdate == "monitor" %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+{% endif %}
+
+networks:
+  {{ miniflux_network | default(networks[0]) }}:
+    external: true
