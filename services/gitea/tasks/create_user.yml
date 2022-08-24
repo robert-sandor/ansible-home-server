@@ -1,4 +1,4 @@
-- name: "Create Gitea user {{ user.name }}"
+- name: "Create Gitea user"
   uri:
     url: '{{ gitea_api_url }}/admin/users'
     method: POST
@@ -33,7 +33,7 @@
   set_fact:
     _repo_list: "{{ _response.json | json_query('[*].name') }}"
 
-- name: "Create Gitea repo {{ repo.name }}"
+- name: "Create Gitea repo"
   uri: 
     url: '{{ gitea_api_url }}/user/repos'
     method: POST
