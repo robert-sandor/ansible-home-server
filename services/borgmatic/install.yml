@@ -55,4 +55,4 @@
 - name: Init borg repository if not already done
   community.docker.docker_container_exec:
     container: borgmatic
-    command: 'sh -c "borgmatic --init --encryption repokey-blake2"'
+    command: 'sh -c "borgmatic init --encryption repokey-blake2"'
