@@ -1,4 +1,4 @@
-- name: "Create Gitea user(s)"
+- name: "Create Gitea user {{ user.name }}"
   uri:
     url: '{{ gitea_api_url }}/admin/users'
     method: POST
@@ -14,7 +14,7 @@
       admin: '{{ "true" if user.admin else false }}'
       must_change_password: false
     return_content: true
-  until: _response.status == 201
+  until: _response.status != -1 or _response.status >= 500
   register: _response
   when: user.name not in _user_list
 
@@ -22,22 +22,18 @@
   uri: 
     url: '{{ gitea_api_url }}/user/repos'
     method: GET
-    body_format: json
     status_code: 200
     force_basic_auth: yes
     url_username: '{{ user.name }}'
     url_password: '{{ user.password }}'
-    return_content: true
-  until: _response.status == 200 
+  until: _response.status != -1 or _response.status >= 500
   register: _response
 
 - name: "Set Gitea _repo_list fact"
   set_fact:
-    _repo_list: "{{ _response.json | json_query(repo_list) }}"
-  vars: 
-    repo_list: "[*].name"     
+    _repo_list: "{{ _response.json | json_query('[*].name') }}"
 
-- name: "Create Gitea repo(s)"
+- name: "Create Gitea repo {{ repo.name }}"
   uri: 
     url: '{{ gitea_api_url }}/user/repos'
     method: POST

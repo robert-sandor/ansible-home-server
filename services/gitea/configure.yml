@@ -3,12 +3,8 @@
     gitea_api_url: "http://localhost:3000/api/v1"
 
 - name: Configure Gitea server
-  include_tasks: tasks/setup.yml
-  vars:
-    service: gitea
+  import_tasks: tasks/setup.yml
 
 - name: Configure Gitea user(s)
-  include_tasks: tasks/users.yml
+  import_tasks: tasks/users.yml
   when: gitea_users
-  vars:
-    service: gitea

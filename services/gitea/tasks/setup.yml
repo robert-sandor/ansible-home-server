@@ -38,8 +38,7 @@
       admin_confirm_passwd: "{{ gitea_admin_passwd | default('') }}"
       admin_email: "{{ gitea_admin_email | default('') }}"
     status_code: 200, 405
-    return_content: true
-  until: _response.status == 200 or _response.status == 405
+  until: _response.status != -1 or _response.status >= 500
   delay: 10
   retries: 5
   register: _response
@@ -48,13 +47,11 @@
   uri:
     url: '{{ gitea_api_url }}/version'
     method: GET
-    body_format: json
     status_code: 200
     force_basic_auth: yes
     url_username: '{{ gitea_admin_user }}'
     url_password: '{{ gitea_admin_passwd }}'
-    return_content: true
-  until: _response.status == 200
+  until: _response.status != -1 or _response.status >= 500
   register: _response
   delay: 10
   retries: 10

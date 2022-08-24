@@ -2,20 +2,16 @@
   uri:
     url: '{{ gitea_api_url }}/admin/users'
     method: GET
-    body_format: json
     status_code: 200
     force_basic_auth: yes
     url_username: '{{ gitea_admin_user }}'
     url_password: '{{ gitea_admin_passwd }}'
-    return_content: true
-  until: _response.status == 200
+  until: _response.status != -1 or _response.status >= 500
   register: _response
 
 - name: "Set Gitea _user_list fact"
   set_fact:
-    _user_list: "{{ _response.json | json_query(user_list) }}"
-  vars: 
-    user_list: "[*].login"
+    _user_list: "{{ _response.json | json_query('[*].login') }}"
 
 - name: "Create users"
   include_tasks: create_user.yml
