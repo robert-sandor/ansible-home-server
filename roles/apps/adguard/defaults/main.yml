@@ -1,0 +1,24 @@
+---
+adguard_version: latest
+adguard_network: apps
+
+adguard_user: admin
+adguard_pass: adguard123
+
+adguard_api: http://localhost:3000/control
+adguard_ratelimit: 50
+adguard_cache_size_mb: 32
+
+adguard_dns:
+  - https://dns.cloudflare.com/dns-query
+  - https://dns.quad9.net/dns-query
+
+adguard_bootstrap:
+  - '1.1.1.1'
+  - '9.9.9.9'
+
+adguard_filters:
+  - name: 'AdGuard DNS filter'
+    url: 'https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt'
+
+adguard_rewrites: []

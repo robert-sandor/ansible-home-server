@@ -1,0 +1,42 @@
+- name: Get existing rewrites
+  uri:
+    url: "{{ adguard_api }}/rewrite/list"
+    method: GET
+    body_format: json
+    headers:
+      Cookie: "{{ adguard_cookie }}"
+    status_code: 200
+  register: rewrites_response
+  retries: 10
+  delay: 10
+  until: rewrites_response.status != -1 or rewrites_response.status == 404
+
+- name: Remove rewrites
+  uri:
+    url: "{{ adguard_api }}/rewrite/delete"
+    method: POST
+    body_format: json
+    headers:
+      Cookie: "{{ adguard_cookie }}"
+    body: "{{ item }}"
+    status_code: 200
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 or _response.status == 404
+  with_items: "{{ rewrites_response.json | difference(adguard_rewrites | default([])) }}"
+
+- name: Add rewrites
+  uri:
+    url: "{{ adguard_api }}/rewrite/add"
+    method: POST
+    body_format: json
+    headers:
+      Cookie: "{{ adguard_cookie }}"
+    body: "{{ item }}"
+    status_code: 200
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1 or _response.status == 404
+  with_items: "{{ adguard_rewrites | default([]) | difference(rewrites_response.json) }}"

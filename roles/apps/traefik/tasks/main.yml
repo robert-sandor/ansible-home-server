@@ -1,0 +1,26 @@
+---
+- name: Create directory structure
+  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  vars:
+    subdirs:
+      - traefik
+      - traefik/acme-data
+
+- name: Template compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ project_dir }}/traefik/compose.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644
+
+- name: Setup docker network {{ traefik_network }}
+  community.docker.docker_network:
+    name: "{{ traefik_network }}"
+
+- name: Start service using docker compose
+  community.docker.docker_compose:
+    project_name: traefik
+    project_src: "{{ project_dir }}/traefik"
+    pull: true
+    remove_orphans: true

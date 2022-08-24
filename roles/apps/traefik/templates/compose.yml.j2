@@ -1,0 +1,77 @@
+version: "3.8"
+
+services:
+  traefik:
+    container_name: traefik
+    hostname: traefik
+    image: traefik:{{ traefik_version | default('latest') }}
+    restart: unless-stopped
+    command:
+      - "--api=true"
+      - "--accesslog={{ traefik_access_logs | default(false) }}"
+      - "--providers.docker=true"
+      - "--providers.docker.network={{ traefik_network | default(networks[0]) }}"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+{% if traefik_https %}
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.websecure.address=:443"
+{% if traefik_acme_enabled %}
+      - "--certificatesresolvers.acme_provider.acme.dnschallenge=true"
+      - "--certificatesresolvers.acme_provider.acme.dnschallenge.provider={{ traefik_acme_provider }}"
+      - "--certificatesresolvers.acme_provider.acme.email={{ traefik_acme_email }}"
+      - "--certificatesresolvers.acme_provider.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.acme_provider.acme.caserver=https://acme{% if traefik_acme_staging %}-staging{% endif %}-v02.api.letsencrypt.org/directory"
+{% endif %}
+{% endif %}
+{% if traefik_metrics %}
+      - "--metrics.prometheus=true"
+      - "--entryPoints.metrics.address=:8081"
+      - "--metrics.prometheus.entryPoint=metrics"
+{% endif %}
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+{% if traefik_acme_enabled and traefik_acme_env is defined %}
+{% for e in traefik_acme_env %}
+      - {{ e }}={{ traefik_acme_env[e] }}
+{% endfor %}
+{% endif %}
+    networks:
+      - {{ traefik_network | default(networks[0]) }}
+    dns:
+      - '1.1.1.1'
+      - '9.9.9.9'
+    ports:
+      - 80:80
+      - 443:443
+{% if traefik_metrics %}
+      - 8081:8081
+{% endif %}
+    volumes:
+{% if traefik_acme_enabled %}
+      - {{ project_dir}}/traefik/acme-data:/letsencrypt
+{% endif %}
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - domain={{ domain }}
+      - traefik.enable=true
+      - traefik.http.routers.traefik.rule=Host(`traefik.{{ domain }}`)
+      - traefik.http.routers.traefik.entrypoints=websecure
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.tls.certresolver={{ traefik_acme_provider }}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=Traefik
+      - flame.url=traefik.{{ domain }}
+      - flame.icon=traffic-light
+{% endif %}
+{% if 'watchtower' in apps %}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+{% endif %}
+
+networks:
+  {{ traefik_network }}:
+    external: true

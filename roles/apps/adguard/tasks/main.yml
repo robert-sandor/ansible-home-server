@@ -1,0 +1,34 @@
+---
+- ansible.builtin.import_role: name=common tasks_from=disable_systemd_resolved
+
+- name: Create directory structure
+  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  vars:
+    subdirs:
+      - adguard
+      - adguard/work
+      - adguard/config
+
+- name: Template compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ project_dir }}/adguard/compose.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644
+
+- name: Setup docker network {{ adguard_network }}
+  community.docker.docker_network:
+    name: "{{ adguard_network }}"
+
+- name: Start service using docker compose
+  community.docker.docker_compose:
+    project_name: adguard
+    project_src: "{{ project_dir }}/adguard"
+    pull: true
+    remove_orphans: true
+
+- ansible.builtin.import_tasks: init.yml
+- ansible.builtin.import_tasks: configure_dns.yml
+- ansible.builtin.import_tasks: set_filters.yml
+- ansible.builtin.import_tasks: set_rewrites.yml

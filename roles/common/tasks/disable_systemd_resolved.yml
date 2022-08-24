@@ -1,0 +1,47 @@
+- name: Get status of systemd services
+  ansible.builtin.service_facts:
+
+- name: Disable SystemD stub resolver
+  become: true
+  when: ansible_facts.services['systemd-resolved.service'].status == 'enabled'
+  block: 
+    - name: Ensure /etc/systemd/resolved.conf.d exists
+      ansible.builtin.file:
+        path: "/etc/systemd/resolved.conf.d"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Disable SystemD Resolved DNS Stub Listener
+      ansible.builtin.copy:
+        dest: "/etc/systemd/resolved.conf.d/noresolved.conf"
+        content: |
+          [Resolve]
+          DNSStubListener=no
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart_systemd_resolved
+
+    - name: Stat /etc/resolv.conf
+      ansible.builtin.stat:
+        path: /etc/resolv.conf
+      register: resolv_conf_stat
+
+    - name: Remove if not symlink
+      ansible.builtin.file:
+        state: absent
+        path: "/etc/resolv.conf"
+      when: > 
+        not resolv_conf_stat.stat.islnk or
+        not '/run/systemd/resolve/resolv.conf' == resolv_conf_stat.stat.lnk_source
+
+    - name: Create symlink for /etc/resolv.conf
+      ansible.builtin.file:
+        state: link
+        src: "/run/systemd/resolve/resolv.conf"
+        dest: "/etc/resolv.conf"
+        owner: root
+        group: root
+        mode: '0644'

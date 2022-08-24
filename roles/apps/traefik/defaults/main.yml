@@ -1,0 +1,16 @@
+---
+traefik_version: latest
+traefik_network: apps
+
+traefik_https: true
+traefik_access_logs: false
+traefik_metrics: false
+
+traefik_acme_enabled: false
+traefik_acme_staging: true
+traefik_acme_email: email@example.com
+traefik_acme_provider: cloudflare
+traefik_acme_env:
+  CF_API_EMAIL: email@example.com
+  CF_DNS_API_TOKEN: <cloudflare_token>
+

@@ -1,0 +1,10 @@
+---
+- ansible.builtin.include_tasks: "./install_pip_{{ ansible_facts.os_family | lower }}.yml"
+
+- name: Install docker and docker-compose using pip
+  ansible.builtin.pip:
+    name:
+      - pip
+      - docker
+      - docker-compose
+    state: latest
