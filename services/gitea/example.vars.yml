@@ -1,0 +1,37 @@
+gitea_version: latest
+gitea_https: yes
+gitea_access_logs: false
+gitea_metrics: no
+gitea_autoupdate: monitor
+
+gitea_db_user: gitea
+gitea_db_pass: changeme
+gitea_db_name: gitea
+gitea_db_type: postgres
+
+gitea_app_name: 'Gitea: With a cup of tea'
+
+gitea_admin_user: changeme
+gitea_admin_passwd: changeme
+gitea_admin_email: something@example.com
+
+gitea_users:
+  - name: testadmin
+    email: something@example.com
+    password: "changeme"
+    admin: true
+    repos:
+      - name: test1
+        description: "changeme"
+        private: false
+      - name: test2
+        description: "changeme"
+        private: false
+  - name: git
+    email: something@git.com
+    password: "changeme"
+    admin: false
+    repos:
+      - name: test3
+        description: "changeme"
+        private: false

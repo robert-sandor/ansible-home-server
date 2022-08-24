@@ -1,0 +1,60 @@
+- name: "Install Gitea server"
+  uri:
+    url: http://localhost:3000
+    method: POST
+    body_format: form-urlencoded
+    body:
+      db_type: postgres
+      db_host: gitea-postgres
+      db_user: "{{ gitea_db_user | default('gitea') }}"
+      db_passwd: "{{ gitea_db_passwd | default('gitea') }}"
+      db_name: gitea
+      ssl_mode: disable
+      db_schema: ''
+      charset: utf8
+      db_path: /data/gitea/gitea.db
+      app_name: "{{ gitea_app_name | default('Gitea: Git with a cup of tea') }}"
+      repo_root_path: /data/git/repositories
+      lfs_root_path: /data/git/lfs
+      run_user: git
+      domain: gitea.{{ domain }}
+      ssh_port: 222
+      http_port: 3000
+      app_url: https://gitea.{{ domain }}/
+      log_root_path: /data/gitea/log
+      smtp_host: "{{ gitea_smtp_host | default('') }}"
+      smtp_from: "{{ gitea_smtp_from | default('') }}"
+      smtp_user: "{{ gitea_smtp_user | default('') }}"
+      smtp_passwd: "{{ gitea_smtp_passwd | default('') }}"
+      enable_federated_avatar: on
+      enable_open_id_sign_in: on
+      enable_open_id_sign_up: on
+      default_allow_create_organization: on
+      default_enable_timetracking: on
+      no_reply_address: noreply.gitea.{{ domain }}
+      password_algorithm: pbkdf2
+      admin_name: "{{ gitea_admin_user | default('') }}"
+      admin_passwd: "{{ gitea_admin_passwd | default('') }}"
+      admin_confirm_passwd: "{{ gitea_admin_passwd | default('') }}"
+      admin_email: "{{ gitea_admin_email | default('') }}"
+    status_code: 200, 405
+    return_content: true
+  until: _response.status == 200 or _response.status == 405
+  delay: 10
+  retries: 5
+  register: _response
+
+- name: "Wait until Gitea API server is running"
+  uri:
+    url: '{{ gitea_api_url }}/version'
+    method: GET
+    body_format: json
+    status_code: 200
+    force_basic_auth: yes
+    url_username: '{{ gitea_admin_user }}'
+    url_password: '{{ gitea_admin_passwd }}'
+    return_content: true
+  until: _response.status == 200
+  register: _response
+  delay: 10
+  retries: 10
