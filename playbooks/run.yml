@@ -1,0 +1,14 @@
+---
+- hosts: all
+
+  tasks:
+    - ansible.builtin.include_role: 
+        name: "apps/{{ app }}"
+        apply:
+          tags:
+            - "{{ app }}"
+      with_items: "{{ apps }}"
+      loop_control:
+        loop_var: app
+      tags:
+        - always

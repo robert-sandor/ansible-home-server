@@ -1,0 +1,8 @@
+---
+watchtower_version: latest
+watchtower_network: apps
+
+watchtower_schedule: "0 0 0 * * *"
+
+watchtower_discord: false
+watchtower_discord_hook: ''

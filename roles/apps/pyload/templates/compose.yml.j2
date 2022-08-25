@@ -1,0 +1,54 @@
+---
+version: "3.8"
+
+services:
+  pyload:
+    container_name: pyload
+    hostname: pyload
+    image: ghcr.io/linuxserver/pyload-ng:{{ pyload_version }}
+    restart: unless-stopped
+    environment:
+      PUID: {{ ansible_facts.user_uid }}
+      PGID: {{ ansible_facts.user_gid }}
+      TZ: {{ timezone }}
+    volumes:
+      - {{ project_dir }}/pyload/config:/config
+{% if pyload_use_nfs %}
+      - downloads:/downloads
+{% else %}
+      - {{ pyload_download_path }}:/downloads
+{% endif %}
+    networks:
+      - {{ pyload_network }}
+    ports:
+      - {{ pyload_port }}:8000/tcp
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.pyload.rule=Host(`pyload.{{ domain }}`)
+      - traefik.http.routers.pyload.entrypoints=websecure
+      - traefik.http.services.pyload.loadbalancer.server.port=8000
+      - traefik.http.routers.pyload.service=pyload
+      - traefik.http.routers.pyload.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=pyload
+      - flame.url=pyload.{{ domain }}
+      - flame.icon=download
+{% endif %}
+
+networks:
+  {{ pyload_network }}:
+    external: true
+
+{% if pyload_use_nfs %}
+volumes:
+  downloads:
+    driver_opts:
+      type: "nfs" 
+      o: "addr={{ pyload_nfs_server }},nolock,rw,soft,nfsvers=4"
+      device: ":{{ pyload_nfs_path }}"
+
+{% endif %}

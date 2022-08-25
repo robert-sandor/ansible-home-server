@@ -1,0 +1,32 @@
+---
+version: "3.8"
+
+services:
+  watchtower:
+    container_name: watchtower
+    hostname: watchtower
+    image: containrrr/watchtower:{{ watchtower_version }}
+    restart: unless-stopped
+    command:
+      - "--schedule={{ watchtower_schedule }}"
+      - "--monitor-only"
+      - "--no-startup-message"
+{% if watchtower_discord %}
+      - "--notifications=slack"
+      - "--notification-slack-hook-url={{ watchtower_discord_hook }}"
+      - "--notification-slack-identifier=watchtower-{{ domain }}"
+{% endif %}
+    environment:
+      - TZ={{ timezone }}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - {{ watchtower_network }}
+    labels:
+      - domain={{ domain }}
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.monitor-only=true
+
+networks:
+  {{ watchtower_network }}:
+    external: true

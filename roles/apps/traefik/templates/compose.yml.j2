@@ -4,13 +4,13 @@ services:
   traefik:
     container_name: traefik
     hostname: traefik
-    image: traefik:{{ traefik_version | default('latest') }}
+    image: traefik:{{ traefik_version }}
     restart: unless-stopped
     command:
       - "--api=true"
-      - "--accesslog={{ traefik_access_logs | default(false) }}"
+      - "--accesslog={{ traefik_access_logs }}"
       - "--providers.docker=true"
-      - "--providers.docker.network={{ traefik_network | default(networks[0]) }}"
+      - "--providers.docker.network={{ traefik_network }}"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
 {% if traefik_https %}
@@ -19,7 +19,7 @@ services:
 {% if traefik_acme_enabled %}
       - "--certificatesresolvers.acme_provider.acme.dnschallenge=true"
       - "--certificatesresolvers.acme_provider.acme.dnschallenge.provider={{ traefik_acme_provider }}"
-      - "--certificatesresolvers.acme_provider.acme.email={{ traefik_acme_email }}"
+      - "--certificatesresolvers.acme_provider.acme.email=$TRAEFIK_ACME_EMAIL"
       - "--certificatesresolvers.acme_provider.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.acme_provider.acme.caserver=https://acme{% if traefik_acme_staging %}-staging{% endif %}-v02.api.letsencrypt.org/directory"
 {% endif %}
@@ -34,12 +34,12 @@ services:
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
 {% if traefik_acme_enabled and traefik_acme_env is defined %}
-{% for e in traefik_acme_env %}
-      - {{ e }}={{ traefik_acme_env[e] }}
+{% for var in traefik_acme_env %}
+      - {{ var }}=${{ var }}
 {% endfor %}
 {% endif %}
     networks:
-      - {{ traefik_network | default(networks[0]) }}
+      - {{ traefik_network }}
     dns:
       - '1.1.1.1'
       - '9.9.9.9'
@@ -60,16 +60,12 @@ services:
       - traefik.http.routers.traefik.rule=Host(`traefik.{{ domain }}`)
       - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik.tls.certresolver={{ traefik_acme_provider }}
+      - traefik.http.routers.traefik.tls.certresolver=acme_provider
 {% if 'flame' in apps %}
       - flame.type=application
       - flame.name=Traefik
       - flame.url=traefik.{{ domain }}
       - flame.icon=traffic-light
-{% endif %}
-{% if 'watchtower' in apps %}
-      - com.centurylinklabs.watchtower.enable=true
-      - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 
 networks:

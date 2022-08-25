@@ -45,3 +45,6 @@
         owner: root
         group: root
         mode: '0644'
+
+- name: Run handlers
+  meta: flush_handlers

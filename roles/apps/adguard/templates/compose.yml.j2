@@ -1,3 +1,4 @@
+---
 version: "3.8"
 
 services:
@@ -14,10 +15,8 @@ services:
     networks:
       - {{ adguard_network }}
     ports:
-    # DNS
       - 53:53/tcp
       - 53:53/udp
-    # UI
       - 3000:3000/tcp
     labels:
       - domain={{ domain }}
@@ -34,10 +33,6 @@ services:
       - flame.name=adguard
       - flame.url=adguard.{{ domain }}
       - flame.icon=shield-check
-{% endif %}
-{% if 'watchtower' in apps %}
-      - com.centurylinklabs.watchtower.enable=true
-      - com.centurylinklabs.watchtower.monitor-only=true
 {% endif %}
 
 networks:
