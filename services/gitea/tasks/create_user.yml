@@ -13,7 +13,6 @@
       email: '{{ user.email }}'
       admin: '{{ "true" if user.admin else false }}'
       must_change_password: false
-    return_content: true
   until: _response.status != -1 or _response.status >= 500
   register: _response
   when: user.name not in _user_list
