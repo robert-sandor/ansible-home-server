@@ -1,0 +1,59 @@
+- name: "Create Gitea user"
+  uri:
+    url: '{{ gitea_api_url }}/admin/users'
+    method: POST
+    body_format: json
+    status_code: 201
+    force_basic_auth: yes
+    url_username: '{{ gitea_admin_user }}'
+    url_password: '{{ gitea_admin_passwd }}'
+    body:
+      username: '{{ user.name }}'
+      password: '{{ user.password }}'
+      email: '{{ user.email }}'
+      admin: '{{ "true" if user.admin else false }}'
+      must_change_password: false
+  until: _response.status != -1 or _response.status >= 500
+  register: _response
+  when: user.name not in _user_list
+
+- name: "Get Gitea existing repo(s)"
+  uri: 
+    url: '{{ gitea_api_url }}/user/repos'
+    method: GET
+    status_code: 200
+    force_basic_auth: yes
+    url_username: '{{ user.name }}'
+    url_password: '{{ user.password }}'
+  until: _response.status != -1 or _response.status >= 500
+  register: _response
+
+- name: "Set Gitea _repo_list fact"
+  set_fact:
+    _repo_list: "{{ _response.json | json_query('[*].name') }}"
+
+- name: "Create Gitea repo"
+  uri: 
+    url: '{{ gitea_api_url }}/user/repos'
+    method: POST
+    body_format: json
+    status_code: 201
+    force_basic_auth: yes
+    url_username: '{{ user.name }}'
+    url_password: '{{ user.password }}'
+    body:
+      auto_init: true
+      default_branch: "main"
+      description: "{{ repo.description }}"
+      gitignores: ""
+      issue_labels: ""
+      license: ""
+      name: "{{ repo.name }}"
+      private: "{{ repo.private }}"
+      readme: ""
+      template: true
+      trust_model: "default"
+  when: repo.name not in _repo_list
+  with_items: '{{ user.repos }}'
+  loop_control:
+    loop_var: repo

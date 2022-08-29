@@ -1,0 +1,10 @@
+- name: Set Gitea API URL
+  set_fact:
+    gitea_api_url: "http://localhost:3000/api/v1"
+
+- name: Configure Gitea server
+  import_tasks: tasks/setup.yml
+
+- name: Configure Gitea user(s)
+  import_tasks: tasks/users.yml
+  when: gitea_users
