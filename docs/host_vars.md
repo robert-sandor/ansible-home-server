@@ -11,7 +11,3 @@ Here's a comprehensive list of all host-level variables, their usage and example
 | networks | `- traefik`<br>`- media` | Defines the docker networks that will be created on the host |
 | volumes | list of [volume configurations](volume_config.md) | Defines the docker volumes to create on the host. This is most useful to connect NFS/SMB shares to the docker services. For more info, check [volume configurations](volume_config.md) |
 | services | list of [services](services/_list.md) | Defines the services to install on the host. For more    information on the services, check the documentation for each service. |
-
-
-
-
