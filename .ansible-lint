@@ -1,0 +1,13 @@
+---
+skip_list:
+  - package-latest
+  - command-instead-of-shell
+  - git-latest
+  - no-tabs
+  - no-handler
+  - var-spacing
+  - command-instead-of-module
+  - risky-shell-pipe
+
+exclude_paths:
+  - ../.ansible/roles
