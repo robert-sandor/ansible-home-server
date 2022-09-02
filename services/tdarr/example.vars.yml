@@ -1,0 +1,2 @@
+tdarr_media_path: "{{ mounts.multimedia.path }}/media"
+tdarr_hw_decode: nvidia
