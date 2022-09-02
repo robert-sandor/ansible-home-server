@@ -1,11 +1,11 @@
 - name: Copy service docker-compose file
-  include_tasks: ../tasks/ansible.builtin.template_compose.yml
+  include_tasks: ../tasks/template_compose.yml
   vars:
     service: dnsmasq
 
 - name: Copy dnsmasq.conf file
   ansible.builtin.template:
-    src: ansible.builtin.templates/dnsmasq.conf.j2
+    src: include_tasks: ../tasks/template_composednsmasq.conf.j2
     dest: "{{ project_dir }}/dnsmasq/dnsmasq.conf"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"

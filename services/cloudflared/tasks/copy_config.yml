@@ -1,6 +1,6 @@
 - name: ansible.builtin.template config file
   ansible.builtin.template:
-    src: ../services/cloudflared/ansible.builtin.templates/config.yml.j2
+    src: ../services/cloudflared/include_tasks: ../tasks/template_composeconfig.yml.j2
     dest: "{{ project_dir }}/cloudflared/data/config.yml"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"

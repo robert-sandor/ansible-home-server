@@ -25,7 +25,7 @@
 
 - name: ansible.builtin.template local-routing configuration
   ansible.builtin.template:
-    src: ansible.builtin.templates/10-local-domain.conf.j2
+    src: include_tasks: ../tasks/template_compose10-local-domain.conf.j2
     dest: "{{ project_dir }}/pihole/dnsmasq.d/10-local-domain.conf"
     mode: '0644'
   when: pihole_local_routing is defined and pihole_local_routing | length > 0

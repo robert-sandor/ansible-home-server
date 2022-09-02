@@ -27,7 +27,7 @@
 
 - name: ansible.builtin.template config
   ansible.builtin.template:
-    src: ../services/borgmatic/ansible.builtin.templates/config.yml.j2
+    src: ../services/borgmatic/include_tasks: ../tasks/template_composeconfig.yml.j2
     dest: "{{ project_dir }}/borgmatic/borgmatic.d/config.yml"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"
@@ -42,7 +42,7 @@
     mode: '0600'
 
 - name: Copy service docker-compose file
-  include_tasks: ../tasks/ansible.builtin.template_compose.yml
+  include_tasks: ../tasks/template_compose.yml
   vars:
     service: borgmatic
 
