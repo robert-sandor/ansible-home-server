@@ -1,0 +1,3 @@
+paperless_export_dir: "{{ mounts.paperless.path }}/export"
+paperless_consume_dir: "{{ mounts.paperless.path }}/consume"
+paperless_ocr_languages: ro

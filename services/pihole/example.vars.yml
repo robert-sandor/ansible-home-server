@@ -1,1 +1,10 @@
 pihole_password: changeme
+
+pihole_allowed_domains:
+  - reddit.com
+
+pihole_blocked_domains:
+  - facebook.com
+
+pihole_local_routing:
+  - pihole.domain.example|192.168.1.5
