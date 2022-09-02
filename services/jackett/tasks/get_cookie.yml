@@ -1,5 +1,5 @@
 - name: Get jackett cookie
-  uri:
+  ansible.builtin.uri:
     url: "{{ jackett_host }}/UI/Dashboard"
     method: GET
   register: _response
@@ -8,11 +8,11 @@
   until: _response.status != -1 and _response.status < 500 and _response.status != 404
 
 - name: Save jackett cookie
-  set_fact:
+  ansible.builtin.set_fact:
     jackett_cookie: "{{ _response.cookies_string }}"
 
 - name: Attempt to login if jackett cookie is not present
-  uri:
+  ansible.builtin.uri:
     url: "{{ jackett_host }}/UI/Dashboard"
     method: POST
     body_format: form-urlencoded
@@ -26,6 +26,6 @@
   when: not jackett_cookie
 
 - name: Save jackett cookie
-  set_fact:
+  ansible.builtin.set_fact:
     jackett_cookie: "{{ _response.set_cookie }}"
   when: not jackett_cookie

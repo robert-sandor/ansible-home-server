@@ -1,5 +1,5 @@
 - name: Setup portainer api variable
-  set_fact:
+  ansible.builtin.set_fact:
     portainer_api: "http://localhost:9000/api"
 
 - name: Configure Portainer admin user

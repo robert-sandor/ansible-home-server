@@ -1,6 +1,6 @@
 sonarr_version: latest
 sonarr_autoupdate: monitor
-sonarr_dark_theme: yes
+sonarr_dark_theme: true
 sonarr_data_path: "/home/user/data"
 
 sonarr_media_dir: series
@@ -14,5 +14,5 @@ sonarr_qbt_remove_completed_downloads: false
 
 sonarr_indexers:
   - name: changeme
-    categories: [ 5000 ]
+    categories: [5000]
     minimum_seeders: 5

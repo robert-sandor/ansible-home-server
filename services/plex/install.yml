@@ -4,7 +4,7 @@
     service: plex
     dir: data
 
-- name: Create docker volume for Template
+- name: Create docker volume for ansible.builtin.template
   include_tasks: ../tasks/local_volume.yml
   vars:
     volume:
@@ -37,7 +37,7 @@
   when: not _stat.stat.exists and _response.changed
 
 - name: Copy service docker-compose file
-  include_tasks: ../tasks/template_compose.yml
+  include_tasks: ../tasks/ansible.builtin.template_compose.yml
   vars:
     service: plex
 

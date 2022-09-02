@@ -5,5 +5,5 @@
   register: _response
 
 - name: Save Lidarr API Key
-  set_fact: 
+  ansible.builtin.set_fact:
     lidarr_api_key: "{{ _response.stdout }}"

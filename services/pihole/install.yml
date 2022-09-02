@@ -11,7 +11,7 @@
     dir: dnsmasq.d
 
 - name: Copy service docker-compose file
-  include_tasks: ../tasks/template_compose.yml
+  include_tasks: ../tasks/ansible.builtin.template_compose.yml
   vars:
     service: pihole
 

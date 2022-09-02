@@ -4,16 +4,16 @@
     service: homer
     dir: assets
 
-- name: Template config
-  template:
-    src: ../services/homer/templates/config.yml.j2
+- name: ansible.builtin.template config
+  ansible.builtin.template:
+    src: ../services/homer/ansible.builtin.templates/config.yml.j2
     dest: "{{ project_dir }}/homer/assets/config.yml"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"
     mode: '0644'
 
 - name: Copy service docker-compose file
-  include_tasks: ../tasks/template_compose.yml
+  include_tasks: ../tasks/ansible.builtin.template_compose.yml
   vars:
     service: homer
 

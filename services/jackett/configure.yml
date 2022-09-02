@@ -1,5 +1,5 @@
 - name: Setup jackett host variable
-  set_fact:
+  ansible.builtin.set_fact:
     jackett_host: "http://localhost:9117"
 
 - name: Get a Jackett Cookie
@@ -20,4 +20,3 @@
   loop_control:
     loop_var: i
   when: jackett_indexers
-

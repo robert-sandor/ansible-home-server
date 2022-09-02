@@ -1,13 +1,14 @@
 - name: Add module {{ module }} to /etc/modules
   become: true
-  lineinfile:
-    create: yes
+  ansible.builtin.lineinfile:
+    create: true
     path: /etc/modules-load.d/{{ module }}.conf
     regexp: '^{{ module }}'
     line: "{{ module }}"
+    mode: '0644'
   register: _result
 
 - name: Set restart needed if changed
-  set_fact:
-    reboot_needed: yes
+  ansible.builtin.set_fact:
+    reboot_needed: true
   when: _result.changed

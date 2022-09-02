@@ -1,5 +1,5 @@
 - name: Create project folder
-  file:
+  ansible.builtin.file:
     path: "{{ project_dir }}"
     state: directory
     owner: "{{ ansible_facts.user_id }}"

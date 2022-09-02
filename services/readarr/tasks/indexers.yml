@@ -1,5 +1,5 @@
 - name: Get readarr indexers
-  uri:
+  ansible.builtin.uri:
     url: "{{ readarr_api_url }}/indexer?apiKey={{ readarr_api_key }}"
     follow_redirects: none
     method: GET
@@ -9,13 +9,13 @@
   until: _response.status != -1 and _response.status < 500 and _response.status != 404
 
 - name: Check whether Jackett indexer {{ indexer.name }} is already configured
-  set_fact:
+  ansible.builtin.set_fact:
     indexer_not_configured: "{{ _response.json | json_query(q) | length() == 0 }}"
   vars:
     q: "[?name == `{{ indexer.name }}`]"
 
 - name: Configure Jackett indexer {{ indexer.name }}
-  uri:
+  ansible.builtin.uri:
     url: "{{ readarr_api_url }}/indexer?apiKey={{ readarr_api_key }}"
     method: POST
     body_format: json
@@ -54,4 +54,4 @@
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404

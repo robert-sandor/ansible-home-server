@@ -1,5 +1,5 @@
 - name: Set vars
-  set_fact:
+  ansible.builtin.set_fact:
     adguard_api: "http://localhost:3000/control"
     adguard_default_ratelimit: 50
     adguard_default_cache_size_mb: 32

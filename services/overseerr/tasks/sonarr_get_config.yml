@@ -1,5 +1,5 @@
 - name: Set host for Sonarr if on same host
-  set_fact:
+  ansible.builtin.set_fact:
     overseerr_sonarr:
       host: sonarr
       url: https://sonarr.{{ domain }}
@@ -10,7 +10,7 @@
     when: overseerr_sonarr is defined and 'sonarr' in services
 
 - name: Set defaults for Sonarr if not configured
-  set_fact:
+  ansible.builtin.set_fact:
     overseerr_sonarr:
       host: sonarr
       url: https://sonarr.{{ domain }}

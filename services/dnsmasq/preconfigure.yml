@@ -1,12 +1,12 @@
 - name: Save services list
-  set_fact:
+  ansible.builtin.set_fact:
     _services: "{{ services }}"
 
 - name: Get status of systemd services
   service_facts:
 
 - name: Check if systemd-resolved is enabled
-  set_fact:
+  ansible.builtin.set_fact:
     resolved_running: "{{ ansible_facts.services['systemd-resolved.service'].status == 'enabled' }}"
 
 - name: Disable SystemD stub resolver
@@ -15,5 +15,5 @@
   when: resolved_running
 
 - name: Reset services list
-  set_fact:
+  ansible.builtin.set_fact:
     services: "{{ _services }}"

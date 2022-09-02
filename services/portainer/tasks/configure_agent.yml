@@ -1,5 +1,5 @@
 - name: Get existing endpoints
-  uri:
+  ansible.builtin.uri:
     url: "{{ portainer_api }}/endpoints"
     method: GET
     headers:
@@ -11,17 +11,17 @@
   until: _response.status != -1
 
 - name: Check existing agent with same host
-  set_fact:
+  ansible.builtin.set_fact:
     already_exists: "{{ _response.json | json_query(query) | length() > 0 }}"
   vars:
     query: "[?contains(URL,'{{ agent.host }}')].Id"
 
 - name: Register Portainer Agent
-  uri:
+  ansible.builtin.uri:
     url: "{{ portainer_api }}/endpoints"
     method: POST
     body_format: form-urlencoded
-    body: 
+    body:
       Name: "{{ agent.name }}"
       EndpointCreationType: "2"
       URL: "tcp://{{ agent.host }}:9001"

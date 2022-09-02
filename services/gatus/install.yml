@@ -1,17 +1,17 @@
-- name: Create folder for Template
+- name: Create folder for ansible.builtin.template
   include_tasks: ../tasks/create_service_dir.yml
   vars:
     service: gatus
     dir: data
 
 - name: Copy service docker-compose file
-  include_tasks: ../tasks/template_compose.yml
+  include_tasks: ../tasks/ansible.builtin.template_compose.yml
   vars:
     service: gatus
 
-- name: Template config
-  template:
-    src: ../services/gatus/templates/config.yaml.j2
+- name: ansible.builtin.template config
+  ansible.builtin.template:
+    src: ../services/gatus/ansible.builtin.templates/config.yaml.j2
     dest: "{{ project_dir }}/gatus/config.yaml"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"

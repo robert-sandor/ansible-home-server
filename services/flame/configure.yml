@@ -1,5 +1,5 @@
 - name: Setup flame api variable
-  set_fact:
+  ansible.builtin.set_fact:
     flame_api: "http://localhost:5005/api"
 
 - name: Authenticate with Flame

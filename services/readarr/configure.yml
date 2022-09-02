@@ -1,5 +1,5 @@
 - name: Set Readarr API URL
-  set_fact:
+  ansible.builtin.set_fact:
     readarr_api_url: "http://localhost:8787/api/v1"
 
 - name: Get Readarr API Key

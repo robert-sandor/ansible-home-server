@@ -1,6 +1,6 @@
 - name: Ensure mount path {{ mount.path }} exists
   become: true
-  file:
+  ansible.builtin.file:
     path: "{{ mount.path }}"
     state: directory
     owner: "{{ ansible_facts.user_id }}"

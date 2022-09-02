@@ -1,9 +1,9 @@
 - name: Try to set config
-  uri:
+  ansible.builtin.uri:
     url: "{{ transmission_api }}"
     user: "{{ transmission_user | default('') }}"
     password: "{{ transmission_pass | default('') }}"
-    force_basic_auth: yes
+    force_basic_auth: true
     method: POST
     body_format: json
     body:

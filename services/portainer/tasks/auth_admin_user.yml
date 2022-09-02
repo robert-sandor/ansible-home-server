@@ -1,5 +1,5 @@
 - name: Authenticate with admin credentials
-  uri:
+  ansible.builtin.uri:
     url: "{{ portainer_api }}/auth"
     method: POST
     body_format: json
@@ -13,5 +13,5 @@
   until: _response.status != -1
 
 - name: Get Portainer JWT token
-  set_fact:
+  ansible.builtin.set_fact:
     portainer_token: "{{ _response.json.jwt }}"

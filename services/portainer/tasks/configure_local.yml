@@ -1,5 +1,5 @@
 - name: Get existing endpoints
-  uri:
+  ansible.builtin.uri:
     url: "{{ portainer_api }}/endpoints"
     method: GET
     headers:
@@ -11,17 +11,17 @@
   until: _response.status != -1
 
 - name: Check existing local endpoint
-  set_fact:
+  ansible.builtin.set_fact:
     already_exists: "{{ _response.json | json_query(query) | length() > 0 }}"
   vars:
     query: "[?contains(URL,'unix:///var/run/docker.sock')].Id"
 
 - name: Register Portainer Agent
-  uri:
+  ansible.builtin.uri:
     url: "{{ portainer_api }}/endpoints"
     method: POST
     body_format: form-urlencoded
-    body: 
+    body:
       Name: "local"
       EndpointCreationType: "1"
       URL: "unix:///var/run/docker.sock"

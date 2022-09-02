@@ -5,11 +5,11 @@
   register: _output
 
 - name: Save group id of group docker
-  set_fact:
+  ansible.builtin.set_fact:
     docker_gid: "{{ _output.gid }}"
 
 - name: Copy service docker-compose file
-  include_tasks: ../tasks/template_compose.yml
+  include_tasks: ../tasks/ansible.builtin.template_compose.yml
   vars:
     service: telegraf
 

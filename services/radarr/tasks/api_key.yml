@@ -5,5 +5,5 @@
   register: _response
 
 - name: Save Radarr API Key
-  set_fact: 
+  ansible.builtin.set_fact:
     radarr_api_key: "{{ _response.stdout }}"

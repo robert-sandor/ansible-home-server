@@ -1,8 +1,10 @@
 - name: Check if vars file {{ file | default('vars') }} exists for {{ service }}
-  local_action: stat path=../services/{{ service }}/{{ file | default('vars') }}.yml
+  ansible.builtin.stat:
+     path: ../services/{{ service }}/{{ file | default('vars') }}.yml
   become: false
   register: _response
+  delegate_to: localhost
 
 - name: Include vars file {{ file | default('vars') }} for service {{ service }}
-  include_vars: ../services/{{ service }}/{{ file | default('vars') }}.yml
+  ansible.builtin.include_vars: ../services/{{ service }}/{{ file | default('vars') }}.yml
   when: _response.stat.exists is defined and _response.stat.exists

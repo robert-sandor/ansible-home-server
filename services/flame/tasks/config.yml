@@ -1,5 +1,5 @@
 - name: Configure flame
-  uri:
+  ansible.builtin.uri:
     url: "{{ flame_api }}/config"
     method: PUT
     body_format: json

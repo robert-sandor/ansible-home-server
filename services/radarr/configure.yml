@@ -1,5 +1,5 @@
 - name: Set Radarr API URL
-  set_fact:
+  ansible.builtin.set_fact:
     radarr_api_url: "http://localhost:7878/api/v3"
 
 - name: Get Radarr API Key

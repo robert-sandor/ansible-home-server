@@ -1,5 +1,5 @@
 - name: Get existing rewrites
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/rewrite/list"
     method: GET
     body_format: json
@@ -12,18 +12,18 @@
   until: _response.status != -1 or _response.status == 404
 
 - name: Save existing rewrites
-  set_fact:
+  ansible.builtin.set_fact:
     adguard_existing_rewrites: "{{ _response.json }}"
 
 - name: Build new list of rewrites
-  set_fact:
-    adguard_updated_rewrites: "{{ adguard_updated_rewrites | default([]) + [{'domain': rewrite.split('|')[0], 'answer': rewrite.split('|')[1]}] }}"
+  ansible.builtin.set_fact:
+    adguard_updated_rewrites: "{{ adguard_updated_rewrites | default([]) + [{ 'domain': rewrite.split('|')[0], 'answer': rewrite.split('|')[1] }] }}"
   with_items: "{{ adguard_rewrites | default([]) }}"
   loop_control:
     loop_var: rewrite
 
 - name: Remove rewrites
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/rewrite/delete"
     method: POST
     body_format: json
@@ -38,7 +38,7 @@
   with_items: "{{ adguard_existing_rewrites | difference(adguard_updated_rewrites) }}"
 
 - name: Add rewrites
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/rewrite/add"
     method: POST
     body_format: json

@@ -1,20 +1,20 @@
 - name: Get Sonarr download clients
-  uri:
+  ansible.builtin.uri:
     url: "{{ sonarr_api_url }}/downloadclient?apiKey={{ sonarr_api_key }}"
     method: GET
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404
 
 - name: Check if download client {{ sonarr_dc }} already configured
-  set_fact:
+  ansible.builtin.set_fact:
     _sonarr_dc_not_configured: "{{ _response.json | json_query(q) | length() == 0 }}"
   vars:
     q: "[?name == `{{ sonarr_dc }}`]"
 
 - name: Set download client {{ sonarr_dc }} variables
-  set_fact:
+  ansible.builtin.set_fact:
     sonarr_dc_host: "{{ sonarr_dc_host | default(sonarr_dc) }}"
     sonarr_dc_port: "{{ sonarr_dc_port | default('8082' if 'qbittorrent' in sonarr_dc else '9091') }}"
     sonarr_dc_use_ssl: "{{ sonarr_dc_use_ssl | default(true if sonarr_dc_port is defined and sonarr_dc_port == 443 else false) }}"
@@ -22,7 +22,7 @@
     sonarr_dc_password: "{{ sonarr_dc_password | default('') }}"
 
 - name: Set common download client fields
-  set_fact:
+  ansible.builtin.set_fact:
     _dc_fields:
       - name: host
         value: "{{ sonarr_dc_host }}"
@@ -44,7 +44,7 @@
         value: 0
 
 - name: Set additional fields for qbittorrent
-  set_fact: 
+  ansible.builtin.set_fact:
     _dc_fields: "{{ _dc_fields + additional_fields }}"
   vars:
     additional_fields:
@@ -57,7 +57,7 @@
         value: false
 
 - name: Set additional fields for transmission
-  set_fact: 
+  ansible.builtin.set_fact:
     _dc_fields: "{{ _dc_fields + additional_fields }}"
   vars:
     additional_fields:
@@ -66,7 +66,7 @@
         value: false
 
 - name: Add download client {{ sonarr_dc }} if not configured
-  uri:
+  ansible.builtin.uri:
     url: "{{ sonarr_api_url }}/downloadclient?apiKey={{ sonarr_api_key }}"
     method: POST
     body_format: json
@@ -88,14 +88,14 @@
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404
 
 - name: Default remote mapping
-  set_fact:
+  ansible.builtin.set_fact:
     sonarr_dc_mapping: "{{ sonarr_dc_mapping | default('/downloads:/data/downloads') }}"
 
 - name: Add remote mapping for download client {{ sonarr_dc }}
-  uri:
+  ansible.builtin.uri:
     url: "{{ sonarr_api_url }}/remotepathmapping?apiKey={{ sonarr_api_key }}"
     method: POST
     body_format: json
@@ -108,4 +108,4 @@
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404

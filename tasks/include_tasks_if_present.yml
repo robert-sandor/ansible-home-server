@@ -1,7 +1,9 @@
 - name: Check if task {{ task }} exists for service {{ service }}
-  local_action: stat path=../services/{{ service }}/{{ task }}.yml
-  become: no
+  ansible.builtin.stat:
+    path: ../services/{{ service }}/{{ task }}.yml
+  become: true
   register: _response
+  delegate_to: localhost
 
 - name: Include task {{ task }} for service {{ service }}
   include_tasks: ../services/{{ service }}/{{ task }}.yml

@@ -1,14 +1,14 @@
 - name: Ensure path to service folder for {{ service }}
-  file:
-    path: "{{ project_dir }}/{{service}}"
+  ansible.builtin.file:
+    path: "{{ project_dir }}/{{ service }}"
     state: directory
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"
     mode: '0755'
 
-- name: Template compose file for {{ service }}
-  template:
-    src: ../services/{{ service }}/templates/compose.yml.j2
+- name: ansible.builtin.template compose file for {{ service }}
+  ansible.builtin.template:
+    src: ../services/{{ service }}/ansible.builtin.templates/compose.yml.j2
     dest: "{{ project_dir }}/{{ service }}/compose.yml"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"

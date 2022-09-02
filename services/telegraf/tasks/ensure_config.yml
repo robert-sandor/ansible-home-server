@@ -1,5 +1,5 @@
 - name: Stat telegraf config file
-  stat:
+  ansible.builtin.stat:
     path: "{{ project_dir }}/telegraf/telegraf.conf"
   register: _stat
 
@@ -14,7 +14,7 @@
   register: _config
 
 - name: Write default telegraf config file
-  copy:
+  ansible.builtin.copy:
     dest: "{{ project_dir }}/telegraf/telegraf.conf"
     content: "{{ _config.container.Output }}"
     owner: "{{ ansible_facts.user_id }}"
