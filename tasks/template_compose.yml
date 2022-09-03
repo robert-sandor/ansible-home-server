@@ -6,7 +6,7 @@
     group: "{{ ansible_facts.user_id }}"
     mode: '0755'
 
-- name: ansible.builtin.template compose file for {{ service }}
+- name: Template compose file for {{ service }}
   ansible.builtin.template:
     src: ../services/{{ service }}/compose.yml.j2
     dest: "{{ project_dir }}/{{ service }}/compose.yml"

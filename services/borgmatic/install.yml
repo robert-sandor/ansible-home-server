@@ -10,7 +10,7 @@
   loop_control:
     loop_var: directory
 
-- name: Create docker volume for ansible.builtin.template
+- name: Create docker volume for Template
   include_tasks: ../tasks/local_volume.yml
   vars:
     volume:
@@ -25,9 +25,9 @@
     group: "{{ ansible_facts.user_id }}"
     mode: '0644'
 
-- name: ansible.builtin.template config
+- name: Template config
   ansible.builtin.template:
-    src: ../services/borgmatic/include_tasks: ../tasks/template_composeconfig.yml.j2
+    src: ../services/borgmatic/templates/config.yml.j2
     dest: "{{ project_dir }}/borgmatic/borgmatic.d/config.yml"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"

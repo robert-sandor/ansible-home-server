@@ -10,4 +10,4 @@
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1 and _response.status < 500 and _response.status != 404and _response.status < 500 and _response.status != 404
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404 and _response.status < 500 and _response.status != 404

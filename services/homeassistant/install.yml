@@ -1,4 +1,4 @@
-- name: Create folder for ansible.builtin.template
+- name: Create folder for Template
   include_tasks: ../tasks/create_service_dir.yml
   vars:
     service: homeassistant

@@ -5,7 +5,7 @@
 
 - name: Copy dnsmasq.conf file
   ansible.builtin.template:
-    src: include_tasks: ../tasks/template_composednsmasq.conf.j2
+    src: templates/dnsmasq.conf.j2
     dest: "{{ project_dir }}/dnsmasq/dnsmasq.conf"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"

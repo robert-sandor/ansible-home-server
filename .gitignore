@@ -20,7 +20,7 @@ services/*/*.yml
 !services/**/preconfigure.yml
 !services/**/configure.yml
 !services/**/example.vars.yml
-!services/.ansible.builtin.template/vars.yml
+!services/.template/vars.yml
 
 # ignore all debug playbooks
 debug

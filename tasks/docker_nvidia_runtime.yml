@@ -1,6 +1,6 @@
 ---
 - name: Add Nvidia Docker GPG Key
-  ansible.builtin.shell: 'curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | ansible.builtin.apt-key add -'
+  ansible.builtin.shell: 'curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | apt-key add -'
   become: true
   changed_when: true
 

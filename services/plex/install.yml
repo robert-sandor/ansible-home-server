@@ -4,7 +4,7 @@
     service: plex
     dir: data
 
-- name: Create docker volume for ansible.builtin.template
+- name: Create docker volume for Template
   include_tasks: ../tasks/local_volume.yml
   vars:
     volume:

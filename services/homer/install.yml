@@ -4,9 +4,9 @@
     service: homer
     dir: assets
 
-- name: ansible.builtin.template config
+- name: Template config
   ansible.builtin.template:
-    src: ../services/homer/include_tasks: ../tasks/template_composeconfig.yml.j2
+    src: ../services/homer/templates/config.yml.j2
     dest: "{{ project_dir }}/homer/assets/config.yml"
     owner: "{{ ansible_facts.user_id }}"
     group: "{{ ansible_facts.user_id }}"
