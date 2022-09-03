@@ -42,9 +42,6 @@
         state: link
         src: "/run/systemd/resolve/resolv.conf"
         dest: "/etc/resolv.conf"
-        owner: root
-        group: root
-        mode: '0644'
 
 - name: Run handlers
   meta: flush_handlers

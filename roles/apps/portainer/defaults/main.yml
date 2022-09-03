@@ -1,0 +1,8 @@
+---
+portainer_version: latest
+portainer_network: apps
+
+portainer_user: admin
+portainer_password: P@ssw0rd!@#$
+
+portainer_agents: {}

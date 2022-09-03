@@ -1,6 +1,7 @@
 # Watchtower
 
-[Watchtower](https://containrrr.dev/watchtower/) is used to monitor and automatically update services. Watchtower will watch each registered container, and will pull the new image, recreating the container if needed.
+[Watchtower](https://containrrr.dev/watchtower/) is used to monitor and automatically update services. 
+Watchtower will watch each registered container, and will pull the new image, recreating the container if needed.
 
 ## Configuration
 

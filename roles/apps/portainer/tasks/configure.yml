@@ -1,0 +1,73 @@
+---
+- name: Authenticate as admin
+  ansible.builtin.uri:
+    method: POST
+    url: "http://localhost:9000/api/auth"
+    body_format: json
+    body:
+      username: "{{ portainer_user }}"
+      password: "{{ portainer_password }}"
+    status_code: 200
+  register: auth_response
+  retries: 10
+  delay: 10
+  until: auth_response.status != -1
+
+- name: Get existing endpoints
+  ansible.builtin.uri:
+    method: GET
+    url: "http://localhost:9000/api/endpoints"
+    headers:
+      Authorization: "Bearer {{ auth_response.json.jwt }}"
+    status_code: 200
+  register: existing_endpoints_response
+  retries: 10
+  delay: 10
+  until: existing_endpoints_response.status != -1
+
+- name: Register Local Environment
+  vars:
+    q: "[?contains(URL,'unix:///var/run/docker.sock')]"
+    already_exists: "{{ existing_endpoints_response.json | json_query(q) | length > 0 }}"
+  ansible.builtin.uri:
+    method: POST
+    url: "http://localhost:9000/api/endpoints"
+    body_format: form-urlencoded
+    body: 
+      Name: local
+      EndpointCreationType: "1"
+      URL: unix:///var/run/docker.sock
+      TLS: "false"
+    headers:
+      Authorization: "Bearer {{ auth_response.json.jwt }}"
+  when: not already_exists
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1
+
+- name: Register Portainer Agent
+  vars:
+    q: "[?contains(URL,'{{ agent.value }}')]"
+    already_exists: "{{ existing_endpoints_response.json | json_query(q) | length > 0 }}"
+  ansible.builtin.uri:
+    method: POST
+    url: "http://localhost:9000/api/endpoints"
+    body_format: form-urlencoded
+    body: 
+      Name: "{{ agent.key }}"
+      EndpointCreationType: "2"
+      URL: "tcp://{{ agent.value }}:9001"
+      TLS: "true"
+      TLSSkipVerify: "true"
+      TLSSkipClientVerify: "true"
+    headers:
+      Authorization: "Bearer {{ auth_response.json.jwt }}"
+  when: not already_exists
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status != -1
+  with_items: "{{ portainer_agents | dict2items }}"
+  loop_control:
+    loop_var: agent
