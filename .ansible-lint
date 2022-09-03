@@ -8,6 +8,3 @@ skip_list:
   - var-spacing
   - command-instead-of-module
   - risky-shell-pipe
-
-exclude_paths:
-  - ../.ansible/roles
