@@ -1,6 +1,6 @@
 - name: Initialize Adguard
   uri:
-    url: "{{ adguard_api }}/install/configure"
+    url: "http://localhost:3000/control/install/configure"
     method: POST
     body_format: json
     body:
@@ -17,25 +17,25 @@
         status: ""
         can_autofix: false
     status_code: 200, 403
-  register: _response
+  register: configure_response
   retries: 10
   delay: 10
-  until: _response.status != -1 or _response.status == 404
+  until: configure_response.status != -1 or configure_response.status == 404
 
 - name: Login with Adguard
   uri:
-    url: "{{ adguard_api }}/login"
+    url: "http://localhost:3000/control/login"
     method: POST
     body_format: json
     body:
       name: "{{ adguard_user }}"
       password: "{{ adguard_pass }}"
     status_code: 200
-  register: _response
+  register: auth_response
   retries: 10
   delay: 10
-  until: _response.status != -1 or _response.status == 404
+  until: auth_response.status != -1 or auth_response.status == 404
 
 - name: Save Adguard cookie
   set_fact:
-    adguard_cookie: "agh_session={{ _response.cookies.agh_session }}"
+    adguard_cookie: "agh_session={{ auth_response.cookies.agh_session }}"

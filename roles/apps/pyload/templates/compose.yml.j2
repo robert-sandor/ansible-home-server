@@ -13,15 +13,15 @@ services:
       TZ: {{ timezone }}
     volumes:
       - {{ project_dir }}/pyload/config:/config
-{% if pyload_use_nfs %}
+{% if 'nfs' == pyload_download_location %}
       - downloads:/downloads
-{% else %}
+{% elif 'path' == pyload_download_location %}
       - {{ pyload_download_path }}:/downloads
 {% endif %}
     networks:
       - {{ pyload_network }}
     ports:
-      - {{ pyload_port }}:8000/tcp
+      - 8010:8000/tcp
     labels:
       - domain={{ domain }}
 {% if 'traefik' in apps %}
@@ -43,12 +43,12 @@ networks:
   {{ pyload_network }}:
     external: true
 
-{% if pyload_use_nfs %}
+{% if 'nfs' == pyload_download_location %}
 volumes:
   downloads:
     driver_opts:
       type: "nfs" 
-      o: "addr={{ pyload_nfs_server }},nolock,rw,soft,nfsvers=4"
+      o: "addr={{ pyload_nfs_server }},{{ pyload_nfs_opts }}"
       device: ":{{ pyload_nfs_path }}"
 
 {% endif %}

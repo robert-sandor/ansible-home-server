@@ -4,7 +4,7 @@
 It can be used to have access to all deployed services, logs, etc. 
 This playbook uses the Community Edition of Portainer.
 
-Once deployed, the service will be available on port `9000`, and if a reverse proxy is also installed, it will be available at `portainer.<domain>`.
+Once deployed, the service will be available on port `9000`, and if [traefik](../apps/traefik/README.md) is also installed on the host, it will be available at `portainer.<domain>`.
 
 ## Configuration
 

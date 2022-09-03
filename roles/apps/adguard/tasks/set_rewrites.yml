@@ -1,6 +1,6 @@
 - name: Get existing rewrites
   uri:
-    url: "{{ adguard_api }}/rewrite/list"
+    url: "http://localhost:3000/control/rewrite/list"
     method: GET
     body_format: json
     headers:
@@ -11,32 +11,39 @@
   delay: 10
   until: rewrites_response.status != -1 or rewrites_response.status == 404
 
-- name: Remove rewrites
-  uri:
-    url: "{{ adguard_api }}/rewrite/delete"
-    method: POST
-    body_format: json
-    headers:
-      Cookie: "{{ adguard_cookie }}"
-    body: "{{ item }}"
-    status_code: 200
-  register: _response
-  retries: 10
-  delay: 10
-  until: _response.status != -1 or _response.status == 404
-  with_items: "{{ rewrites_response.json | difference(adguard_rewrites | default([])) }}"
+- name: Update rewrites
+  vars:
+    rewrite_list: "[{% for rewrite in adguard_rewrites | dict2items %}\
+      {'domain': '{{ rewrite.key }}', 'answer': '{{ rewrite.value }}'},\
+      {'domain': '*.{{ rewrite.key }}', 'answer': '{{ rewrite.value }}'},\
+      {% endfor %}]"
+  block:
+    - name: Remove rewrites
+      uri:
+        url: "http://localhost:3000/control/rewrite/delete"
+        method: POST
+        body_format: json
+        headers:
+          Cookie: "{{ adguard_cookie }}"
+        body: "{{ item }}"
+        status_code: 200
+      register: _response
+      retries: 10
+      delay: 10
+      until: _response.status != -1 or _response.status == 404
+      with_items: "{{ rewrites_response.json | difference(rewrite_list) }}"
 
-- name: Add rewrites
-  uri:
-    url: "{{ adguard_api }}/rewrite/add"
-    method: POST
-    body_format: json
-    headers:
-      Cookie: "{{ adguard_cookie }}"
-    body: "{{ item }}"
-    status_code: 200
-  register: _response
-  retries: 10
-  delay: 10
-  until: _response.status != -1 or _response.status == 404
-  with_items: "{{ adguard_rewrites | default([]) | difference(rewrites_response.json) }}"
+    - name: Add rewrites
+      uri:
+        url: "http://localhost:3000/control/rewrite/add"
+        method: POST
+        body_format: json
+        headers:
+          Cookie: "{{ adguard_cookie }}"
+        body: "{{ item }}"
+        status_code: 200
+      register: _response
+      retries: 10
+      delay: 10
+      until: _response.status != -1 or _response.status == 404
+      with_items: "{{ rewrite_list | difference(rewrites_response.json) }}"

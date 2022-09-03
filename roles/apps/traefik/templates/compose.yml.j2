@@ -33,7 +33,7 @@ services:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-{% if traefik_acme_enabled and traefik_acme_env is defined %}
+{% if traefik_https and traefik_acme_enabled %}
 {% for var in traefik_acme_env %}
       - {{ var }}=${{ var }}
 {% endfor %}
@@ -45,12 +45,14 @@ services:
       - '9.9.9.9'
     ports:
       - 80:80
+{% if traefik_https %}
       - 443:443
+{% endif %}
 {% if traefik_metrics %}
       - 8081:8081
 {% endif %}
     volumes:
-{% if traefik_acme_enabled %}
+{% if traefik_https and traefik_acme_enabled %}
       - {{ project_dir}}/traefik/acme-data:/letsencrypt
 {% endif %}
       - /var/run/docker.sock:/var/run/docker.sock:ro

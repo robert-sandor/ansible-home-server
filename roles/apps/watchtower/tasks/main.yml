@@ -13,6 +13,15 @@
     group: "{{ ansible_facts.user_gid }}"
     mode: 0644
 
+- name: Template .env file
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ project_dir }}/watchtower/.env"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0600
+  when: watchtower_notifications in ["gotify", "slack", "discord"]
+
 - name: Setup docker network {{ watchtower_network }}
   community.docker.docker_network:
     name: "{{ watchtower_network }}"

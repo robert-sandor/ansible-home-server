@@ -4,5 +4,11 @@ watchtower_network: apps
 
 watchtower_schedule: "0 0 0 * * *"
 
-watchtower_discord: false
-watchtower_discord_hook: ''
+watchtower_notifications: none
+
+watchtower_discord_hook: ""
+
+watchtower_slack_hook: ""
+
+watchtower_gotify_url: http://gotify:80
+watchtower_gotify_token: ""

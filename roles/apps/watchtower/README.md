@@ -1,22 +1,31 @@
 # Watchtower
 
-[Watchtower](https://containrrr.dev/watchtower/) is used to monitor and automatically update services. 
-Watchtower will watch each registered container, and will pull the new image, recreating the container if needed.
+[Watchtower](https://containrrr.dev/watchtower/) is used to monitor for new docker images for the deployed apps. 
+Watchtower will watch each registered container, and will notify using one of the suppoert notification mechanism.
 
 ## Configuration
 
-To configure watchtower, add a `main.yml` file in the `vars` directory of this folder, and add the fields you want to customize. 
-
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `watchtower_schedule` | no | `0 0 1 * * *`<br>(1 AM every day) | The cron schedule for when watchtower should run. This can be any valid cron expression, but it's recommended to run this on a daily or weekly cadence for the best results. |
-| `watchtower_version` | no | `latest` | The version of watchtower to use. You can see the versions by checking [github](https://github.com/containrrr/watchtower/releases). Defaults to `latest` |
-| `watchtower_network` | no | `apps` | The network name that watchtower should attach to. This defaults to the first network defined in the [host config](../host_vars.md) |
-| `watchtower_discord` | no | `false` | Whether to enable Notifications through Slack/Discord. Defaults to `false` |
-| `watchtower_discord_hook` | no | `''` | The Slack/Discord webhook to use for notifications |
-
-## Notifications
-
-[Notifications](https://containrrr.dev/watchtower/notifications/) are currently only supported for Slack and Discord. The Discord notifications are supported through the Slack notifications, as Discord has support for Slack notifications as well. Support for other notification mechanisms is TBD.
-
-For [Slack](https://containrrr.dev/watchtower/notifications/#slack) you need to providde the Slack hook URL for the channel you want to post in. For Discord, you need to provide the webhook, and append `/slack` at the end. Discord will receive the notifications in Slack's format, and present them in the Discord channel. 
+- `watchtower_version`
+    - Default: `latest`
+    - Watchtower version to deploy. For available versions check [DockerHub](https://hub.docker.com/r/containrrr/watchtower/tags).
+- `watchtower_network`
+    - Default: `apps`
+    - Docker network to add watchtower to.
+- `watchtower_schedule`
+    - Default: `0 0 0 * * *`
+    - Cron schedule for when watchtower will check for new docker images. Check [crontab guru](https://crontab.guru/) for setting this up if you're not familiar with cron expressions.
+- `watchtower_notifications`
+    - Default: `none`
+    - Which notification system watchtower should use. This playbook supports `slack`, `discord` and `gotify` as options.
+- `watchtower_discord_hook`
+    - Default: empty
+    - A Discord webhook to send the notifications to. To get this value, check documentation [here](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks).
+- `watchtower_slack_hook`
+    - Default: empty
+    - A Slack webhook to send the notifications to. To get this value, check documentation [here](https://slack.com/help/articles/115005265063-Incoming-webhooks-for-Slack)
+- `watchtower_gotify_url`
+    - Default: `http://gotify:80`
+    - The URL for a Gotify server to use for notifications.
+- `watchtower_gotify_token`
+    - Default: empty
+    - The Gotify API token to use when sending notifications to Gotify. For more information check [Gotify Docs](https://gotify.net/docs/pushmsg).

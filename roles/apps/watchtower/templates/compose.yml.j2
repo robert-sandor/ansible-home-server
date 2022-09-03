@@ -11,10 +11,15 @@ services:
       - "--schedule={{ watchtower_schedule }}"
       - "--monitor-only"
       - "--no-startup-message"
-{% if watchtower_discord %}
+{% if 'slack' == watchtower_notifications or 'discord' == watchtower_notifications %}
       - "--notifications=slack"
-      - "--notification-slack-hook-url={{ watchtower_discord_hook }}"
-      - "--notification-slack-identifier=watchtower-{{ domain }}"
+      - "--notification-slack-hook-url=$SLACK_HOOK_URL"
+      - "--notification-slack-identifier={{ domain }}"
+{% endif %}
+{% if 'gotify' == watchtower_notifications %}
+      - "--notifications=gotify"
+      - "--notification-gotify-url={{ watchtower_gotify_url }}"
+      - "--notification-gotify-token=$GOTIFY_TOKEN"
 {% endif %}
     environment:
       - TZ={{ timezone }}

@@ -1,11 +1,11 @@
 - name: Configure DNS settings
   uri:
-    url: "{{ adguard_api }}/dns_config"
+    url: "http://localhost:3000/control/dns_config"
     method: POST
     body_format: json
     headers:
       Cookie: "{{ adguard_cookie }}"
-    body: >
+    body: >-
       {
         "upstream_dns": {{ adguard_dns }},
         "bootstrap_dns": {{ adguard_bootstrap }},

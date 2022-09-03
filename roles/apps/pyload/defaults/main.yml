@@ -1,11 +1,10 @@
 ---
 pyload_version: latest
 pyload_network: apps
-pyload_port: 8010
 
-pyload_use_nfs: false
-
+pyload_download_location: path
 pyload_download_path: "{{ project_dir }}/pyload"
 
 pyload_nfs_server: 192.168.1.5
 pyload_nfs_path: /mnt/downloads
+pyload_nfs_opts: noexec,nolock,rw,soft,nfsvers=4

@@ -8,8 +8,8 @@ traefik_metrics: false
 
 traefik_acme_enabled: false
 traefik_acme_staging: true
-traefik_acme_email: email@example.com
+traefik_acme_email: admin@{{ domain }}
 traefik_acme_provider: cloudflare
 traefik_acme_env:
-  CF_API_EMAIL: email@example.com
-  CF_DNS_API_TOKEN: <cloudflare_token>
+  CF_API_EMAIL: admin@{{ domain }}
+  CF_DNS_API_TOKEN: changeme

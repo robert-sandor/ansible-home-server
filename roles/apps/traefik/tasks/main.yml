@@ -21,6 +21,7 @@
     owner: "{{ ansible_facts.user_uid }}"
     group: "{{ ansible_facts.user_gid }}"
     mode: 0600
+  when: traefik_https and traefik_acme_enabled
 
 - name: Setup docker network {{ traefik_network }}
   community.docker.docker_network:
