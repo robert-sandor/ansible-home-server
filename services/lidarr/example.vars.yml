@@ -1,0 +1,9 @@
+lidarr_data_path: "{{ mounts.multimedia.path }}"
+
+lidarr_media_dir: media/music
+
+lidarr_dc: transmission
+lidarr_dc_username: admin
+lidarr_dc_password: transmission@yavin
+
+lidarr_indexers:

@@ -1,10 +1,18 @@
 - name: "Create Gitea user"
+<<<<<<< HEAD
   ansible.builtin.uri:
+=======
+  uri:
+>>>>>>> upstream/main
     url: '{{ gitea_api_url }}/admin/users'
     method: POST
     body_format: json
     status_code: 201
+<<<<<<< HEAD
     force_basic_auth: true
+=======
+    force_basic_auth: yes
+>>>>>>> upstream/main
     url_username: '{{ gitea_admin_user }}'
     url_password: '{{ gitea_admin_passwd }}'
     body:
@@ -18,27 +26,47 @@
   when: user.name not in _user_list
 
 - name: "Get Gitea existing repo(s)"
+<<<<<<< HEAD
   ansible.builtin.uri:
     url: '{{ gitea_api_url }}/user/repos'
     method: GET
     status_code: 200
     force_basic_auth: true
+=======
+  uri: 
+    url: '{{ gitea_api_url }}/user/repos'
+    method: GET
+    status_code: 200
+    force_basic_auth: yes
+>>>>>>> upstream/main
     url_username: '{{ user.name }}'
     url_password: '{{ user.password }}'
   until: _response.status != -1 or _response.status >= 500
   register: _response
 
 - name: "Set Gitea _repo_list fact"
+<<<<<<< HEAD
   ansible.builtin.set_fact:
     _repo_list: "{{ _response.json | json_query('[*].name') }}"
 
 - name: "Create Gitea repo"
   ansible.builtin.uri:
+=======
+  set_fact:
+    _repo_list: "{{ _response.json | json_query('[*].name') }}"
+
+- name: "Create Gitea repo"
+  uri: 
+>>>>>>> upstream/main
     url: '{{ gitea_api_url }}/user/repos'
     method: POST
     body_format: json
     status_code: 201
+<<<<<<< HEAD
     force_basic_auth: true
+=======
+    force_basic_auth: yes
+>>>>>>> upstream/main
     url_username: '{{ user.name }}'
     url_password: '{{ user.password }}'
     body:
@@ -51,7 +79,11 @@
       name: "{{ repo.name }}"
       private: "{{ repo.private }}"
       readme: ""
+<<<<<<< HEAD
       ansible.builtin.template: true
+=======
+      template: true
+>>>>>>> upstream/main
       trust_model: "default"
   when: repo.name not in _repo_list
   with_items: '{{ user.repos }}'
