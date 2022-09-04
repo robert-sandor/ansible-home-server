@@ -1,0 +1,40 @@
+---
+- name: Validate registry location is valid
+  ansible.builtin.fail:
+    msg: registry_location must be one of 'path' or 'nfs'
+  when: registry_location not in ['path', 'nfs']
+
+- name: Create directory structure
+  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  vars:
+    subdirs:
+      - registry
+      - registry/data
+
+- name: Template compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ project_dir }}/registry/compose.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644
+
+- name: Template .env file
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ project_dir }}/registry/.env"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0600
+  when: registry_proxy and '' != registry_proxy_user and '' != registry_proxy_password
+
+- name: Setup docker network {{ registry_network }}
+  community.docker.docker_network:
+    name: "{{ registry_network }}"
+
+- name: Start service using docker compose
+  community.docker.docker_compose:
+    project_name: registry
+    project_src: "{{ project_dir }}/registry"
+    pull: true
+    remove_orphans: true

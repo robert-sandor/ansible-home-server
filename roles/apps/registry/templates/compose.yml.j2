@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  registry:
+    container_name: registry
+    hostname: registry
+    image: registry:{{ registry_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    environment:
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+{% if registry_proxy %}
+      REGISTRY_PROXY_REMOTEURL: {{ registry_proxy_url }}
+{% if '' != registry_proxy_user and '' != registry_proxy_password %}
+      REGISTRY_PROXY_USERNAME: {{ registry_proxy_user }}
+      REGISTRY_PROXY_PASSWORD: $REGISTRY_PROXY_PASSWORD
+{% endif %}
+{% endif %}
+    volumes:
+{% if 'nfs' == registry_location %}
+      - downloads:/var/lib/registry
+{% elif 'path' == registry_location %}
+      - {{ registry_path }}:/var/lib/registry
+{% endif %}
+    networks:
+      - {{ registry_network }}
+    ports:
+      - 5000:5000
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.registry.rule=Host(`registry.{{ domain }}`)
+      - traefik.http.routers.registry.entrypoints=websecure
+      - traefik.http.services.registry.loadbalancer.server.port=5000
+      - traefik.http.routers.registry.service=registry
+      - traefik.http.routers.registry.tls=true
+      - traefik.http.routers.registry.tls.certresolver=acme_provider
+{% endif %}
+
+networks:
+  {{ registry_network }}:
+    external: true
+
+{% if 'nfs' == registry_location %}
+volumes:
+  downloads:
+    driver_opts:
+      type: "nfs" 
+      o: "addr={{ registry_nfs_server }},{{ registry_nfs_opts }}"
+      device: ":{{ registry_nfs_path }}"
+
+{% endif %}

@@ -1,0 +1,15 @@
+---
+registry_version: latest
+registry_network: apps
+
+registry_location: path
+registry_path: "{{ project_dir }}/registry/data"
+
+registry_nfs_server: ""
+registry_nfs_path: ""
+registry_nfs_opts: noexec,nolock,rw,soft,nfsvers=4
+
+registry_proxy: true
+registry_proxy_url: https://registry-1.docker.io
+registry_proxy_user: ""
+registry_proxy_password: ""
