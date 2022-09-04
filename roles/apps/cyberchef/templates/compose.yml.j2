@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  cyberchef:
+    container_name: cyberchef
+    hostname: cyberchef
+    image: mpepping/cyberchef:{{ cyberchef_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks:
+      - {{ cyberchef_network }}
+    ports:
+      - 8001:8000
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.cyberchef.rule=Host(`cyberchef.{{ domain }}`)
+      - traefik.http.routers.cyberchef.entrypoints=websecure
+      - traefik.http.services.cyberchef.loadbalancer.server.port=8000
+      - traefik.http.routers.cyberchef.service=cyberchef
+      - traefik.http.routers.cyberchef.tls=true
+      - traefik.http.routers.cyberchef.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=cyberchef
+      - flame.url=cyberchef.{{ domain }}
+      - flame.icon=chef-hat
+{% endif %}
+
+networks:
+  {{ cyberchef_network }}:
+    external: true
