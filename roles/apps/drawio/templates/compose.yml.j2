@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  drawio-export:
+    container_name: drawio-export
+    hostname: drawio-export
+    image: jgraph/export-server:{{ drawio_export_version }}
+    restart: unless-stopped
+    networks:
+      - {{ drawio_network }}
+    expose:
+      - 8000
+    labels:
+      - domain={{ domain }}
+
+  drawio-plantuml:
+    container_name: drawio-plantuml
+    hostname: drawio-plantuml
+    image: jgraph/plantuml-server:{{ drawio_plantuml_version }}
+    restart: unless-stopped
+    networks:
+      - {{ drawio_network }}
+    ports:
+      - 8079:8080
+    labels:
+      - domain={{ domain }}
+
+  drawio:
+    container_name: drawio
+    hostname: drawio
+    image: jgraph/drawio:{{ drawio_version }}
+    restart: unless-stopped
+    environment:
+      - TZ={{ timezone }}
+      - EXPORT_URL=http://drawio-export:8000/
+      - PLANTUML_URL=http://drawio-plantuml:8080/
+    networks:
+      - {{ drawio_network }}
+    ports:
+      - 8085:8080
+    depends_on:
+      - drawio-export
+      - drawio-plantuml
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.drawio.rule=Host(`drawio.{{ domain }}`)
+      - traefik.http.routers.drawio.entrypoints=websecure
+      - traefik.http.services.drawio.loadbalancer.server.port=8080
+      - traefik.http.routers.drawio.service=drawio
+      - traefik.http.routers.drawio.tls=true
+      - traefik.http.routers.drawio.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=drawio
+      - flame.url=drawio.{{ domain }}
+      - flame.icon=lead-pencil
+{% endif %}
+
+networks:
+  {{ drawio_network }}:
+    external: true
