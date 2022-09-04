@@ -1,0 +1,36 @@
+---
+- name: Validate filebrowser location is valid
+  ansible.builtin.fail:
+    msg: filebrowser_location must be one of 'path' or 'nfs'
+  when: filebrowser_location not in ['path', 'nfs']
+
+- name: Create directory structure
+  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  vars:
+    subdirs:
+      - filebrowser
+
+- name: Create service files
+  ansible.builtin.import_role: name=common tasks_from=service_files
+  vars:
+    files:
+      - file: filebrowser/filebrowser.db
+
+- name: Template compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ project_dir }}/filebrowser/compose.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644
+
+- name: Setup docker network {{ filebrowser_network }}
+  community.docker.docker_network:
+    name: "{{ filebrowser_network }}"
+
+- name: Start service using docker compose
+  community.docker.docker_compose:
+    project_name: filebrowser
+    project_src: "{{ project_dir }}/filebrowser"
+    pull: true
+    remove_orphans: true

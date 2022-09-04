@@ -1,0 +1,12 @@
+---
+- name: Create files for service
+  ansible.builtin.copy:
+    dest: "{{ project_dir }}/{{ file.file }}"
+    content: "{{ file.content | default('') }}"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644
+    force: no
+  with_items: "{{ files }}"
+  loop_control:
+    loop_var: file

@@ -18,7 +18,7 @@ services:
 {% endif %}
     volumes:
 {% if 'nfs' == registry_location %}
-      - downloads:/var/lib/registry
+      - registry:/var/lib/registry
 {% elif 'path' == registry_location %}
       - {{ registry_path }}:/var/lib/registry
 {% endif %}
@@ -44,7 +44,7 @@ networks:
 
 {% if 'nfs' == registry_location %}
 volumes:
-  downloads:
+  registry:
     driver_opts:
       type: "nfs" 
       o: "addr={{ registry_nfs_server }},{{ registry_nfs_opts }}"

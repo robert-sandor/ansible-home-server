@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  filebrowser:
+    container_name: filebrowser
+    hostname: filebrowser
+    image: filebrowser/filebrowser:{{ filebrowser_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks:
+      - {{ filebrowser_network }}
+    ports:
+      - 8083:80
+    volumes:
+      - {{ project_dir }}/filebrowser/filebrowser.db:/database.db
+{% if 'nfs' == filebrowser_location %}
+      - srv:/srv
+{% elif 'path' == filebrowser_location %}
+      - {{ filebrowser_path }}:/srv
+{% endif %}
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.filebrowser.rule=Host(`filebrowser.{{ domain }}`)
+      - traefik.http.routers.filebrowser.entrypoints=websecure
+      - traefik.http.services.filebrowser.loadbalancer.server.port=80
+      - traefik.http.routers.filebrowser.service=filebrowser
+      - traefik.http.routers.filebrowser.tls=true
+      - traefik.http.routers.filebrowser.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=filebrowser
+      - flame.url=filebrowser.{{ domain }}
+      - flame.icon=file
+{% endif %}
+
+networks:
+  {{ filebrowser_network }}:
+    external: true
+
+{% if 'nfs' == filebrowser_location %}
+volumes:
+  srv:
+    driver_opts:
+      type: "nfs" 
+      o: "addr={{ filebrowser_nfs_server }},{{ filebrowser_nfs_opts }}"
+      device: ":{{ filebrowser_nfs_path }}"
+
+{% endif %}
