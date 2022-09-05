@@ -1,0 +1,18 @@
+- name: Get existing users
+  ansible.builtin.uri:
+    method: GET
+    url: '{{ gitea_api_url }}/admin/users'
+    status_code: 200
+    force_basic_auth: yes
+    url_username: '{{ gitea_admin_user }}'
+    url_password: '{{ gitea_admin_password }}'
+  until: existing_users_response.status != -1 or existing_users_response.status >= 500
+  register: existing_users_response
+
+- name: Create users
+  vars: 
+    existing_users: "{{ existing_users_response.json | json_query('[*].login') }}"
+  ansible.builtin.include_tasks: create_user.yml
+  with_items: '{{ gitea_users | dict2items }}'
+  loop_control:
+    loop_var: user

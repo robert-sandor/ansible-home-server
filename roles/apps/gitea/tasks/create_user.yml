@@ -1,0 +1,60 @@
+- name: Create user
+  ansible.builtin.uri:
+    method: POST
+    url: '{{ gitea_api_url }}/admin/users'
+    body_format: json
+    status_code: 201
+    force_basic_auth: yes
+    url_username: '{{ gitea_admin_user }}'
+    url_password: '{{ gitea_admin_password }}'
+    body:
+      username: '{{ user.key }}'
+      password: '{{ user.value.password }}'
+      email: '{{ user.value.email }}'
+      admin: '{{ user.value.admin | default(false) }}'
+      must_change_password: false
+  until: create_user_response.status != -1 or create_user_response.status >= 500
+  register: create_user_response
+  when: user.key not in existing_users
+  changed_when: true
+
+- name: Get existing repos
+  ansible.builtin.uri: 
+    method: GET
+    url: '{{ gitea_api_url }}/user/repos'
+    status_code: 200
+    force_basic_auth: yes
+    url_username: '{{ user.key }}'
+    url_password: '{{ user.value.password }}'
+  until: existing_repos_response.status != -1 or existing_repos_response.status >= 500
+  register: existing_repos_response
+  changed_when: false
+
+- name: Create repo for user
+  vars:
+    existing_repos: "{{ existing_repos_response.json | json_query('[*].name') }}"
+  ansible.builtin.uri: 
+    method: POST
+    url: '{{ gitea_api_url }}/user/repos'
+    body_format: json
+    status_code: 201
+    force_basic_auth: yes
+    url_username: '{{ user.key }}'
+    url_password: '{{ user.value.password }}'
+    body:
+      auto_init: true
+      default_branch: "{{ repo.value.default_branch | default('main') }}"
+      description: "{{ repo.value.description | default(repo.key) }}"
+      gitignores: ""
+      issue_labels: ""
+      license: ""
+      name: "{{ repo.key }}"
+      private: "{{ repo.value.private | default(false) }}"
+      readme: ""
+      template: "{{ repo.value.template | default(false) }}"
+      trust_model: "default"
+  when: repo.key not in existing_repos
+  with_items: '{{ user.value.repos | dict2items }}'
+  loop_control:
+    loop_var: repo
+  changed_when: true

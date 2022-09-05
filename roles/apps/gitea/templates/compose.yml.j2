@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  gitea:
+    container_name: gitea
+    hostname: gitea
+    image: gitea/gitea:{{ gitea_version }}
+    restart: unless-stopped
+    environment:
+      - USER_UID={{ ansible_facts.user_uid }}
+      - USER_GID={{ ansible_facts.user_gid }}
+      - GITEA__database__DB_TYPE=postgres
+      - GITEA__database__HOST=gitea_postgres:5432
+      - GITEA__database__NAME=gitea
+      - GITEA__database__USER=$POSTGRES_USER
+      - GITEA__database__PASSWD=$POSTGRES_PASSWORD
+      - GITEA__server__DOMAIN=gitea.{{ domain }}
+      - GITEA__server__ROOT_URL=https://gitea.{{ domain }}
+      - GITEA__server__SSH_DOMAIN=gitea.{{ domain }}
+      - GITEA__server__SSH_PORT={{ gitea_ssh_port }}
+      - GITEA__ui__DEFAULT_THEME={{ gitea_default_theme }}
+    networks:
+      - {{ gitea_network }}
+    ports:
+      - {{ gitea_http_port }}:3000
+      - '{{ gitea_ssh_port }}:22'
+    volumes:
+      - {{ project_dir }}/gitea/data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - db
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.gitea.rule=Host(`gitea.{{ domain }}`)
+      - traefik.http.routers.gitea.entrypoints=websecure
+      - traefik.http.services.gitea.loadbalancer.server.port=3000
+      - traefik.http.routers.gitea.service=gitea
+      - traefik.http.routers.gitea.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=gitea
+      - flame.url=gitea.{{ domain }}
+      - flame.icon=git
+{% endif %}
+
+  db:
+    container_name: gitea_postgres
+    hostname: gitea_postgres
+    image: postgres:{{ gitea_postgres_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_DB=gitea
+    networks:
+      - {{ gitea_network }}
+    volumes:
+      - {{ project_dir }}/gitea/db:/var/lib/postgresql/data
+
+networks:
+  {{ gitea_network }}:
+    external: true

@@ -3,13 +3,14 @@
   ansible.builtin.import_role: name=common tasks_from=service_dir_structure
   vars:
     subdirs:
-      - focalboard
-      - focalboard/data
+      - gitea
+      - gitea/data
+      - gitea/db
 
 - name: Template compose file
   ansible.builtin.template:
     src: compose.yml.j2
-    dest: "{{ project_dir }}/focalboard/compose.yml"
+    dest: "{{ project_dir }}/gitea/compose.yml"
     owner: "{{ ansible_facts.user_uid }}"
     group: "{{ ansible_facts.user_gid }}"
     mode: 0644
@@ -17,26 +18,25 @@
 - name: Template .env file
   ansible.builtin.template:
     src: .env.j2
-    dest: "{{ project_dir }}/focalboard/.env"
+    dest: "{{ project_dir }}/gitea/.env"
     owner: "{{ ansible_facts.user_uid }}"
     group: "{{ ansible_facts.user_gid }}"
     mode: 0600
 
-- name: Template config file
-  ansible.builtin.template:
-    src: config.json.j2
-    dest: "{{ project_dir }}/focalboard/config.json"
-    owner: "{{ ansible_facts.user_uid }}"
-    group: "{{ ansible_facts.user_gid }}"
-    mode: 0600
-
-- name: Setup docker network {{ focalboard_network }}
+- name: Setup docker network {{ gitea_network }}
   community.docker.docker_network:
-    name: "{{ focalboard_network }}"
+    name: "{{ gitea_network }}"
 
 - name: Start service using docker compose
   community.docker.docker_compose:
-    project_name: focalboard
-    project_src: "{{ project_dir }}/focalboard"
+    project_name: gitea
+    project_src: "{{ project_dir }}/gitea"
     pull: true
     remove_orphans: true
+
+- name: Configure gitea
+  vars:
+    gitea_api_url: http://localhost:{{ gitea_http_port }}/api/v1
+  block:
+    - ansible.builtin.import_tasks: setup.yml
+    - ansible.builtin.import_tasks: users.yml

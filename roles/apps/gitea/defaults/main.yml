@@ -1,0 +1,31 @@
+---
+gitea_version: latest
+gitea_network: apps
+
+gitea_http_port: 3030
+gitea_ssh_port: 2222
+
+gitea_postgres_version: 14
+gitea_postgres_user: gitea
+gitea_postgres_password: gitea
+
+gitea_app_name: Gitea
+gitea_default_theme: arc-green
+
+gitea_admin_user: gitea
+gitea_admin_password: gitea
+gitea_admin_email: admin@{{ domain }}
+
+gitea_smtp_host: ""
+gitea_smtp_from: ""
+gitea_smtp_user: ""
+gitea_smtp_passwd: ""
+
+gitea_enable_federated_avatar: true
+gitea_enable_open_id_sign_in: true
+gitea_enable_open_id_sign_up: true
+gitea_default_allow_create_organization: true
+gitea_default_enable_timetracking: true
+gitea_password_algorithm: pbkdf2
+
+gitea_users: {}

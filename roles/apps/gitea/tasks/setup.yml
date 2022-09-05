@@ -1,0 +1,59 @@
+- name: Run install on Gitea server
+  ansible.builtin.uri:
+    method: POST
+    url: http://localhost:{{ gitea_http_port }}
+    body_format: form-urlencoded
+    body:
+      db_type: postgres
+      db_host: gitea_postgres
+      db_user: "{{ gitea_postgres_user }}"
+      db_passwd: "{{ gitea_postgres_password }}"
+      db_name: gitea
+      ssl_mode: disable
+      db_schema: ''
+      charset: utf8
+      db_path: /data/gitea/gitea.db
+      app_name: "{{ gitea_app_name }}"
+      repo_root_path: /data/git/repositories
+      lfs_root_path: /data/git/lfs
+      run_user: git
+      domain: gitea.{{ domain }}
+      ssh_port: "{{ gitea_ssh_port }}"
+      http_port: 3000
+      app_url: https://gitea.{{ domain }}/
+      log_root_path: /data/gitea/log
+      smtp_host: "{{ gitea_smtp_host }}"
+      smtp_from: "{{ gitea_smtp_from }}"
+      smtp_user: "{{ gitea_smtp_user }}"
+      smtp_passwd: "{{ gitea_smtp_passwd }}"
+      enable_federated_avatar: "{{ gitea_enable_federated_avatar }}"
+      enable_open_id_sign_in: "{{ gitea_enable_open_id_sign_in }}"
+      enable_open_id_sign_up: "{{ gitea_enable_open_id_sign_up }}"
+      default_allow_create_organization: "{{ gitea_default_allow_create_organization }}"
+      default_enable_timetracking: "{{ gitea_default_enable_timetracking }}"
+      no_reply_address: noreply.gitea.{{ domain }}
+      password_algorithm: pbkdf2
+      admin_name: "{{ gitea_admin_user }}"
+      admin_passwd: "{{ gitea_admin_password }}"
+      admin_confirm_passwd: "{{ gitea_admin_password }}"
+      admin_email: "{{ gitea_admin_email }}"
+    status_code: 200, 405
+  until: install_response.status != -1 or install_response.status >= 500
+  delay: 10
+  retries: 5
+  register: install_response
+  changed_when: install_response == 200
+
+- name: Wait for Gitea API to be available
+  ansible.builtin.uri:
+    method: GET
+    url: '{{ gitea_api_url }}/version'
+    status_code: 200
+    force_basic_auth: yes
+    url_username: '{{ gitea_admin_user }}'
+    url_password: '{{ gitea_admin_password }}'
+  until: version_response.status != -1 or version_response.status >= 500
+  register: version_response
+  delay: 10
+  retries: 10
+  changed_when: false
