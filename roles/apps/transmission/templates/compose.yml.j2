@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  transmission:
+    container_name: transmission
+    hostname: transmission
+    image: ghcr.io/linuxserver/transmission:{{ transmission_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - TRANSMISSION_WEB_HOME=/{{ transmission_ui }}/
+      - USER={{ transmission_user }}
+      - PASS={{ transmission_password }}
+    volumes:
+      - {{ project_dir }}/transmission/data:/config
+{% if 'nfs' == transmission_storage %}
+      - downloads:/downloads
+      - watch:/watch
+{% elif 'path' == transmission_storage %}
+      - {{ transmission_download_path }}:/downloads
+      - {{ transmission_watch_path }}:/watch
+{% endif %}
+    networks:
+      - {{ transmission_network }}
+    ports:
+      - 51413:51413
+      - 51413:51413/udp
+      - 9091:9091
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.transmission.rule=Host(`transmission.{{ domain }}`)
+      - traefik.http.routers.transmission.entrypoints=websecure
+      - traefik.http.services.transmission.loadbalancer.server.port=9091
+      - traefik.http.routers.transmission.service=transmission
+      - traefik.http.routers.transmission.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=transmission
+      - flame.url=transmission.{{ domain }}
+      - flame.icon=download
+{% endif %}
+
+networks:
+  {{ transmission_network }}:
+    external: true
+
+{% if 'nfs' == transmission_storage %}
+volumes:
+  downloads:
+    driver_opts:
+      type: "nfs" 
+      o: "addr={{ transmission_nfs_server }},{{ transmission_nfs_opts }}"
+      device: ":{{ transmission_nfs_download }}"
+  watch:
+    driver_opts:
+      type: "nfs" 
+      o: "addr={{ transmission_nfs_server }},{{ transmission_nfs_opts }}"
+      device: ":{{ transmission_nfs_watch }}"
+
+{% endif %}

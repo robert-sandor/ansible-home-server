@@ -1,0 +1,66 @@
+---
+- name: Create directory structure
+  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  vars:
+    subdirs:
+      - transmission
+      - transmission/data
+
+- name: Template compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ project_dir }}/transmission/compose.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644
+
+- name: Setup docker network {{ transmission_network }}
+  community.docker.docker_network:
+    name: "{{ transmission_network }}"
+
+- name: Start service using docker compose
+  community.docker.docker_compose:
+    project_name: transmission
+    project_src: "{{ project_dir }}/transmission"
+    pull: true
+    remove_orphans: true
+
+- name: Configure transmission
+  when: transmission_config != {}
+  vars:
+    transmission_api: http://localhost:9091/transmission/rpc
+  block:
+    - name: Get session ID
+      ansible.builtin.uri:
+        method: POST
+        url: "{{ transmission_api }}"
+        body_format: json
+        body:
+          method: session-get
+        force_basic_auth: true
+        user: "{{ transmission_user }}"
+        password: "{{ transmission_password }}"
+        status_code: 409
+      register: session_response
+      retries: 10
+      delay: 10
+      until: session_response.status != -1 and session_response.status < 500
+
+    - name: Set transmission config
+      ansible.builtin.uri:
+        method: POST
+        url: "{{ transmission_api }}"
+        body_format: json
+        body:
+          method: session-set
+          arguments: "{{ transmission_config }}"
+        headers:
+          x-transmission-session-id: "{{ session_response.x_transmission_session_id }}"
+        force_basic_auth: true
+        user: "{{ transmission_user }}"
+        password: "{{ transmission_password }}"
+        status_code: 200
+      register: set_session_response      
+      retries: 10
+      delay: 10
+      until: set_session_response.status != -1 and set_session_response.status < 500

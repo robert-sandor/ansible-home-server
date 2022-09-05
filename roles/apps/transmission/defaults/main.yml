@@ -1,0 +1,20 @@
+---
+transmission_version: latest
+transmission_network: apps
+
+transmission_user: ""
+transmission_password: ""
+
+transmission_ui: flood-for-transmission
+
+transmission_storage: path
+
+transmission_download_path: "{{ project_dir }}/transmission"
+transmission_watch_path: "{{ project_dir }}/transmission"
+
+transmission_nfs_server: ""
+transmission_nfs_download: ""
+transmission_nfs_watch: ""
+transmission_nfs_opts: noexec,nolock,rw,soft,nfsvers=4
+
+transmission_config: {}
