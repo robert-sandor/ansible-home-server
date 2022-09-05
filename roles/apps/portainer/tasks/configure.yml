@@ -2,7 +2,7 @@
 - name: Authenticate as admin
   ansible.builtin.uri:
     method: POST
-    url: "http://localhost:9000/api/auth"
+    url: "{{ portainer_api }}/auth"
     body_format: json
     body:
       username: "{{ portainer_user }}"
@@ -16,7 +16,7 @@
 - name: Get existing endpoints
   ansible.builtin.uri:
     method: GET
-    url: "http://localhost:9000/api/endpoints"
+    url: "{{ portainer_api }}/endpoints"
     headers:
       Authorization: "Bearer {{ auth_response.json.jwt }}"
     status_code: 200
@@ -31,7 +31,7 @@
     already_exists: "{{ existing_endpoints_response.json | json_query(q) | length > 0 }}"
   ansible.builtin.uri:
     method: POST
-    url: "http://localhost:9000/api/endpoints"
+    url: "{{ portainer_api }}/endpoints"
     body_format: form-urlencoded
     body: 
       Name: local
@@ -52,7 +52,7 @@
     already_exists: "{{ existing_endpoints_response.json | json_query(q) | length > 0 }}"
   ansible.builtin.uri:
     method: POST
-    url: "http://localhost:9000/api/endpoints"
+    url: "{{ portainer_api }}/endpoints"
     body_format: form-urlencoded
     body: 
       Name: "{{ agent.key }}"

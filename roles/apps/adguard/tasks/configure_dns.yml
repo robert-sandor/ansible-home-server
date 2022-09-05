@@ -1,6 +1,6 @@
 - name: Configure DNS settings
   uri:
-    url: "http://localhost:3000/control/dns_config"
+    url: "{{ adguard_api }}/dns_config"
     method: POST
     body_format: json
     headers:

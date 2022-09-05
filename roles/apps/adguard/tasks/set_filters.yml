@@ -1,6 +1,6 @@
 - name: Get existing filters
   ansible.builtin.uri:
-    url: "http://localhost:3000/control/filtering/status"
+    url: "{{ adguard_api }}/filtering/status"
     method: GET
     body_format: json
     headers:
@@ -19,7 +19,7 @@
   block:
     - name: Remove filters
       ansible.builtin.uri:
-        url: "http://localhost:3000/control/filtering/remove_url"
+        url: "{{ adguard_api }}/filtering/remove_url"
         method: POST
         body_format: json
         headers:
@@ -34,7 +34,7 @@
 
     - name: Add filters
       ansible.builtin.uri:
-        url: "http://localhost:3000/control/filtering/add_url"
+        url: "{{ adguard_api }}/filtering/add_url"
         method: POST
         body_format: json
         headers:

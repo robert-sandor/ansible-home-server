@@ -2,7 +2,7 @@
 - name: Check for existing admin user
   ansible.builtin.uri:
     method: GET
-    url: http://localhost:9000/api/users/admin/check
+    url: "{{ portainer_api }}/users/admin/check"
     status_code: [204, 404]
   register: admin_check_response
   retries: 10
@@ -12,7 +12,7 @@
 - name: Initialize admin user
   uri:
     method: POST
-    url: "http://localhost:9000/api/users/admin/init"
+    url: "{{ portainer_api }}/users/admin/init"
     body_format: json
     body:
       username: "{{ portainer_user }}"

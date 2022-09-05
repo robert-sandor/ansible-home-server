@@ -28,7 +28,11 @@
     pull: true
     remove_orphans: true
 
-- ansible.builtin.import_tasks: init.yml
-- ansible.builtin.import_tasks: configure_dns.yml
-- ansible.builtin.import_tasks: set_filters.yml
-- ansible.builtin.import_tasks: set_rewrites.yml
+- name: Configure Adguard
+  vars:
+    adguard_api: "http://localhost:3000/control"
+  block:
+    - ansible.builtin.import_tasks: init.yml
+    - ansible.builtin.import_tasks: configure_dns.yml
+    - ansible.builtin.import_tasks: set_filters.yml
+    - ansible.builtin.import_tasks: set_rewrites.yml

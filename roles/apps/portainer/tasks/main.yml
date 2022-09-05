@@ -25,5 +25,9 @@
     pull: true
     remove_orphans: true
 
-- ansible.builtin.import_tasks: initialize_admin.yml
-- ansible.builtin.import_tasks: configure.yml
+- name: Configure Portainer
+  vars:
+    portainer_api: http://localhost:9000/api
+  block:
+    - ansible.builtin.import_tasks: initialize_admin.yml
+    - ansible.builtin.import_tasks: configure.yml
