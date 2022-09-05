@@ -1,8 +1,11 @@
 ---
-- hosts: all
+- name: Setup apps using docker
+
+  hosts: all
 
   tasks:
-    - ansible.builtin.include_role: 
+    - name: Include apps
+      ansible.builtin.include_role:
         name: "apps/{{ app }}"
         apply:
           tags:
