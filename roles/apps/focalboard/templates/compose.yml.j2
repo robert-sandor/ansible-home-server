@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  focalboard:
+    container_name: focalboard
+    hostname: focalboard
+    image: mattermost/focalboard:{{ focalboard_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks:
+      - {{ focalboard_network }}
+    ports:
+      - 8000:8000
+    volumes:
+      - {{ project_dir }}/focalboard/config.json:/opt/focalboard/config.json
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.focalboard.rule=Host(`focalboard.{{ domain }}`)
+      - traefik.http.routers.focalboard.entrypoints=websecure
+      - traefik.http.services.focalboard.loadbalancer.server.port=8000
+      - traefik.http.routers.focalboard.service=focalboard
+      - traefik.http.routers.focalboard.tls=true
+      - traefik.http.routers.focalboard.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=focalboard
+      - flame.url=focalboard.{{ domain }}
+      - flame.icon=clipboard-check
+{% endif %}
+
+  focalboard_db:
+    container_name: focalboard_db
+    hostname: focalboard_db
+    image: postgres:{{ focalboard_postgres_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    environment:
+      POSTGRES_DB: focalboard
+      POSTGRES_USER: focalboard
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    networks:
+      - {{ focalboard_network }}
+    volumes:
+      - {{ project_dir }}/focalboard/data:/var/lib/postgresql/data
+
+networks:
+  {{ focalboard_network }}:
+    external: true

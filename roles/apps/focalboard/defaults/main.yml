@@ -1,0 +1,8 @@
+---
+focalboard_version: latest
+focalboard_network: apps
+
+focalboard_postgres_version: latest
+focalboard_postgres_password: focalboard
+
+focalboard_telemetry: false

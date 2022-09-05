@@ -1,4 +1,4 @@
-# TEMPLATE
+# Filebrowser
 
 [Filebrowser](https://filebrowser.org) is a create-your-own-cloud-kind of software where you can install it on a server, direct it to a path and then access your files through a nice web interface.
 
