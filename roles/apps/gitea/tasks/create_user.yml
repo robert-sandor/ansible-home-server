@@ -4,7 +4,7 @@
     url: '{{ gitea_api_url }}/admin/users'
     body_format: json
     status_code: 201
-    force_basic_auth: yes
+    force_basic_auth: true
     url_username: '{{ gitea_admin_user }}'
     url_password: '{{ gitea_admin_password }}'
     body:
@@ -13,32 +13,32 @@
       email: '{{ user.value.email }}'
       admin: '{{ user.value.admin | default(false) }}'
       must_change_password: false
-  until: create_user_response.status != -1 or create_user_response.status >= 500
+  until: create_user_response.status > 0
   register: create_user_response
   when: user.key not in existing_users
   changed_when: true
 
 - name: Get existing repos
-  ansible.builtin.uri: 
+  ansible.builtin.uri:
     method: GET
     url: '{{ gitea_api_url }}/user/repos'
     status_code: 200
-    force_basic_auth: yes
+    force_basic_auth: true
     url_username: '{{ user.key }}'
     url_password: '{{ user.value.password }}'
-  until: existing_repos_response.status != -1 or existing_repos_response.status >= 500
+  until: existing_repos_response.status > 0
   register: existing_repos_response
   changed_when: false
 
 - name: Create repo for user
   vars:
     existing_repos: "{{ existing_repos_response.json | json_query('[*].name') }}"
-  ansible.builtin.uri: 
+  ansible.builtin.uri:
     method: POST
     url: '{{ gitea_api_url }}/user/repos'
     body_format: json
     status_code: 201
-    force_basic_auth: yes
+    force_basic_auth: true
     url_username: '{{ user.key }}'
     url_password: '{{ user.value.password }}'
     body:

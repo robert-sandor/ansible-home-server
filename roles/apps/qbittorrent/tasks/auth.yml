@@ -1,0 +1,36 @@
+---
+- name: Authenticate using default credentials
+  ansible.builtin.uri:
+    method: POST
+    url: "{{ qbt_api_url }}/auth/login"
+    body_format: form-urlencoded
+    body:
+      username: admin
+      password: adminadmin
+    headers:
+      Referer: "{{ qbt_referer }}"
+    status_code: [200, 401]
+  register: default_auth_response
+  retries: 10
+  delay: 10
+  until: default_auth_response.status > 0
+
+- name: Authenticate with qbittorrent using changed credentials
+  ansible.builtin.uri:
+    url: "{{ qbt_api_url }}/auth/login"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      username: "{{ qbittorrent_user }}"
+      password: "{{ qbittorrent_password }}"
+    headers:
+      Referer: "{{ qbt_referer }}"
+  register: auth_response
+  when: default_auth_response.status == 401
+  retries: 10
+  delay: 10
+  until: auth_response.status > 0
+
+- name: Set qbittorrent_cookie
+  ansible.builtin.set_fact:
+    qbittorrent_cookie: "{{ auth_response.cookies_string | default(default_auth_response.cookies_string) }}"

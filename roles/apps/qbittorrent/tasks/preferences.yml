@@ -1,0 +1,26 @@
+- name: Get qBittorrent preferences
+  ansible.builtin.uri:
+    method: GET
+    url: "{{ qbt_api_url }}/app/preferences"
+    headers:
+      Cookie: "{{ qbittorrent_cookie }}"
+    status_code: 200
+  register: preferences_response
+  retries: 10
+  delay: 10
+  until: preferences_response.status > 0
+
+- name: Set preferences
+  ansible.builtin.uri:
+    method: POST
+    url: "{{ qbt_api_url }}/app/setPreferences"
+    body_format: form-urlencoded
+    body:
+      json: "{{ qbittorrent_config | to_json }}"
+    headers:
+      Cookie: "{{ qbittorrent_cookie }}"
+    status_code: 200
+  register: _response
+  retries: 10
+  delay: 10
+  until: _response.status > 0

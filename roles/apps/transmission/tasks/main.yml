@@ -44,7 +44,7 @@
       register: session_response
       retries: 10
       delay: 10
-      until: session_response.status != -1 and session_response.status < 500
+      until: session_response.status > 0
 
     - name: Set transmission config
       ansible.builtin.uri:
@@ -60,7 +60,7 @@
         user: "{{ transmission_user }}"
         password: "{{ transmission_password }}"
         status_code: 200
-      register: set_session_response      
+      register: set_session_response
       retries: 10
       delay: 10
-      until: set_session_response.status != -1 and set_session_response.status < 500
+      until: set_session_response.status > 0

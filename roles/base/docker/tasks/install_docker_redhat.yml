@@ -3,7 +3,6 @@
   become: true
   ansible.builtin.dnf:
     name: dnf-plugins-core
-    state: latest
 
 - name: Add GPG key
   become: true
@@ -28,4 +27,3 @@
       - docker-ce-cli
       - containerd.io
       - docker-compose-plugin
-    state: latest

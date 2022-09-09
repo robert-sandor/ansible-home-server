@@ -1,0 +1,36 @@
+---
+- name: Create directory structure
+  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  vars:
+    subdirs:
+      - qbittorrent
+      - qbittorrent/data
+
+- name: Template compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ project_dir }}/qbittorrent/compose.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644
+
+- name: Setup docker network {{ qbittorrent_network }}
+  community.docker.docker_network:
+    name: "{{ qbittorrent_network }}"
+
+- name: Start service using docker compose
+  community.docker.docker_compose:
+    project_name: qbittorrent
+    project_src: "{{ project_dir }}/qbittorrent"
+    pull: true
+    remove_orphans: true
+
+- name: Configure qBittorrent
+  vars:
+    qbt_referer: "http://localhost:{{ qbittorrent_port }}"
+    qbt_api_url: "http://localhost:{{ qbittorrent_port }}/api/v2"
+  block:
+    - ansible.builtin.import_tasks: tasks/auth.yml
+    - ansible.builtin.import_tasks: tasks/preferences.yml
+    - ansible.builtin.import_tasks: tasks/categories.yml
+    - ansible.builtin.import_tasks: tasks/vuetorrent.yml

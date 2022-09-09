@@ -3,4 +3,4 @@
 - ansible.builtin.import_tasks: ./docker_configure.yml
 
 - name: Run handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

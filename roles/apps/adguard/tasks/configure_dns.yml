@@ -1,5 +1,5 @@
 - name: Configure DNS settings
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/dns_config"
     method: POST
     body_format: json
@@ -13,7 +13,7 @@
         "cache_size": {{ adguard_cache_size_mb * 1024 * 1024 }}
       }
     status_code: 200
-  register: _response
+  register: dns_settings_response
   retries: 10
   delay: 10
-  until: _response.status != -1 or _response.status == 404
+  until: dns_settings_response.status > 0 or dns_settings_response.status == 404

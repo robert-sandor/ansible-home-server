@@ -12,7 +12,7 @@
     append: true
 
 - name: Reset connection
-  meta: reset_connection
+  ansible.builtin.meta: reset_connection
 
 - name: Enable docker daemon to run at boot
   become: true
@@ -20,3 +20,35 @@
     name: docker
     state: started
     enabled: true
+
+- name: Ensure /etc/docker/daemon.json exists
+  become: true
+  ansible.builtin.file:
+    state: touch
+    access_time: preserve
+    modification_time: preserve
+    path: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Read docker daemon config if it exists
+  become: true
+  ansible.builtin.command: cat /etc/docker/daemon.json
+  changed_when: false
+  register: cat_docker_config
+
+- name: Set docker daemon config
+  vars:
+    docker_config: "{{ cat_docker_config.stdout | from_json if cat_docker_config.stdout | length > 0 else {} }}"
+    docker_config_updates:
+      insecure-registries: "{{ (docker_config['insecure-registries'] | default([]) + docker_insecure_registries) | unique }}"
+      registry-mirrors: "{{ (docker_config['registry-mirrors'] | default([]) + docker_registry_mirrors) | unique }}"
+  become: true
+  ansible.builtin.copy:
+    content: "{{ docker_config | combine(docker_config_updates) | to_nice_json(indent=2) }}"
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0644
+  notify: RestartDockerDaemon

@@ -1,0 +1,57 @@
+---
+version: "3.8"
+
+services:
+  qbittorrent:
+    container_name: qbittorrent
+    hostname: qbittorrent
+    image: ghcr.io/linuxserver/qbittorrent:{{ qbittorrent_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - WEBUI_PORT={{ qbittorrent_port }}
+    volumes:
+      - {{ project_dir }}/qbittorrent/data:/config
+{% if 'nfs' == qbittorrent_storage %}
+      - downloads:/downloads
+{% elif 'path' == qbittorrent_storage %}
+      - {{ qbittorrent_download_path }}:/downloads
+{% endif %}
+    networks:
+      - {{ qbittorrent_network }}
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - {{ qbittorrent_port }}:{{ qbittorrent_port }}
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.{{ domain }}`)
+      - traefik.http.routers.qbittorrent.entrypoints=websecure
+      - traefik.http.services.qbittorrent.loadbalancer.server.port=8082
+      - traefik.http.routers.qbittorrent.service=qbittorrent
+      - traefik.http.routers.qbittorrent.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=Qbittorrent
+      - flame.url=qbittorrent.{{ domain }}
+      - flame.icon=download
+{% endif %}
+
+networks:
+  {{ qbittorrent_network }}:
+    external: true
+
+{% if 'nfs' == qbittorrent_storage %}
+volumes:
+  downloads:
+    driver_opts:
+      type: "nfs" 
+      o: "addr={{ qbittorrent_nfs_server }},{{ qbittorrent_nfs_opts }}"
+      device: ":{{ qbittorrent_nfs_download }}"
+
+{% endif %}

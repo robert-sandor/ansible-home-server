@@ -11,7 +11,7 @@
   register: auth_response
   retries: 10
   delay: 10
-  until: auth_response.status != -1
+  until: auth_response.status > 0
 
 - name: Get existing endpoints
   ansible.builtin.uri:
@@ -23,7 +23,7 @@
   register: existing_endpoints_response
   retries: 10
   delay: 10
-  until: existing_endpoints_response.status != -1
+  until: existing_endpoints_response.status > 0
 
 - name: Register Local Environment
   vars:
@@ -33,7 +33,7 @@
     method: POST
     url: "{{ portainer_api }}/endpoints"
     body_format: form-urlencoded
-    body: 
+    body:
       Name: local
       EndpointCreationType: "1"
       URL: unix:///var/run/docker.sock
@@ -44,7 +44,7 @@
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1
+  until: _response.status > 0
 
 - name: Register Portainer Agent
   vars:
@@ -54,7 +54,7 @@
     method: POST
     url: "{{ portainer_api }}/endpoints"
     body_format: form-urlencoded
-    body: 
+    body:
       Name: "{{ agent.key }}"
       EndpointCreationType: "2"
       URL: "tcp://{{ agent.value }}:9001"
@@ -67,7 +67,7 @@
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1
+  until: _response.status > 0
   with_items: "{{ portainer_agents | dict2items }}"
   loop_control:
     loop_var: agent

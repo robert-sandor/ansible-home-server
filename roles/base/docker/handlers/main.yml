@@ -1,3 +1,6 @@
 ---
-- name: reset_connection
-  meta: reset_connection
+- name: RestartDockerDaemon
+  become: true
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted

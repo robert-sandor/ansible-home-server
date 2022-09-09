@@ -38,7 +38,7 @@
       admin_confirm_passwd: "{{ gitea_admin_password }}"
       admin_email: "{{ gitea_admin_email }}"
     status_code: 200, 405
-  until: install_response.status != -1 or install_response.status >= 500
+  until: install_response.status > 0
   delay: 10
   retries: 5
   register: install_response
@@ -49,10 +49,10 @@
     method: GET
     url: '{{ gitea_api_url }}/version'
     status_code: 200
-    force_basic_auth: yes
+    force_basic_auth: true
     url_username: '{{ gitea_admin_user }}'
     url_password: '{{ gitea_admin_password }}'
-  until: version_response.status != -1 or version_response.status >= 500
+  until: version_response.status > 0
   register: version_response
   delay: 10
   retries: 10

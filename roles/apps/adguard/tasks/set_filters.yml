@@ -9,7 +9,7 @@
   register: get_filters_response
   retries: 10
   delay: 10
-  until: get_filters_response.status != -1 or get_filters_response.status == 404
+  until: get_filters_response.status > 0 or get_filters_response.status == 404
 
 - name: Update filters
   vars:
@@ -29,7 +29,7 @@
       register: remove_filter_response
       retries: 10
       delay: 10
-      until: remove_filter_response.status != -1 or remove_filter_response.status == 404
+      until: remove_filter_response.status > 0 or remove_filter_response.status == 404
       with_items: "{{ existing_filters | difference(adguard_filters) }}"
 
     - name: Add filters
@@ -44,5 +44,5 @@
       register: add_filter_response
       retries: 10
       delay: 10
-      until: add_filter_response.status != -1 or add_filter_response.status == 404
+      until: add_filter_response.status > 0 or add_filter_response.status == 404
       with_items: "{{ adguard_filters | difference(existing_filters) }}"

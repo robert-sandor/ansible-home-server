@@ -7,10 +7,10 @@
   register: admin_check_response
   retries: 10
   delay: 10
-  until: admin_check_response.status != -1
+  until: admin_check_response.status > 0
 
 - name: Initialize admin user
-  uri:
+  ansible.builtin.uri:
     method: POST
     url: "{{ portainer_api }}/users/admin/init"
     body_format: json
@@ -22,4 +22,4 @@
   register: admin_init_response
   retries: 10
   delay: 10
-  until: admin_init_response.status != -1
+  until: admin_init_response.status > 0

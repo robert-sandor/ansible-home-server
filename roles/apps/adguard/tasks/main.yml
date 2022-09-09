@@ -1,5 +1,6 @@
 ---
-- ansible.builtin.import_role: name=common tasks_from=disable_systemd_resolved
+- name: Disable systemd-resolved
+  ansible.builtin.import_role: name=common tasks_from=disable_systemd_resolved
 
 - name: Create directory structure
   ansible.builtin.import_role: name=common tasks_from=service_dir_structure

@@ -1,0 +1,21 @@
+---
+qbittorrent_version: latest
+qbittorrent_network: apps
+qbittorrent_port: 8082
+
+qbittorrent_user: ""
+qbittorrent_password: ""
+
+qbittorrent_storage: path
+
+qbittorrent_download_path: "{{ project_dir }}/transmission"
+qbittorrent_watch_path: "{{ project_dir }}/transmission"
+
+qbittorrent_nfs_server: ""
+qbittorrent_nfs_download: ""
+qbittorrent_nfs_watch: ""
+qbittorrent_nfs_opts: noexec,nolock,rw,soft,nfsvers=4
+
+qbittorrent_config: {}
+
+qbittorrent_categories: {}

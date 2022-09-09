@@ -1,7 +1,11 @@
 ---
 - name: Setup apps using docker
 
-  hosts: all
+  hosts: home
+
+  roles:
+    - base/docker
+    - base/docker_compose
 
   tasks:
     - name: Include apps

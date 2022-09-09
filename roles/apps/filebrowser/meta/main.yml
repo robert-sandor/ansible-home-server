@@ -1,4 +1,0 @@
----
-dependencies:
-  - role: base/docker
-  - role: base/docker_compose

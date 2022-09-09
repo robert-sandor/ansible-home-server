@@ -7,7 +7,6 @@
       - curl
       - gnupg
       - lsb-release
-    state: latest
 
 - name: Ensure /etc/apt/keyrings exists
   become: true
@@ -64,4 +63,3 @@
       - docker-ce-cli
       - containerd.io
       - docker-compose-plugin
-    state: latest
