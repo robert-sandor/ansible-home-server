@@ -1,5 +1,5 @@
 - name: Authenticate with flame
-  uri:
+  ansible.builtin.uri:
     url: "{{ flame_api }}/auth"
     method: POST
     body_format: json
@@ -13,5 +13,5 @@
   until: _response.status != -1 or _response.status == 404
 
 - name: Save flame token
-  set_fact:
+  ansible.builtin.set_fact:
     flame_token: "{{ _response.json.data.token }}"

@@ -1,5 +1,5 @@
 - name: Initialize Adguard
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/install/configure"
     method: POST
     body_format: json
@@ -23,7 +23,7 @@
   until: _response.status != -1 or _response.status == 404
 
 - name: Login with Adguard
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/login"
     method: POST
     body_format: json
@@ -37,5 +37,5 @@
   until: _response.status != -1 or _response.status == 404
 
 - name: Save Adguard cookie
-  set_fact:
+  ansible.builtin.set_fact:
     adguard_cookie: "agh_session={{ _response.cookies.agh_session }}"

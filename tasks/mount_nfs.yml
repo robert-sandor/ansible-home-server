@@ -6,4 +6,3 @@
     opts: "{{ mount.opts | default('auto,_netdev') }}"
     state: mounted
     fstype: "{{ mount.type }}"
-    

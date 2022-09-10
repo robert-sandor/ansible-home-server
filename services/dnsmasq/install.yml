@@ -4,7 +4,7 @@
     service: dnsmasq
 
 - name: Copy dnsmasq.conf file
-  template:
+  ansible.builtin.template:
     src: templates/dnsmasq.conf.j2
     dest: "{{ project_dir }}/dnsmasq/dnsmasq.conf"
     owner: "{{ ansible_facts.user_id }}"

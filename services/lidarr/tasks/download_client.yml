@@ -1,20 +1,20 @@
 - name: Get Lidarr download clients
-  uri:
+  ansible.builtin.uri:
     url: "{{ lidarr_api_url }}/downloadclient?apiKey={{ lidarr_api_key }}"
     method: GET
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404
 
 - name: Check if download client {{ lidarr_dc }} already configured
-  set_fact:
+  ansible.builtin.set_fact:
     _lidarr_dc_not_configured: "{{ _response.json | json_query(q) | length() == 0 }}"
   vars:
     q: "[?name == `{{ lidarr_dc }}`]"
 
 - name: Set download client {{ lidarr_dc }} variables
-  set_fact:
+  ansible.builtin.set_fact:
     lidarr_dc_host: "{{ lidarr_dc_host | default(lidarr_dc) }}"
     lidarr_dc_port: "{{ lidarr_dc_port | default('8082' if 'qbittorrent' in lidarr_dc else '9091') }}"
     lidarr_dc_use_ssl: "{{ lidarr_dc_use_ssl | default(true if lidarr_dc_port is defined and lidarr_dc_port == 443 else false) }}"
@@ -22,7 +22,7 @@
     lidarr_dc_password: "{{ lidarr_dc_password | default('') }}"
 
 - name: Set common download client fields
-  set_fact:
+  ansible.builtin.set_fact:
     _dc_fields:
       - name: host
         value: "{{ lidarr_dc_host }}"
@@ -44,7 +44,7 @@
         value: 0
 
 - name: Set additional fields for qbittorrent
-  set_fact: 
+  ansible.builtin.set_fact:
     _dc_fields: "{{ _dc_fields + additional_fields }}"
   vars:
     additional_fields:
@@ -57,7 +57,7 @@
         value: false
 
 - name: Set additional fields for transmission
-  set_fact: 
+  ansible.builtin.set_fact:
     _dc_fields: "{{ _dc_fields + additional_fields }}"
   vars:
     additional_fields:
@@ -66,7 +66,7 @@
         value: false
 
 - name: Add download client {{ lidarr_dc }} if not configured
-  uri:
+  ansible.builtin.uri:
     url: "{{ lidarr_api_url }}/downloadclient?apiKey={{ lidarr_api_key }}"
     method: POST
     body_format: json
@@ -88,14 +88,14 @@
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404
 
 - name: Default remote mapping
-  set_fact:
+  ansible.builtin.set_fact:
     lidarr_dc_mapping: "{{ lidarr_dc_mapping | default('/downloads:/data/downloads') }}"
 
 - name: Add remote mapping for download client {{ lidarr_dc }}
-  uri:
+  ansible.builtin.uri:
     url: "{{ lidarr_api_url }}/remotepathmapping?apiKey={{ lidarr_api_key }}"
     method: POST
     body_format: json
@@ -108,4 +108,4 @@
   register: _response
   retries: 10
   delay: 10
-  until: _response.status != -1 and _response.status < 500 and _response.status != 404 
+  until: _response.status != -1 and _response.status < 500 and _response.status != 404

@@ -1,5 +1,5 @@
 - name: Set overseerr_api
-  set_fact:
+  ansible.builtin.set_fact:
     overseerr_api: "http://localhost:5055/api/v1"
 
 - name: Sign in to Overseerr

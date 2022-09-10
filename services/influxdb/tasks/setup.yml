@@ -1,5 +1,5 @@
 - name: Stat influxdb config file
-  stat: 
+  ansible.builtin.stat:
     path: "{{ project_dir }}/influxdb/config/influx-configs"
   register: _stat
 

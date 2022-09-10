@@ -1,5 +1,5 @@
 - name: Set qbittorrent api URL
-  set_fact:
+  ansible.builtin.set_fact:
     qbt_referer: "http://localhost:8082"
     qbt_api_url: "http://localhost:8082/api/v2"
 

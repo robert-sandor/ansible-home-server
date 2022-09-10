@@ -1,5 +1,5 @@
 - name: Set Sonarr API URL
-  set_fact:
+  ansible.builtin.set_fact:
     sonarr_api_url: "http://localhost:8989/api/v3"
 
 - name: Get Sonarr API Key

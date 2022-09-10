@@ -10,7 +10,7 @@
     service: gatus
 
 - name: Template config
-  template:
+  ansible.builtin.template:
     src: ../services/gatus/templates/config.yaml.j2
     dest: "{{ project_dir }}/gatus/config.yaml"
     owner: "{{ ansible_facts.user_id }}"

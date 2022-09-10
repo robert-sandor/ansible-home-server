@@ -1,17 +1,17 @@
 - name: Try to get session
-  uri:
+  ansible.builtin.uri:
     url: "{{ transmission_api }}"
     user: "{{ transmission_user | default('') }}"
     password: "{{ transmission_pass | default('') }}"
-    force_basic_auth: yes
+    force_basic_auth: true
     method: POST
     body_format: json
     body:
       method: session-get
     status_code: 409
   register: _response
-  no_log: yes
+  no_log: true
 
 - name: Save Transmission Session ID
-  set_fact:
+  ansible.builtin.set_fact:
     transmission_session_id: "{{ _response.x_transmission_session_id }}"

@@ -35,4 +35,3 @@
         task: configure
       with_items: "{{ services }}"
       when: services
-

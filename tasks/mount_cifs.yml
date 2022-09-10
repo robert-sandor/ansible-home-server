@@ -3,7 +3,7 @@
   ansible.posix.mount:
     src: "//{{ mount.host }}/{{ mount.device }}"
     path: "{{ mount.path }}"
-    opts: "username={{ mount.user }},password={{ mount.password }},{{ mount.opts | default('file_mode=0777,dir_mode=0777,rw,noserverino,uid=99,gid=100,auto,_netdev') }}"
+    opts: "username={{ mount.user }},password={{ mount.password }},\
+      {{ mount.opts | default('file_mode=0777,dir_mode=0777,rw,noserverino,uid=99,gid=100,auto,_netdev') }}"
     state: mounted
     fstype: cifs
-    

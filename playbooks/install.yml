@@ -67,7 +67,7 @@
         docker_install_compose: false
         docker_users: "{{ ansible_facts.user_id }}"
       when: '"x86_64" in ansible_architecture'
-      
+
     - role: geerlingguy.docker_arm
       become: true
       vars:
@@ -86,15 +86,15 @@
   tasks:
     - name: Reboot host
       become: true
-      reboot:
+      ansible.builtin.reboot:
       when: reboot_needed
 
     - name: Reset connection to reload user changes if not rebooted
-      meta: reset_connection
+      ansible.builtin.meta: reset_connection
       when: not reboot_needed
 
     - name: Default networks
-      set_fact:
+      ansible.builtin.set_fact:
         networks: "{{ networks | default(['main']) }}"
 
     - name: Setup docker networks

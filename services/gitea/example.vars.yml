@@ -1,7 +1,7 @@
 gitea_version: latest
-gitea_https: yes
+gitea_https: true
 gitea_access_logs: false
-gitea_metrics: no
+gitea_metrics: true
 gitea_autoupdate: monitor
 
 gitea_db_user: gitea

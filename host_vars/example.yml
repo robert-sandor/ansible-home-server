@@ -23,4 +23,3 @@ volumes:
 services:
   - traefik
   - watchtower
-  

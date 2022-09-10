@@ -5,19 +5,19 @@
   tasks:
     - name: Prune everything (including non-dangling images)
       community.docker.docker_prune:
-        containers: yes
-        images: yes
+        containers: true
+        images: true
         images_filters:
           dangling: false
-        networks: yes
-        volumes: yes
-        builder_cache: yes
+        networks: true
+        volumes: true
+        builder_cache: true
       register: _prune_result
 
     - name: Print saved space
-      debug:
-        msg: "Reclaimed\ 
-            - volumes: {{ _prune_result.volumes_space_reclaimed | human_readable }}\ 
-            - images: {{ _prune_result.images_space_reclaimed | human_readable }}\ 
-            - containers: {{ _prune_result.containers_space_reclaimed | human_readable }}\ 
+      ansible.builtin.debug:
+        msg: "Reclaimed\
+            - volumes: {{ _prune_result.volumes_space_reclaimed | human_readable }}\
+            - images: {{ _prune_result.images_space_reclaimed | human_readable }}\
+            - containers: {{ _prune_result.containers_space_reclaimed | human_readable }}\
             - builder_cache: {{ _prune_result.builder_cache_space_reclaimed | human_readable }}"

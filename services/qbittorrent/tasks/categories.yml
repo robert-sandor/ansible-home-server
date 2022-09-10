@@ -7,7 +7,7 @@
     loop_var: i
 
 - name: Create category in Qbittorrent
-  uri:
+  ansible.builtin.uri:
     url: "{{ qbt_api_url }}/torrents/createCategory"
     method: POST
     body_format: form-urlencoded

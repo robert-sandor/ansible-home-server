@@ -1,5 +1,5 @@
 - name: Set host for Radarr if on same host
-  set_fact:
+  ansible.builtin.set_fact:
     overseerr_radarr:
       host: radarr
       url: https://radarr.{{ domain }}
@@ -10,7 +10,7 @@
     when: overseerr_radarr is defined and 'radarr' in services
 
 - name: Set defaults for Radarr if not configured
-  set_fact:
+  ansible.builtin.set_fact:
     overseerr_radarr:
       host: radarr
       url: https://radarr.{{ domain }}

@@ -1,5 +1,6 @@
+---
 - name: Get existing filters
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/filtering/status"
     method: GET
     body_format: json
@@ -12,16 +13,16 @@
   until: _response.status != -1 or _response.status == 404
 
 - name: Save existing filters
-  set_fact:
+  ansible.builtin.set_fact:
     adguard_existing_filters: "{{ adguard_existing_filters | default([]) + [{'name': item.name, 'url': item.url}] }}"
   with_items: "{{ _response.json.filters }}"
 
 - name: Default filters
-  set_fact:
+  ansible.builtin.set_fact:
     adguard_filters: "{{ adguard_filters | default(adguard_default_filters) }}"
 
 - name: Remove filters
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/filtering/remove_url"
     method: POST
     body_format: json
@@ -36,7 +37,7 @@
   with_items: "{{ adguard_existing_filters | difference(adguard_filters) }}"
 
 - name: Add filters
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/filtering/add_url"
     method: POST
     body_format: json

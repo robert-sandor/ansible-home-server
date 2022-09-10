@@ -1,5 +1,5 @@
 - name: Set Transmission API var
-  set_fact:
+  ansible.builtin.set_fact:
     transmission_api: http://localhost:9091/transmission/rpc
 
 - name: Get Transmission Session ID

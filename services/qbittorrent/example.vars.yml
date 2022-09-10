@@ -1,7 +1,7 @@
 qbt_version: latest
 qbt_autoupdate: enable
 qbt_download_volume: smb-data
-qbt_vuetorrent: yes
+qbt_vuetorrent: true
 
 qbt_config:
   save_path: "/data/downloads"

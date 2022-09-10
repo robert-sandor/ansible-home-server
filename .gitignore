@@ -1,6 +1,8 @@
 # Ignore inventory file
 inventory.yml
-test.inventory.yml
+*.inventory.yml
+!example.inventory.yml
+
 
 # ignore group vars except for examples and readme
 group_vars/*

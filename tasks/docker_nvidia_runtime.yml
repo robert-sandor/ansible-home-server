@@ -1,22 +1,33 @@
 ---
-- name: Add Nvidia Docker GPG Key
-  shell: 'curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | apt-key add -'
+- name: Get Nvidia signing key
   become: true
+  ansible.builtin.get_url:
+    url: https://nvidia.github.io/nvidia-docker/gpgkey
+    dest: /etc/apt/trusted.gpg.d/nvidia.asc
+    owner: root
+    group: root
+    mode: 0644
 
-- name: Add Nvidia Docker Repository
-  shell: 'curl -s -L https://nvidia.github.io/nvidia-docker/{{ ansible_distribution|lower }}{{ ansible_distribution_version }}/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list'
+- name: Get Nvidia repo list
   become: true
+  ansible.builtin.get_url:
+    url: https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}\
+         {{ ansible_distribution_version }}/nvidia-docker.list
+    dest: /etc/ansible.builtin.apt/sources.list.d/nvidia-docker.list
+    owner: root
+    group: root
+    mode: 0644
 
 - name: Update cache and install nvidia-container-toolkit
   become: true
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
     pkg: nvidia-container-toolkit
   register: _result
 
 - name: Restart docker
   become: true
-  systemd:
+  ansible.builtin.systemd:
     name: docker
     state: restarted
   when: _result.changed

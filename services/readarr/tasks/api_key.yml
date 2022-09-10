@@ -5,5 +5,5 @@
   register: _response
 
 - name: Save readarr API Key
-  set_fact: 
+  ansible.builtin.set_fact:
     readarr_api_key: "{{ _response.stdout }}"

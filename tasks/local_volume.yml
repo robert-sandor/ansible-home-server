@@ -1,4 +1,3 @@
 - name: Create local volume {{ volume.name }}
   community.docker.docker_volume:
     name: "{{ volume.name }}"
-

@@ -1,12 +1,12 @@
 - name: Check if app for {{ app.name }} exists
-  set_fact:
+  ansible.builtin.set_fact:
     app_exists: "{{ existing_apps | json_query(app_query) | length() > 0 }}"
     found_apps: "{{ existing_apps | json_query(app_query) }}"
   vars:
     app_query: "[?name == `{{ app.name }}`]"
 
 - name: Create app for {{ app.name }}
-  uri:
+  ansible.builtin.uri:
     url: "{{ flame_api }}/apps"
     method: POST
     body_format: json
@@ -24,11 +24,11 @@
   when: not app_exists
 
 - name: Save app id
-  set_fact:
+  ansible.builtin.set_fact:
     app_id: "{{ app_exists | ternary(found_apps[0].id, _response.json.data.id) }}"
-  
+
 - name: Update existing app for {{ app.name }}
-  uri:
+  ansible.builtin.uri:
     url: "{{ flame_api }}/apps/{{ found_apps[0].id }}"
     method: PUT
     body_format: json

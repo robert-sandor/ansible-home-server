@@ -1,12 +1,12 @@
 traefik_version: latest
 traefik_network: traefik
-traefik_https: yes
+traefik_https: true
 traefik_access_logs: false
-traefik_metrics: yes
+traefik_metrics: true
 traefik_autoupdate: monitor
 
-traefik_acme: yes
-traefik_acme_staging: yes
+traefik_acme: true
+traefik_acme_staging: true
 traefik_acme_email: email@example.com
 traefik_acme_provider: cloudflare
 traefik_acme_env:

@@ -30,7 +30,7 @@
 
   tasks:
     - name: Default networks
-      set_fact:
+      ansible.builtin.set_fact:
         networks: "{{ networks | default(['main']) }}"
 
     - name: Setup docker networks

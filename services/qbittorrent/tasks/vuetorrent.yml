@@ -1,17 +1,17 @@
 - name: Get VueTorrent in temp folder
-  git:
+  ansible.builtin.git:
     repo: https://github.com/WDaan/VueTorrent.git
     dest: "{{ project_dir }}/qbittorrent/data/vuetorrent"
     version: latest-release
 
 - name: Create QBittorrent preferences request body
-  set_fact:
+  ansible.builtin.set_fact:
     qbt_pref:
       alternative_webui_enabled: true
       alternative_webui_path: "/config/vuetorrent"
 
 - name: Enable Alternative Web UI in Qbittorrent
-  uri:
+  ansible.builtin.uri:
     url: "{{ qbt_api_url }}/app/setPreferences"
     method: POST
     body_format: form-urlencoded

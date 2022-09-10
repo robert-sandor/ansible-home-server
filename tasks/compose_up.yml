@@ -2,7 +2,7 @@
   community.docker.docker_compose:
     project_name: "{{ service }}"
     project_src: "{{ project_dir }}/{{ service }}"
-    pull: yes
-    remove_orphans: yes
+    pull: true
+    remove_orphans: true
     restarted: "{{ restart | default(false) }}"
   when: _compose_file is not defined or _compose_file.changed or always_update

@@ -1,5 +1,5 @@
 - name: Template config file
-  template:
+  ansible.builtin.template:
     src: ../services/cloudflared/templates/config.yml.j2
     dest: "{{ project_dir }}/cloudflared/data/config.yml"
     owner: "{{ ansible_facts.user_id }}"

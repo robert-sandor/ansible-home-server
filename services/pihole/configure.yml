@@ -24,7 +24,7 @@
   when: pihole_blocked_domains is defined and pihole_blocked_domains | length > 0
 
 - name: Template local-routing configuration
-  template:
+  ansible.builtin.template:
     src: templates/10-local-domain.conf.j2
     dest: "{{ project_dir }}/pihole/dnsmasq.d/10-local-domain.conf"
     mode: '0644'

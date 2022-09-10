@@ -1,5 +1,5 @@
 - name: Set jackett admin password
-  uri:
+  ansible.builtin.uri:
     url: "{{ jackett_host }}/api/v2.0/server/adminpassword"
     method: POST
     body_format: json
@@ -7,7 +7,7 @@
     headers:
       Cookie: "{{ jackett_cookie }}"
     status_code: 204
-    follow_redirects: yes
+    follow_redirects: true
   register: _response
   retries: 10
   delay: 10

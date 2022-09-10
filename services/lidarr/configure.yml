@@ -1,5 +1,5 @@
 - name: Set Lidarr API URL
-  set_fact:
+  ansible.builtin.set_fact:
     lidarr_api_url: "http://localhost:8686/api/v1"
 
 - name: Get lidarr API Key

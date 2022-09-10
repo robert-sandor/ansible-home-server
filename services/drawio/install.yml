@@ -3,7 +3,7 @@
   vars:
     service: drawio
     dir: config
-    
+
 - name: Create fonts folder for drawio
   include_tasks: ../tasks/create_service_dir.yml
   vars:

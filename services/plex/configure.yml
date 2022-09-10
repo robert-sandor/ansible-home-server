@@ -12,6 +12,6 @@
   register: _response
 
 - name: Save Plex Server Token
-  set_fact:
+  ansible.builtin.set_fact:
     plex_server_token: "{{ _response.stdout }}"
   when: _response.changed

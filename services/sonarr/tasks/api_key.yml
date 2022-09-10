@@ -5,5 +5,5 @@
   register: _response
 
 - name: Save Sonarr API Key
-  set_fact: 
+  ansible.builtin.set_fact:
     sonarr_api_key: "{{ _response.stdout }}"

@@ -1,10 +1,10 @@
 - name: Check if dir exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ project_dir }}/{{ service }}/{{ dir }}"
   register: _stat
 
 - name: Create dir in service folder if not exists
-  file:
+  ansible.builtin.file:
     path: "{{ project_dir }}/{{ service }}/{{ dir }}"
     state: directory
     owner: "{{ ansible_facts.user_id }}"

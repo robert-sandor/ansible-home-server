@@ -1,5 +1,6 @@
+---
 - name: Configure DNS settings
-  uri:
+  ansible.builtin.uri:
     url: "{{ adguard_api }}/dns_config"
     method: POST
     body_format: json

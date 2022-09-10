@@ -1,24 +1,24 @@
 - name: Check for updates
   become: true
-  apt:
-    update_cache: yes
-    autoclean: yes
-    autoremove: yes
+  ansible.builtin.apt:
+    update_cache: true
+    autoclean: true
+    autoremove: true
     upgrade: dist
   register: _response
 
 - name: Check if reboot needed
-  set_fact:
+  ansible.builtin.set_fact:
     reboot_needed: "{{ _response.changed }}"
 
 - name: Install packages with apt
   become: true
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ packages }}"
   when: packages is defined
   register: _response
 
 - name: Check if reboot needed
-  set_fact:
+  ansible.builtin.set_fact:
     reboot_needed: "{{ _response.changed }}"
   when: not reboot_needed

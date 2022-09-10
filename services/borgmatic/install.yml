@@ -26,7 +26,7 @@
     mode: '0644'
 
 - name: Template config
-  template:
+  ansible.builtin.template:
     src: ../services/borgmatic/templates/config.yml.j2
     dest: "{{ project_dir }}/borgmatic/borgmatic.d/config.yml"
     owner: "{{ ansible_facts.user_id }}"

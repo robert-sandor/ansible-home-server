@@ -1,5 +1,5 @@
 - name: Set jackett indexer config for {{ indexer.name }}
-  uri:
+  ansible.builtin.uri:
     url: "{{ jackett_host }}/api/v2.0/indexers/{{ indexer.name }}/config"
     method: POST
     body_format: json
