@@ -1,0 +1,6 @@
+---
+cloudflared_version: latest
+
+cloudflared_tunnel: "{{ ansible_hostname }}"
+
+cloudflared_ingress: {}

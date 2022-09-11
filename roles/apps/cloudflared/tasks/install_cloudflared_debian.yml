@@ -1,0 +1,6 @@
+---
+- name: Install cloudflared using APT
+  become: true
+  ansible.builtin.apt:
+    deb: "https://github.com/cloudflare/cloudflared/releases/\
+      {{ cloudflared_version }}/download/cloudflared-linux-amd64.deb"

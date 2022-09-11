@@ -31,7 +31,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.{{ domain }}`)
       - traefik.http.routers.qbittorrent.entrypoints=websecure
-      - traefik.http.services.qbittorrent.loadbalancer.server.port=8082
+      - traefik.http.services.qbittorrent.loadbalancer.server.port={{ qbittorrent_port }}
       - traefik.http.routers.qbittorrent.service=qbittorrent
       - traefik.http.routers.qbittorrent.tls.certresolver=acme_provider
 {% endif %}

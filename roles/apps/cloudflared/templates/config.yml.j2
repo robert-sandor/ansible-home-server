@@ -1,0 +1,9 @@
+tunnel: {{ cloudflared_tunnel_uuid }}
+credentials-file: /home/{{ ansible_facts.user_id }}/.cloudflared/{{ cloudflared_tunnel_uuid }}.json
+
+ingress:
+{% for ingress in cloudflared_ingress | dict2items %}
+  - hostname: {{ ingress.key }}
+    service: {{ ingress.value }}
+{% endfor %}
+  - service: http_status:404

@@ -1,0 +1,7 @@
+---
+homarr_version: latest
+homarr_network: apps
+homarr_port: 7575
+homarr_baseurl: homarr.{{ domain }}
+
+homarr_password: ''

@@ -4,8 +4,10 @@
   hosts: home
 
   roles:
-    - base/docker
-    - base/docker_compose
+    - role: base/docker
+      tags: docker
+    - role: base/docker_compose
+      tags: docker
 
   tasks:
     - name: Include apps

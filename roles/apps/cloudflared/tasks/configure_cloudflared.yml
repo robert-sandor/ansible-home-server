@@ -1,0 +1,59 @@
+---
+- name: Get existing cloudflared tunnels
+  ansible.builtin.command: cloudflared tunnel list -o json
+  changed_when: false
+  register: tunnels_response
+
+- name: Create cloudflared tunnel if not exists
+  vars:
+    tunnels: "{{ tunnels_response.stdout | from_json | json_query('[].name') }}"
+  ansible.builtin.command: cloudflared tunnel create -o json {{ cloudflared_tunnel }}
+  when: cloudflared_tunnel not in tunnels
+  changed_when: true
+  register: create_tunnel_response
+
+- debug: var=create_tunnel_response
+
+- name: Template config file
+  vars:
+    query: "[?name=='{{ cloudflared_tunnel }}'] | [0].id"
+    cloudflared_tunnel_uuid: "{{ create_tunnel_response.stdout | from_json | json_query('id') \
+      if create_tunnel_response.stdout is defined else tunnels_response.stdout | from_json | json_query(query) }}"
+  ansible.builtin.template:
+    src: config.yml.j2
+    dest: "~{{ ansible_facts.user_id }}/.cloudflared/config.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0600
+  register: config_template_response
+
+- name: Ensure ~{{ ansible_facts.user_id }}/.config/systemd/user exists
+  ansible.builtin.file:
+    path: ~{{ ansible_facts.user_id }}/.config/systemd/user
+    state: directory
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0755
+
+- name: Template systemd service file
+  ansible.builtin.template:
+    src: cloudflared.service.j2
+    dest: ~{{ ansible_facts.user_id }}/.config/systemd/user/cloudflared.service
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644
+  register: template_service_response
+
+- name: Run cloudflared service
+  ansible.builtin.systemd:
+    name: cloudflared
+    state: "{{ config_template_response.changed | ternary('restarted', 'started') }}"
+    enabled: true
+    daemon_reload: "{{ template_service_response.changed }}"
+    scope: user
+
+- name: Add DNS records to route to the tunnel
+  ansible.builtin.command: cloudflared tunnel route dns {{ cloudflared_tunnel }} {{ hostname }}
+  with_items: "{{ cloudflared_ingress.keys() }}"
+  loop_control:
+    loop_var: hostname

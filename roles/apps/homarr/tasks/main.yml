@@ -9,23 +9,33 @@
   ansible.builtin.import_role: name=common tasks_from=service_dir_structure
   vars:
     subdirs:
-      - template
+      - homarr
+      - homarr/configs
+      - homarr/icons
+
+- name: Template .env file
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ project_dir }}/homarr/.env"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0600
 
 - name: Template compose file
   ansible.builtin.template:
     src: compose.yml.j2
-    dest: "{{ project_dir }}/template/compose.yml"
+    dest: "{{ project_dir }}/homarr/compose.yml"
     owner: "{{ ansible_facts.user_uid }}"
     group: "{{ ansible_facts.user_gid }}"
     mode: 0644
 
-- name: Setup docker network {{ template_network }}
+- name: Setup docker network {{ homarr_network }}
   community.docker.docker_network:
-    name: "{{ template_network }}"
+    name: "{{ homarr_network }}"
 
 - name: Start service using docker compose
   community.docker.docker_compose:
-    project_name: template
-    project_src: "{{ project_dir }}/template"
+    project_name: homarr
+    project_src: "{{ project_dir }}/homarr"
     pull: true
     remove_orphans: true

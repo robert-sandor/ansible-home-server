@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  homarr:
+    container_name: homarr
+    hostname: homarr
+    image: ghcr.io/ajnart/homarr:{{ homarr_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    environment:
+      TZ: {{ timezone }}
+      BASE_URL: {{ homarr_baseurl }}
+      PASSWORD: $PASSWORD
+      PORT: {{ homarr_port }}
+    volumes:
+      - {{ project_dir }}/homarr/configs:/app/data/configs
+      - {{ project_dir }}/homarr/icons:/app/data/icons
+    networks:
+      - {{ homarr_network }}
+    ports:
+      - {{ homarr_port }}:{{ homarr_port }}
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.homarr.rule=Host(`homarr.{{ domain }}`)
+      - traefik.http.routers.homarr.entrypoints=websecure
+      - traefik.http.services.homarr.loadbalancer.server.port={{ homarr_port }}
+      - traefik.http.routers.homarr.service=homarr
+      - traefik.http.routers.homarr.tls=true
+      - traefik.http.routers.homarr.tls.certresolver=acme_provider
+{% endif %}
+
+networks:
+  {{ homarr_network }}:
+    external: true

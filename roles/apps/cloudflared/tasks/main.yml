@@ -1,0 +1,36 @@
+---
+- name: Include host specific vars
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files: [ "{{ ansible_hostname }}.yml" ]
+      skip: true
+
+- ansible.builtin.import_tasks: increase_udp_buffer_size.yml
+- ansible.builtin.include_tasks: install_cloudflared_{{ ansible_facts.os_family | lower }}.yml
+
+- name: Ensure ~/.cloudflared exists
+  ansible.builtin.file:
+    path: ~{{ ansible_facts.user_id }}/.cloudflared
+    state: directory
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0700
+
+- name: Copy cert.pem from controller if the file exists
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: ~{{ ansible_facts.user_id }}/.cloudflared/cert.pem
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0600
+  with_first_found:
+    - files: [ "cert.pem" ]
+      skip: true
+
+- name: Check if cloudflared cert.pem exists on the remote
+  ansible.builtin.stat:
+    path: ~{{ ansible_facts.user_id }}/.cloudflared/cert.pem
+  register: cert_stat
+
+- ansible.builtin.import_tasks: configure_cloudflared.yml
+  when: cert_stat.stat.exists
