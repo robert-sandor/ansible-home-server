@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  excalidraw:
+    container_name: excalidraw
+    hostname: excalidraw
+    image: excalidraw/excalidraw:{{ excalidraw_version }}
+    restart: unless-stopped
+    networks:
+      - {{ excalidraw_network }}
+    ports:
+      - 8084:80
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.excalidraw.rule=Host(`excalidraw.{{ domain }}`)
+      - traefik.http.routers.excalidraw.entrypoints=websecure
+      - traefik.http.services.excalidraw.loadbalancer.server.port=80
+      - traefik.http.routers.excalidraw.service=excalidraw
+      - traefik.http.routers.excalidraw.tls=true
+      - traefik.http.routers.excalidraw.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=excalidraw
+      - flame.url=excalidraw.{{ domain }}
+      - flame.icon=lead-pencil
+{% endif %}
+
+networks:
+  {{ excalidraw_network }}:
+    external: true
