@@ -1,27 +1,32 @@
 ---
-- name: Create folders for categories
-  community.docker.docker_container_exec:
-    container: qbittorrent
-    command: "mkdir -p {{ category.key }}"
-  with_items: "{{ qbittorrent_categories }}"
-  loop_control:
-    loop_var: category
-
-- name: Create category in Qbittorrent
+- name: Get all categories
   ansible.builtin.uri:
-    method: POST
-    url: "{{ qbt_api_url }}/torrents/createCategory"
-    body_format: form-urlencoded
-    body:
-      category: "{{ category.value }}"
-      savePath: "{{ category.key }}"
+    method: GET
+    url: "{{ qbt_api_url }}/torrents/categories"
     headers:
       Cookie: "{{ qbittorrent_cookie }}"
-    status_code: 200, 409
-  with_items: "{{ qbittorrent_categories }}"
-  loop_control:
-    loop_var: category
-  register: create_category_response
+    status_code: 200
+  register: get_categories_response
   retries: 10
   delay: 10
-  until: create_category_response.status > 0
+  until: get_categories_response.status > 0
+
+- name: Update categories
+  vars:
+    action: "{{ 'editCategory' if category.key in get_categories_response.json.keys() else 'createCategory' }}"
+  ansible.builtin.uri:
+    method: POST
+    url: "{{ qbt_api_url }}/torrents/{{ action }}"
+    body_format: form-urlencoded
+    body:
+      category: "{{ category.key }}"
+      savePath: /downloads/{{ category.value }}
+    headers:
+      Cookie: "{{ qbittorrent_cookie }}"
+    status_code: 200
+  when: >
+    category.key not in get_categories_response.json.keys() or
+    get_categories_response.json[category.key].savePath != '/downloads/' + category.value
+  with_items: "{{ qbittorrent_categories | dict2items }}"
+  loop_control:
+    loop_var: category

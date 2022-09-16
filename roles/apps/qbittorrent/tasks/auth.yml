@@ -9,7 +9,7 @@
       password: adminadmin
     headers:
       Referer: "{{ qbt_referer }}"
-    status_code: [200, 401]
+    status_code: 200
   register: default_auth_response
   retries: 10
   delay: 10
@@ -26,7 +26,7 @@
     headers:
       Referer: "{{ qbt_referer }}"
   register: auth_response
-  when: default_auth_response.status == 401
+  when: default_auth_response.cookies_string | default('') | length == 0
   retries: 10
   delay: 10
   until: auth_response.status > 0

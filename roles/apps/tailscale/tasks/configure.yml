@@ -1,0 +1,51 @@
+---
+- name: Get devices
+  ansible.builtin.uri:
+    method: GET
+    url: https://api.tailscale.com/api/v2/tailnet/{{ tailscale_tailnet }}/devices
+    user: "{{ tailscale_api_key }}"
+    password: ''
+    force_basic_auth: true
+    status_code: 200
+  no_log: true
+  register: devices_response
+
+- name: Update device
+  vars:
+    query: "devices[?contains(hostname, '{{ ansible_facts.hostname }}')] | [0].id"
+    device_id: "{{ devices_response.json | json_query(query) }}"
+  block:
+    - name: Get advertised and enabled routes for device {{ device_id }}
+      ansible.builtin.uri:
+        method: GET
+        url: https://api.tailscale.com/api/v2/device/{{ device_id }}/routes
+        user: "{{ tailscale_api_key }}"
+        password: ''
+        force_basic_auth: true
+        status_code: 200
+      no_log: true
+      register: get_routes_response
+
+    - name: Update advertised routes
+      become: true
+      vars:
+        advertised_routes: "{{ get_routes_response.json.advertisedRoutes | default([]) }}"
+      ansible.builtin.command: "tailscale up --advertise-routes={{ tailscale_advertise_routes | join(',') }} \
+        {{ tailscale_exit_node | ternary('--advertise-exit-node', '') }}"
+      when: tailscale_advertise_routes | difference(advertised_routes) | length > 0
+
+    - name: Enable routes
+      vars:
+        enabled_routes: "{{ get_routes_response.json.enabledRoutes }}"
+      ansible.builtin.uri:
+        method: POST
+        url: https://api.tailscale.com/api/v2/device/{{ device_id }}/routes
+        user: "{{ tailscale_api_key }}"
+        password: ''
+        force_basic_auth: true
+        body_format: json
+        body:
+          routes: "{{ tailscale_advertise_routes }}"
+        status_code: 200
+      no_log: true
+      when: tailscale_enable_routes and tailscale_advertise_routes | difference(enabled_routes) | length > 0

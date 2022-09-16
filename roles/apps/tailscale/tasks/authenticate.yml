@@ -1,0 +1,35 @@
+---
+- name: Check tailscale status
+  ansible.builtin.command: tailscale status --json
+  register: status_response
+  changed_when: false
+
+- name: Authenticate tailscale if needs login
+  vars:
+    query: "Health[?contains(@, 'NeedsLogin')] | [0]"
+    health: "{{ status_response.stdout | from_json | json_query(query) }}"
+  when: health | length > 0
+  block:
+    - name: Generate one-time auth key
+      ansible.builtin.uri:
+        method: POST
+        url: https://api.tailscale.com/api/v2/tailnet/{{ tailscale_tailnet }}/keys
+        user: "{{ tailscale_api_key }}"
+        password: ''
+        force_basic_auth: true
+        body_format: json
+        body:
+          capabilities:
+            devices:
+              create:
+                reusable: false
+                ephemeral: false
+                preauthorized: false
+                tags: []
+        status_code: 200
+      no_log: true
+      register: create_authkey_response
+    
+    - name: Use authkey to login
+      become: true
+      ansible.builtin.command: tailscale up --auth-key {{ create_authkey_response.json.key }}

@@ -1,0 +1,8 @@
+---
+tailscale_api_key: ""
+tailscale_tailnet: ""
+
+tailscale_exit_node: false
+
+tailscale_enable_routes: true
+tailscale_advertise_routes: []

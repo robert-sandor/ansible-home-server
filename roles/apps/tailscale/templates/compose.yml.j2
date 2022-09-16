@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  template:
+    container_name: template
+    hostname: template
+    image: template/template:{{ template_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    networks:
+      - {{ template_network }}
+    ports:
+      - 8000:8000
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.template.rule=Host(`template.{{ domain }}`)
+      - traefik.http.routers.template.entrypoints=websecure
+      - traefik.http.services.template.loadbalancer.server.port=8000
+      - traefik.http.routers.template.service=template
+      - traefik.http.routers.template.tls=true
+      - traefik.http.routers.template.tls.certresolver=acme_provider
+{% endif %}
+{% if 'flame' in apps %}
+      - flame.type=application
+      - flame.name=template
+      - flame.url=template.{{ domain }}
+      - flame.icon=template
+{% endif %}
+
+networks:
+  {{ template_network }}:
+    external: true

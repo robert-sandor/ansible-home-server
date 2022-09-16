@@ -13,9 +13,21 @@ qbittorrent_watch_path: "{{ project_dir }}/transmission"
 
 qbittorrent_nfs_server: ""
 qbittorrent_nfs_download: ""
-qbittorrent_nfs_watch: ""
 qbittorrent_nfs_opts: noexec,nolock,rw,soft,nfsvers=4
 
-qbittorrent_config: {}
+qbittorrent_auto_torrent_management: true
+qbittorrent_max_active_torrents: 100
+qbittorrent_max_active_downloads: 100
+qbittorrent_max_active_uploads: 100
+
+qbittorrent_alt_speed_schedule: true
+qbittorrent_alt_speed_from_hour: 9
+qbittorrent_alt_speed_from_min: 0
+qbittorrent_alt_speed_to_hour: 23
+qbittorrent_alt_speed_to_min: 0
+qbittorrent_alt_speed_dl_limit: 15
+qbittorrent_alt_speed_up_limit: 15
+
+qbittorrent_additional_config: {}
 
 qbittorrent_categories: {}
