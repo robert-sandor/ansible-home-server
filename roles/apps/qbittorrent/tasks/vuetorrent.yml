@@ -16,7 +16,7 @@
     body:
       json: "{{ preferences | to_json }}"
     headers:
-      Cookie: "{{ qbittorrent_cookie }}"
+      Cookie: "{{ qbit_cookie }}"
     status_code: 200
   register: set_preference_response
   retries: 10

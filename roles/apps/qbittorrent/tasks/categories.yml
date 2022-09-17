@@ -4,7 +4,7 @@
     method: GET
     url: "{{ qbt_api_url }}/torrents/categories"
     headers:
-      Cookie: "{{ qbittorrent_cookie }}"
+      Cookie: "{{ qbit_cookie }}"
     status_code: 200
   register: get_categories_response
   retries: 10
@@ -22,11 +22,11 @@
       category: "{{ category.key }}"
       savePath: /downloads/{{ category.value }}
     headers:
-      Cookie: "{{ qbittorrent_cookie }}"
+      Cookie: "{{ qbit_cookie }}"
     status_code: 200
   when: >
     category.key not in get_categories_response.json.keys() or
     get_categories_response.json[category.key].savePath != '/downloads/' + category.value
-  with_items: "{{ qbittorrent_categories | dict2items }}"
+  with_items: "{{ qbit_categories | dict2items }}"
   loop_control:
     loop_var: category

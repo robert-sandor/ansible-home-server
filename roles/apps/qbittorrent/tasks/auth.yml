@@ -21,8 +21,8 @@
     method: POST
     body_format: form-urlencoded
     body:
-      username: "{{ qbittorrent_user }}"
-      password: "{{ qbittorrent_password }}"
+      username: "{{ qbit_user }}"
+      password: "{{ qbit_password }}"
     headers:
       Referer: "{{ qbt_referer }}"
   register: auth_response
@@ -31,6 +31,6 @@
   delay: 10
   until: auth_response.status > 0
 
-- name: Set qbittorrent_cookie
+- name: Set qbit_cookie
   ansible.builtin.set_fact:
-    qbittorrent_cookie: "{{ auth_response.cookies_string | default(default_auth_response.cookies_string) }}"
+    qbit_cookie: "{{ auth_response.cookies_string | default(default_auth_response.cookies_string) }}"

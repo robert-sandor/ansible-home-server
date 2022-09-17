@@ -1,33 +1,30 @@
 ---
-qbittorrent_version: latest
-qbittorrent_network: apps
-qbittorrent_port: 8082
+qbit_version: latest
+qbit_network: apps
 
-qbittorrent_user: ""
-qbittorrent_password: ""
+qbit_user: admin
+qbit_password: adminadmin
 
-qbittorrent_storage: path
+qbit_storage: path
 
-qbittorrent_download_path: "{{ project_dir }}/transmission"
-qbittorrent_watch_path: "{{ project_dir }}/transmission"
+qbit_download_path: "{{ project_dir }}/qbittorrent"
 
-qbittorrent_nfs_server: ""
-qbittorrent_nfs_download: ""
-qbittorrent_nfs_opts: noexec,nolock,rw,soft,nfsvers=4
+qbit_nfs_server: ""
+qbit_nfs_download: ""
+qbit_nfs_opts: noexec,nolock,rw,soft,nfsvers=4
 
-qbittorrent_auto_torrent_management: true
-qbittorrent_max_active_torrents: 100
-qbittorrent_max_active_downloads: 100
-qbittorrent_max_active_uploads: 100
+qbit_config_auto_tmm_enabled: true
+qbit_config_max_active_torrents: 100
+qbit_config_max_active_downloads: 100
+qbit_config_max_active_uploads: 100
+qbit_config_scheduler_enabled: true
+qbit_config_schedule_from_hour: 9
+qbit_config_schedule_from_min: 0
+qbit_config_schedule_to_hour: 23
+qbit_config_schedule_to_min: 0
+qbit_config_alt_dl_limit: 15360
+qbit_config_alt_up_limit: 15360
 
-qbittorrent_alt_speed_schedule: true
-qbittorrent_alt_speed_from_hour: 9
-qbittorrent_alt_speed_from_min: 0
-qbittorrent_alt_speed_to_hour: 23
-qbittorrent_alt_speed_to_min: 0
-qbittorrent_alt_speed_dl_limit: 15
-qbittorrent_alt_speed_up_limit: 15
+qbit_categories: {}
 
-qbittorrent_additional_config: {}
-
-qbittorrent_categories: {}
+qbit_install_vuetorrent: true

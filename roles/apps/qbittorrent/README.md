@@ -1,97 +1,72 @@
-# Transmission
+# qBittorrent
 
-[Transmission](https://transmissionbt.com/) is a free and open source BitTorrent client. It can integrate with Sonarr/Radarr/etc. for media management. This deployment uses the [linuxserver.io](https://docs.linuxserver.io/images/docker-transmission) image.
+[qBittorrent](https://www.qbittorrent.org/) is a free and open source BitTorrent client. It can integrate with Sonarr/Radarr/etc. for media management. This deployment uses the [linuxserver.io](https://docs.linuxserver.io/images/docker-qbittorrent) image.
 
-Once deployed, Transmission will be available at `http://<host>:9001`, or if [Traefik](../traefik/README.md) is also deployed, on `https://transmission.<domain>`.
+Once deployed, Qbittorrent will be available at `http://<host>:8082`, or if [Traefik](../traefik/README.md) is also deployed, on `https://qbittorrent.<domain>`.
 
 ## Configuration
 
-- `transmission_version`
+- `qbit_version`
     - Default: `latest`
-    - Version of the Transmission container to deploy. Available versions can be found on [LSIO's Github releases](https://github.com/linuxserver/docker-transmission/releases)
-- `transmission_network`
+    - Version of the qBittorrent container to deploy. Available versions can be found on [LSIO's Github releases](https://github.com/linuxserver/docker-qbittorrent/releases)
+- `qbit_network`
     - Default: `apps`
-    - The docker network to add transmission to.
-- `transmission_user`
-    - Default: empty
-    - The username to set for tranmission authentication. Empty means no authentication.
-- `transmission_password`
-    - Default: empty
-    - The password to set for tranmission authentication. Empty means no authentication.
-- `transmission_ui`
-    - Default: `flood-for-transmission`
-    - One of the alternate UI options for Transmission. Options are `combustion-release`, `transmission-web-control`, `kettu`, `flood-for-transmission`, and `transmissionic`.
-- `transmission_storage`
+    - The docker network to add qBittorrent to.
+- `qbit_user`
+    - Default: `admin`
+    - The username to set for qBittorrent authentication. Empty means no authentication.
+- `qbit_password`
+    - Default: `adminadmin`
+    - The password to set for qBittorrent authentication. Empty means no authentication.
+- `qbit_storage`
     - Default: `path`
     - Whether to use a path on the host, or an NFS share for downloads and watch directories. Options are `path` and `nfs`.
-- `transmission_download_path`
-    - Default: `"{{ project_dir }}/transmission"`
-    - Path on the host where Transmission will download torrents, if `transmission_storage` is set to `path`.
-- `transmission_watch_path`
-    - Default: `"{{ project_dir }}/transmission"`
-    - Path on the host where Transmission will watch for torrent files to download, if `transmission_storage` is set to `path`.
-- `transmission_nfs_server`
+- `qbit_download_path`
+    - Default: `"{{ project_dir }}/qbittorrent"`
+    - Path on the host where qBittorrent will download torrents, if `qbit_storage` is set to `path`.
+- `qbit_nfs_server`
     - Default: empty
-    - The hostname or IP address of the NFS server, if `transmission_storage` is set to `nfs`.
-- `transmission_nfs_download`
+    - The hostname or IP address of the NFS server, if `qbit_storage` is set to `nfs`.
+- `qbit_nfs_download`
     - Default: empty
-    - The path on the NFS server that Transmission should download to, if `transmission_storage` is set to `nfs`.
-- `transmission_nfs_watch`
-    - Default: empty
-    - The path on the NFS server that Transmission should watch, if `transmission_storage` is set to `nfs`.
-- `transmission_nfs_opts`
+    - The path on the NFS server that qBittorrent should download to, if `qbit_storage` is set to `nfs`.
+- `qbit_nfs_opts`
     - Default: `noexec,nolock,rw,soft,nfsvers=4`
     - Additional parameters to set for the NFS mount.
-- `transmission_config`
-    - Default: `{}`
-    - Configurations for Transmission. Check [below](#transmission-app-configuration).
+- `qbit_install_vuetorrent`
+    - Default: `true`
+    - Whether to install and enable [Vuetorrent](https://github.com/WDaan/VueTorrent).
+- `qbit_categories`
+    - Default: empty
+    - A map of categories to setup in qBittorrent, where the key is the category name, and the value is the relative path from `/downloads/`. e.g. `movies: movies` will create a category named `movies` and set the download path for it to `/downloads/movies` in the container. Note that `/downloads/` maps to the storage type chosen by `qbit_storage`.
 
+## Additional configuration options
 
-## Transmission App Configuration
+The playbook supports setting any qBittorrent configuration that the API support.
+All variables of type `qbit_config_<config>` will be used to set the appropiate config in qBittorrent.
+Example: `qbit_config_auto_tmm_enabled: true` with set the `auto_tmm_enabled` config in qBittorrent to `true`.
+For a complete list of configs that qBittorrent supports, check their [API Documentation](https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-application-preferences).
 
-Note: For a full, up-to-date reference, you can visit the official documentation [here](https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt#L446)
-
-| Variable                     | Type       | Description                                                                                       |
-|------------------------------|------------|---------------------------------------------------------------------------------------------------|
-| alt-speed-down               | number     | max global download speed (KBps)                                                                  |
-| alt-speed-enabled            | boolean    | true means use the alt speeds                                                                     |
-| alt-speed-time-begin         | number     | when to turn on alt speeds (units: minutes after midnight)                                        |
-| alt-speed-time-enabled       | boolean    | true means the scheduled on/off times are used                                                    |
-| alt-speed-time-end           | number     | when to turn off alt speeds (units: same)                                                         |
-| alt-speed-time-day           | number     | what day(s) to turn on alt speeds (look at tr_sched_day)                                          |
-| alt-speed-up                 | number     | max global upload speed (KBps)                                                                    |
-| blocklist-url                | string     | location of the blocklist to use for "blocklist-update"                                           |
-| blocklist-enabled            | boolean    | true means enabled                                                                                |
-| cache-size-mb                | number     | maximum size of the disk cache (MB)                                                               |
-| download-dir                 | string     | default path to download torrents                                                                 |
-| download-queue-size          | number     | max number of torrents to download at once (see download-queue-enabled)                           |
-| download-queue-enabled       | boolean    | if true, limit how many torrents can be downloaded at once                                        |
-| dht-enabled                  | boolean    | true means allow dht in public torrents                                                           |
-| encryption                   | string     | "required", "preferred", "tolerated"                                                              |
-| idle-seeding-limit           | number     | torrents we're seeding will be stopped if they're idle for this long                              |
-| idle-seeding-limit-enabled   | boolean    | true if the seeding inactivity limit is honored by default                                        |
-| incomplete-dir               | string     | path for incomplete torrents, when enabled                                                        |
-| incomplete-dir-enabled       | boolean    | true means keep torrents in incomplete-dir until done                                             |
-| lpd-enabled                  | boolean    | true means allow Local Peer Discovery in public torrents                                          |
-| peer-limit-global            | number     | maximum global number of peers                                                                    |
-| peer-limit-per-torrent       | number     | maximum global number of peers                                                                    |
-| pex-enabled                  | boolean    | true means allow pex in public torrents                                                           |
-| peer-port                    | number     | port number                                                                                       |
-| peer-port-random-on-start    | boolean    | true means pick a random peer port on launch                                                      |
-| port-forwarding-enabled      | boolean    | true means enabled                                                                                |
-| queue-stalled-enabled        | boolean    | whether or not to consider idle torrents as stalled                                               |
-| queue-stalled-minutes        | number     | torrents that are idle for N minuets aren't counted toward seed-queue-size or download-queue-size |
-| rename-partial-files         | boolean    | true means append ".part" to incomplete files                                                     |
-| script-torrent-done-filename | string     | filename of the script to run                                                                     |
-| script-torrent-done-enabled  | boolean    | whether or not to call the "done" script                                                          |
-| seedRatioLimit               | double     | the default seed ratio for torrents to use                                                        |
-| seedRatioLimited             | boolean    | true if seedRatioLimit is honored by default                                                      |
-| seed-queue-size              | number     | max number of torrents to uploaded at once (see seed-queue-enabled)                               |
-| seed-queue-enabled           | boolean    | if true, limit how many torrents can be uploaded at once                                          |
-| speed-limit-down             | number     | max global download speed (KBps)                                                                  |
-| speed-limit-down-enabled     | boolean    | true means enabled                                                                                |
-| speed-limit-up               | number     | max global upload speed (KBps)                                                                    |
-| speed-limit-up-enabled       | boolean    | true means enabled                                                                                |
-| start-added-torrents         | boolean    | true means added torrents will be started right away                                              |
-| trash-original-torrent-files | boolean    | true means the .torrent file of added torrents will be deleted                                    |
-| utp-enabled                  | boolean    | true means allow utp                                                                              |
+The list of defaults configs applied by the playbook are:
+- `qbit_config_auto_tmm_enabled: true`
+    - Sets automatic torrent management to true. This allows the user or client to specify the category only, and the download path will be automatically determined.
+- `max_active_torrents: 100`
+    - Set max number of active torrents.
+- `max_active_downloads: 100`
+    - Set max number of active torrents that can be downloading.
+- `max_active_uploads: 100`
+    - Set max number of active torrents that can be seeding.
+- `scheduler_enabled: true`
+    - Enable scheduled alternate speeds. This is useful to prevent the client saturating the network during work hours, for example. By default the schedule is set from 9:00 AM to 11:00 PM.
+- `schedule_from_hour: 9`
+    - Sets the scheduled start hour.
+- `schedule_from_min: 0`
+    - Sets the scheduled start minute.
+- `schedule_to_hour: 23`
+    - Sets the scheduled end hour.
+- `schedule_to_min: 0`
+    - Sets the scheduled end minute.
+- `alt_dl_limit: 15360`
+    - Sets the alternate download limit, in KiB/s. Default is 15 MiB/s.
+- `alt_up_limit: 15360`
+    - Sets the alternate upload limit, in KiB/s. Default is 15 MiB/s.

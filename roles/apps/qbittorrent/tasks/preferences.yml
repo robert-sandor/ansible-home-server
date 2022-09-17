@@ -1,27 +1,26 @@
+- name: Build qbittorrent config map
+  vars:
+    prefix: "qbit_config_"
+    query: "[?starts_with(@, '{{ prefix }}')]"
+  ansible.builtin.set_fact:
+    qbit_config: "{{ qbit_config | default({}) | combine( { cfg.replace(prefix, ''): vars[cfg] } ) }}"
+  with_items: "{{ vars.keys() | list | json_query(query) }}"
+  loop_control:
+    loop_var: cfg
+
 - name: Set preferences
   vars:
-    qbit_config:
-      web_ui_username: "{{ qbittorrent_user }}"
-      web_ui_password: "{{ qbittorrent_password }}"
-      auto_tmm_enabled: "{{ qbittorrent_auto_torrent_management }}"
-      max_active_torrents: "{{ qbittorrent_max_active_torrents }}"
-      max_active_downloads: "{{ qbittorrent_max_active_downloads }}"
-      max_active_uploads: "{{ qbittorrent_max_active_uploads }}"
-      alt_dl_limit: "{{ qbittorrent_alt_speed_dl_limit * 1024 * 1024 }}"
-      alt_up_limit: "{{ qbittorrent_alt_speed_up_limit * 1024 * 1024 }}"
-      scheduler_enabled: "{{ qbittorrent_alt_speed_schedule }}"
-      schedule_from_hour: "{{ qbittorrent_alt_speed_from_hour }}"
-      schedule_from_min: "{{ qbittorrent_alt_speed_from_min }}"
-      schedule_to_hour: "{{ qbittorrent_alt_speed_to_hour }}"
-      schedule_to_min: "{{ qbittorrent_alt_speed_to_min }}"
+    user_config:
+      web_ui_username: "{{ qbit_user }}"
+      web_ui_password: "{{ qbit_password }}"
   ansible.builtin.uri:
     method: POST
     url: "{{ qbt_api_url }}/app/setPreferences"
     body_format: form-urlencoded
     body:
-      json: "{{ qbit_config | combine(qbittorrent_additional_config) | to_json }}"
+      json: "{{ qbit_config | default({}) | combine(user_config) | to_json }}"
     headers:
-      Cookie: "{{ qbittorrent_cookie }}"
+      Cookie: "{{ qbit_cookie }}"
     status_code: 200
   register: _response
   retries: 10
