@@ -42,13 +42,13 @@ Once deployed, Qbittorrent will be available at `http://<host>:8082`, or if [Tra
 
 ## Additional configuration options
 
-The playbook supports setting any qBittorrent configuration that the API support.
+The playbook supports setting any qBittorrent configuration that the API supports.
 All variables of type `qbit_config_<config>` will be used to set the appropiate config in qBittorrent.
 Example: `qbit_config_auto_tmm_enabled: true` with set the `auto_tmm_enabled` config in qBittorrent to `true`.
 For a complete list of configs that qBittorrent supports, check their [API Documentation](https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-application-preferences).
 
 The list of defaults configs applied by the playbook are:
-- `qbit_config_auto_tmm_enabled: true`
+- `auto_tmm_enabled: true`
     - Sets automatic torrent management to true. This allows the user or client to specify the category only, and the download path will be automatically determined.
 - `max_active_torrents: 100`
     - Set max number of active torrents.
