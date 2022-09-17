@@ -13,17 +13,22 @@ qbit_nfs_server: ""
 qbit_nfs_download: ""
 qbit_nfs_opts: noexec,nolock,rw,soft,nfsvers=4
 
-qbit_config_auto_tmm_enabled: true
-qbit_config_max_active_torrents: 100
-qbit_config_max_active_downloads: 100
-qbit_config_max_active_uploads: 100
-qbit_config_scheduler_enabled: true
-qbit_config_schedule_from_hour: 9
-qbit_config_schedule_from_min: 0
-qbit_config_schedule_to_hour: 23
-qbit_config_schedule_to_min: 0
-qbit_config_alt_dl_limit: 15360
-qbit_config_alt_up_limit: 15360
+qbit_default_config:
+  auto_tmm_enabled: true
+  max_active_torrents: 100
+  max_active_downloads: 100
+  max_active_uploads: 100
+  scheduler_enabled: true
+  schedule_from_hour: 9
+  schedule_from_min: 0
+  schedule_to_hour: 0
+  schedule_to_min: 0
+  alt_dl_limit: 15360
+  alt_up_limit: 15360
+  max_connec: 2000
+  max_connec_per_torrent: 20
+
+qbit_config: {}
 
 qbit_categories: {}
 

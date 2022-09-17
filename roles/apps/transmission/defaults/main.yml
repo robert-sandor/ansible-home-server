@@ -17,4 +17,22 @@ transmission_nfs_download: ""
 transmission_nfs_watch: ""
 transmission_nfs_opts: noexec,nolock,rw,soft,nfsvers=4
 
+transmission_default_config:
+  alt-speed-down: 15000
+  alt-speed-up: 15000
+  alt-speed-time-begin: 540 # 9:00 AM
+  alt-speed-time-end: 0 # 12:00 AM
+  alt-speed-time-enabled: true
+  download-dir: /downloads
+  download-queue-size: 100
+  seed-queue-size: 100
+  peer-limit-global: 2000
+  peer-limit-per-torrent: 20
+  rename-partial-files: true
+  seedRatioLimit: 10
+  seedRatioLimited: true
+  idle-seeding-limit: 1440
+  idle-seeding-limit-enabled: true
+  start-added-torrents: true
+
 transmission_config: {}

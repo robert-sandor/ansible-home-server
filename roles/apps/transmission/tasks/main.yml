@@ -26,7 +26,6 @@
     remove_orphans: true
 
 - name: Configure transmission
-  when: transmission_config != {}
   vars:
     transmission_api: http://localhost:9091/transmission/rpc
   block:
@@ -53,7 +52,7 @@
         body_format: json
         body:
           method: session-set
-          arguments: "{{ transmission_config }}"
+          arguments: "{{ transmission_default_config | combine(transmission_config) }}"
         headers:
           x-transmission-session-id: "{{ session_response.x_transmission_session_id }}"
         force_basic_auth: true

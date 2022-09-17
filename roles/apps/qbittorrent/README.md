@@ -39,15 +39,24 @@ Once deployed, Qbittorrent will be available at `http://<host>:8082`, or if [Tra
 - `qbit_categories`
     - Default: empty
     - A map of categories to setup in qBittorrent, where the key is the category name, and the value is the relative path from `/downloads/`. e.g. `movies: movies` will create a category named `movies` and set the download path for it to `/downloads/movies` in the container. Note that `/downloads/` maps to the storage type chosen by `qbit_storage`.
+- `qbit_config`
+    - Default: empty
+    - A map containing qBittorrent configurations. See [below](#additional-configuration-options) for usage.
 
 ## Additional configuration options
 
 The playbook supports setting any qBittorrent configuration that the API supports.
-All variables of type `qbit_config_<config>` will be used to set the appropiate config in qBittorrent.
-Example: `qbit_config_auto_tmm_enabled: true` with set the `auto_tmm_enabled` config in qBittorrent to `true`.
+All fields of `qbit_config` will be used to set the appropiate config in qBittorrent.
+
+Example to set automatic torrent management to true:
+```
+qbit_config:
+    auto_tmm_enabled: true
+```
+
 For a complete list of configs that qBittorrent supports, check their [API Documentation](https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-application-preferences).
 
-The list of defaults configs applied by the playbook are:
+The list of defaults configs applied by the playbook is:
 - `auto_tmm_enabled: true`
     - Sets automatic torrent management to true. This allows the user or client to specify the category only, and the download path will be automatically determined.
 - `max_active_torrents: 100`
@@ -57,12 +66,12 @@ The list of defaults configs applied by the playbook are:
 - `max_active_uploads: 100`
     - Set max number of active torrents that can be seeding.
 - `scheduler_enabled: true`
-    - Enable scheduled alternate speeds. This is useful to prevent the client saturating the network during work hours, for example. By default the schedule is set from 9:00 AM to 11:00 PM.
+    - Enable scheduled alternate speeds. This is useful to prevent the client saturating the network during work hours, for example. By default the schedule is set from 9:00 AM to 12:00 AM.
 - `schedule_from_hour: 9`
     - Sets the scheduled start hour.
 - `schedule_from_min: 0`
     - Sets the scheduled start minute.
-- `schedule_to_hour: 23`
+- `schedule_to_hour: 0`
     - Sets the scheduled end hour.
 - `schedule_to_min: 0`
     - Sets the scheduled end minute.
@@ -70,3 +79,7 @@ The list of defaults configs applied by the playbook are:
     - Sets the alternate download limit, in KiB/s. Default is 15 MiB/s.
 - `alt_up_limit: 15360`
     - Sets the alternate upload limit, in KiB/s. Default is 15 MiB/s.
+- `max_connec: 2000`
+    - Sets global maximum connections to 2000.
+- `max_connec_per_torrent: 20`
+    - Sets maximum connections per torrent to 20.
