@@ -1,4 +1,10 @@
 ---
+- name: Include host specific vars
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files: [ "{{ inventory_hostname }}.yml" ]
+      skip: true
+
 - name: Validate registry location is valid
   ansible.builtin.fail:
     msg: registry_location must be one of 'path' or 'nfs'
