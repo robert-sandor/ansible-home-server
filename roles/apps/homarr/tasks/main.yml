@@ -39,3 +39,13 @@
     project_src: "{{ project_dir }}/homarr"
     pull: true
     remove_orphans: true
+
+- name: Template configuration
+  vars:
+    yaml_config: "{{ lookup('template', 'default.yml.j2') }}"
+  ansible.builtin.copy:
+    content: "{{ yaml_config | from_yaml | to_nice_json }}"
+    dest: "{{ project_dir }}/homarr/configs/default.json"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644

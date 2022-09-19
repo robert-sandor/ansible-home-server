@@ -1,7 +1,44 @@
 ---
 homarr_version: latest
 homarr_network: apps
-homarr_port: 7575
 homarr_baseurl: homarr.{{ domain }}
 
 homarr_password: ''
+
+homarr_types:
+  dashdot: Dash.
+  deluge: Deluge
+  emby: Emby
+  lidarr: Lidarr
+  plex: Plex
+  qbittorrent: qBittorrent
+  radarr: Radarr
+  readarr: Readarr
+  sonarr: Sonarr
+  transmission: Transmission
+  overseerr: Overseerr
+  jellyseerr: Jellyseerr
+  sabnzbd: Sabnzbd
+
+homarr_title: "{{ domain }}"
+homarr_logo: ""
+homarr_search_url: https://google.com/search?q=
+homarr_primary_color: red
+homarr_secondary_color: orange
+homarr_primary_shade: 6
+homarr_app_card_width: 1.5
+
+homarr_modules_search: true
+homarr_modules_torrent: true
+homarr_modules_calendar: true
+homarr_modules_calendar_sundaystart: false
+homarr_modules_date: true
+homarr_modules_overseerr: false
+homarr_modules_dlspeed: true
+homarr_modules_weather: true
+homarr_modules_weather_location: London
+homarr_modules_docker: false
+homarr_modules_dashdot: false
+homarr_modules_ping: false
+
+homarr_apps: {}

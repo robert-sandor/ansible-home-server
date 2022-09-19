@@ -1,0 +1,70 @@
+name: ansible
+services:
+{% for category in homarr_apps | dict2items %}
+{% for app in category.value | dict2items %}
+  - id: {{ app.key | to_uuid }}
+    category: {{ category.key }}
+    type: {{ app.value.type | default(homarr_types[app.key.lower()] | default('Other')) }}
+{% if app.value is none %}
+    name: {{ app.key }}
+    icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/{{ app.key | replace(' ', '-') | lower }}.png
+    url: https://{{ app.key }}.{{ domain }}
+{% elif app.value is string %}
+    name: {{ app.key }}
+    icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/{{ app.key | replace(' ', '-') | lower }}.png
+    url: {{ app.value }}
+{% elif app.value is mapping %}
+{% if app.value.icon | default('') | length > 0 %}
+{% if app.value.icon is match('^[a-zA-Z-]*$') %}
+    icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/{{ app.value.icon | lower }}.png
+{% else %}
+    icon: {{ app.value.icon }}
+{% endif %}
+{% else %}
+    icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/{{ app.value.name | default(app.key) | replace(' ', '-') | lower }}.png
+{% endif %}
+    name: {{ app.value.name | default(app.key) }}
+    url: {{ app.value.url }}
+    openedUrl: {{ app.value.opened_url | default(app.value.url) }}
+    username: {{ app.value.username | default('') }}
+    password: "{{ app.value.password | default('') }}"
+    apiKey: "{{ app.value.api_key | default('') }}"
+{% endif %}
+{% endfor %}
+{% endfor %}
+settings:
+  searchUrl: {{ homarr_search_url }}
+  primaryColor: {{ homarr_primary_color }}
+  secondaryColor: {{ homarr_secondary_color }}
+  primaryShade: {{ homarr_primary_shade }}
+  title: {{ homarr_title }}
+  logo: {{ homarr_logo }}
+modules:
+  'Seach Bar':
+    enabled: {{ homarr_modules_search }}
+  torrents-status:
+    enabled: {{ homarr_modules_torrent }}
+  calendar:
+    enabled: {{ homarr_modules_calendar }}
+    options:
+      sundaystart:
+        value: {{ homarr_modules_calendar_sundaystart }}
+  date:
+    enabled: {{ homarr_modules_date }}
+  overseerr:
+    enabled: {{ homarr_modules_overseerr }}
+  dlspeed:
+    enabled: {{ homarr_modules_dlspeed }}
+  search:
+    enabled: {{ homarr_modules_search }}
+  weather:
+    enabled: {{ homarr_modules_weather }}
+    options:
+      location:
+        value: {{ homarr_modules_weather_location }}
+  docker:
+    enabled: {{ homarr_modules_docker }}
+  dashdot:
+    enabled: {{ homarr_modules_dashdot }}
+  ping:
+    enabled: {{ homarr_modules_ping }}

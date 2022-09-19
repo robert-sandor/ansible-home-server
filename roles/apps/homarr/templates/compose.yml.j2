@@ -11,21 +11,21 @@ services:
       TZ: {{ timezone }}
       BASE_URL: {{ homarr_baseurl }}
       PASSWORD: $PASSWORD
-      PORT: {{ homarr_port }}
+      PORT: 7575
     volumes:
       - {{ project_dir }}/homarr/configs:/app/data/configs
       - {{ project_dir }}/homarr/icons:/app/data/icons
     networks:
       - {{ homarr_network }}
     ports:
-      - {{ homarr_port }}:{{ homarr_port }}
+      - 7575:7575
     labels:
       - domain={{ domain }}
 {% if 'traefik' in apps %}
       - traefik.enable=true
       - traefik.http.routers.homarr.rule=Host(`homarr.{{ domain }}`)
       - traefik.http.routers.homarr.entrypoints=websecure
-      - traefik.http.services.homarr.loadbalancer.server.port={{ homarr_port }}
+      - traefik.http.services.homarr.loadbalancer.server.port=7575
       - traefik.http.routers.homarr.service=homarr
       - traefik.http.routers.homarr.tls=true
       - traefik.http.routers.homarr.tls.certresolver=acme_provider
