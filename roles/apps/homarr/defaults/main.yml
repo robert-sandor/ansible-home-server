@@ -42,3 +42,5 @@ homarr_modules_dashdot: false
 homarr_modules_ping: false
 
 homarr_apps: {}
+
+homarr_custom_icons: {}

@@ -13,6 +13,17 @@
       - homarr/configs
       - homarr/icons
 
+- name: Download custom icons
+  ansible.builtin.get_url:
+    url: "{{ icon.value }}"
+    dest: "{{ project_dir }}/homarr/icons/{{ icon.key }}"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0644
+  with_items: "{{ homarr_custom_icons | dict2items }}"
+  loop_control:
+    loop_var: icon
+
 - name: Template .env file
   ansible.builtin.template:
     src: .env.j2

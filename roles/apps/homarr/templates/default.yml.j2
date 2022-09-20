@@ -24,8 +24,8 @@ services:
     icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/{{ app.value.name | default(app.key) | replace(' ', '-') | lower }}.png
 {% endif %}
     name: {{ app.value.name | default(app.key) }}
-    url: {{ app.value.url }}
-    openedUrl: {{ app.value.opened_url | default(app.value.url) }}
+    url: {{ app.value.url | default('https://' + app.key + "." + domain) }}
+    openedUrl: {{ app.value.opened_url | default(app.value.url | default('https://' + app.key + "." + domain)) }}
     username: {{ app.value.username | default('') }}
     password: "{{ app.value.password | default('') }}"
     apiKey: "{{ app.value.api_key | default('') }}"

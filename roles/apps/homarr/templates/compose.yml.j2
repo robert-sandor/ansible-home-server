@@ -14,7 +14,7 @@ services:
       PORT: 7575
     volumes:
       - {{ project_dir }}/homarr/configs:/app/data/configs
-      - {{ project_dir }}/homarr/icons:/app/data/icons
+      - {{ project_dir }}/homarr/icons:/app/public/icons
     networks:
       - {{ homarr_network }}
     ports:
