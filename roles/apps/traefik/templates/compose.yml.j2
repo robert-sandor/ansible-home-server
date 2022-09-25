@@ -52,7 +52,7 @@ services:
       - 8081:8081
 {% endif %}
     volumes:
-{% if traefik_https and traefik_acme_enabled %}
+{% if traefik_https and traefik_acme_enabled %} 
       - {{ project_dir}}/traefik/acme-data:/letsencrypt
 {% endif %}
       - /var/run/docker.sock:/var/run/docker.sock:ro

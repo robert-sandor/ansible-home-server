@@ -1,13 +1,7 @@
 ---
 - name: Setup apps using docker
 
-  hosts: home
-
-  roles:
-    - role: base/docker
-      tags: docker
-    - role: base/docker_compose
-      tags: docker
+  hosts: "{{ target | default('home') }}"
 
   tasks:
     - name: Include apps
