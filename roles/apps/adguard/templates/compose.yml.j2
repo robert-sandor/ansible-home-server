@@ -8,7 +8,7 @@ services:
     image: adguard/adguardhome:{{ adguard_version }}
     restart: unless-stopped
     environment:
-      TZ: {{ timezone }}
+      - "TZ={{ timezone }}"
     volumes:
       - {{ project_dir }}/adguard/work:/opt/adguardhome/work
       - {{ project_dir }}/adguard/conf:/opt/adguardhome/conf
@@ -17,23 +17,19 @@ services:
     ports:
       - 53:53/tcp
       - 53:53/udp
-      - 3000:3000/tcp
+    expose:
+      - 3000
     labels:
-      - domain={{ domain }}
-{% if 'traefik' in apps %}
       - traefik.enable=true
+      - traefik.http.services.adguard.loadbalancer.server.port=3000
       - traefik.http.routers.adguard.rule=Host(`adguard.{{ domain }}`)
       - traefik.http.routers.adguard.entrypoints=websecure
-      - traefik.http.services.adguard.loadbalancer.server.port=3000
       - traefik.http.routers.adguard.service=adguard
-      - traefik.http.routers.adguard.tls.certresolver=acme_provider
-{% endif %}
-{% if 'flame' in apps %}
-      - flame.type=application
-      - flame.name=adguard
-      - flame.url=adguard.{{ domain }}
-      - flame.icon=shield-check
-{% endif %}
+      - simplydash.enable=true
+      - simplydash.name=Adguard Home
+      - simplydash.description=Ad blocking DNS server @ {{ domain }}
+      - simplydash.group=admin
+      - simplydash.link=https://adguard.{{ domain }}
 
 networks:
   {{ adguard_network }}:

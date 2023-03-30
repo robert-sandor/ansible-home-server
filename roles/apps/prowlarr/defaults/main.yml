@@ -1,0 +1,42 @@
+---
+prowlarr_version: latest
+prowlarr_network: apps
+
+prowlarr_user: admin
+prowlarr_password: P@ssw0rd!@#
+
+default_prowlarr_config:
+  bindAddress: "*"
+  port: 9696
+  sslPort: 6969
+  enableSsl: false
+  launchBrowser: true
+  authenticationMethod: forms
+  authenticationRequired: enabled
+  analyticsEnabled: false
+  logLevel: info
+  consoleLogLevel: ''
+  branch: master
+  sslCertPath: ''
+  sslCertPassword: ''
+  urlBase: ''
+  instanceName: Prowlarr
+  updateAutomatically: false
+  updateMechanism: docker
+  updateScriptPath: ''
+  proxyEnabled: false
+  proxyType: http
+  proxyHostname: ''
+  proxyPort: 8080
+  proxyUsername: ''
+  proxyPassword: ''
+  proxyBypassFilter: ''
+  proxyBypassLocalAddresses: true
+  certificateValidation: enabled
+  backupFolder: Backups
+  backupInterval: 7
+  backupRetention: 28
+  historyCleanupDays: 365
+  id: 1
+  username: "{{ prowlarr_user }}"
+  password: "{{ prowlarr_password }}"

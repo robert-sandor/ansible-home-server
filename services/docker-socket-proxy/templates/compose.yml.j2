@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  docker-socket-proxy:
+    container_name: docker-socket-proxy
+    hostname: docker-socket-proxy
+    image: ghcr.io/tecnativa/docker-socket-proxy:{{ dsp_version | default("latest") }}
+    restart: unless-stopped
+    environment:
+      - CONTAINERS=1
+      - POST=0
+    networks:
+      - {{ dsp_network | default(networks[0]) }}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 2375:2375
+    labels:
+      - domain={{ domain }}
+
+networks:
+  {{ dsp_network | default(networks[0]) }}:
+    external: true

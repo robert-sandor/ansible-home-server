@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  docker-socket-proxy:
+    container_name: docker-socket-proxy
+    hostname: docker-socket-proxy
+    image: ghcr.io/tecnativa/docker-socket-proxy:{{ dsp_version }}
+    restart: unless-stopped
+    environment:
+      - CONTAINERS=1
+      - POST=0
+    networks:
+      - {{ dsp_network }}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 2375:2375
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.docker-socket-proxy.loadbalancer.server.port=2375
+      - traefik.http.routers.docker-socket-proxy.rule=Host(`docker.{{ domain }}`)
+      - traefik.http.routers.docker-socket-proxy.entrypoints=websecure
+      - traefik.http.routers.docker-socket-proxy.service=docker-socket-proxy
+
+networks:
+  {{ dsp_network }}:
+    external: true

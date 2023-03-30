@@ -1,0 +1,98 @@
+---
+- name: Get download clients
+  ansible.builtin.uri:
+    method: GET
+    url: "{{ radarr_api }}/downloadclient"
+    headers:
+      x-api-key: "{{ radarr_api_key }}"
+  register: get_download_clients_response
+  retries: 10
+  delay: 10
+  until: get_download_clients_response.status > 0 and get_download_clients_response.status != 404
+  changed_when: false
+
+- name: Set transmission as the download client
+  vars:
+    find_transmission_query: "[?name == `transmission`]"
+    transmission_configured: "{{ get_download_clients_response.json | json_query(find_transmission_query) | length() > 0 }}"
+  when: not transmission_configured
+  ansible.builtin.uri:
+    method: POST
+    url: "{{ radarr_api }}/downloadclient"
+    headers:
+      x-api-key: "{{ radarr_api_key }}"
+    body_format: json
+    body:
+      enable: true
+      protocol: torrent
+      priority: 1
+      removeCompletedDownloads: true
+      removeFailedDownloads: true
+      name: transmission
+      implementationName: transmission
+      implementation: transmission
+      configContract: transmissionsettings
+      infoLink: 'https://wiki.servarr.com/radarr/supported#transmission'
+      fields:
+        - name: host
+          value: "{{ radarr_download_client_host }}"
+        - name: port
+          value: "{{ radarr_download_client_port }}"
+        - name: useSsl
+          value: "{{ radarr_download_client_ssl }}"
+        - name: urlBase
+          value: "/transmission/"
+        - name: username
+          value: "{{ radarr_download_client_user }}"
+        - name: password
+          value: "{{ radarr_download_client_password }}"
+        - name: movieCategory
+          value: "{{ radarr_download_client_category }}"
+        - name: recentMoviePriority
+          value: 0
+        - name: olderMoviePriority
+          value: 0
+        - name: tvDirectory
+        - name: addPaused
+          value: false
+      tags: []
+    status_code: 201
+  register: add_download_client_response
+  retries: 10
+  delay: 10
+  until: add_download_client_response.status > 0 and add_download_client_response.status != 404
+  changed_when: true
+
+- name: Get remote path mappings
+  ansible.builtin.uri:
+    method: GET
+    url: "{{ radarr_api }}/remotepathmapping"
+    headers:
+      x-api-key: "{{ radarr_api_key }}"
+  register: get_remote_path_mapping_response
+  retries: 10
+  delay: 10
+  until: get_remote_path_mapping_response.status > 0 and get_remote_path_mapping_response.status != 404
+  changed_when: false
+
+- name: Add remote mapping for download client
+  vars:
+    query: "[?host == `{{ radarr_download_client_host }}`]"
+    remote_mapping_configured: "{{ get_remote_path_mapping_response.json | json_query(query) | length() > 0 }}"
+  when: not remote_mapping_configured
+  ansible.builtin.uri:
+    method: POST
+    url: "{{ radarr_api }}/remotepathmapping"
+    headers:
+      x-api-key: "{{ radarr_api_key }}"
+    body_format: json
+    body:
+      host: "{{ radarr_download_client_host }}"
+      remotePath: "{{ radarr_download_client_remotePath }}"
+      localPath: /data{{ radarr_download_client_remotePath }}
+    status_code: 201
+  register: set_remote_mapping_response
+  retries: 10
+  delay: 10
+  until: set_remote_mapping_response.status > 0 and set_remote_mapping_response.status != 404
+  changed_when: true

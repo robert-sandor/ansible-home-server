@@ -5,7 +5,7 @@
     state: directory
     owner: "{{ ansible_facts.user_uid }}"
     group: "{{ ansible_facts.user_gid }}"
-    mode: 0755
+    mode: 0700
   with_items: "{{ subdirs }}"
   loop_control:
     loop_var: subdir

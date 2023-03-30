@@ -32,6 +32,10 @@ services:
       - db
     labels:
       - domain={{ domain }}
+      - simplydash.enable=true
+      - simplydash.name=gitea
+      - simplydash.group=dev
+      - simplydash.href=https://gitea.yavin.xyz
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.gitea.rule=Host(`gitea.{{ domain }}`)

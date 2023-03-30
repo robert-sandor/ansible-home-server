@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  homepage:
+    container_name: homepage
+    hostname: homepage
+    image: ghcr.io/benphelps/homepage:{{ homepage_version }}
+    restart: unless-stopped
+    networks:
+      - {{ homepage_network }}
+    volumes:
+      - {{ project_dir }}/homepage/config:/app/config
+    labels:
+      - domain={{ domain }}
+{% if 'traefik' in apps %}
+      - traefik.enable=true
+      - traefik.http.routers.homepage.rule=Host(`{{ domain }}`)
+      - traefik.http.routers.homepage.entrypoints=websecure
+      - traefik.http.services.homepage.loadbalancer.server.port=3000
+      - traefik.http.routers.homepage.service=homepage
+      - traefik.http.routers.homepage.tls=true
+      - traefik.http.routers.homepage.tls.certresolver=acme_provider
+{% endif %}
+
+networks:
+  {{ homepage_network }}:
+    external: true

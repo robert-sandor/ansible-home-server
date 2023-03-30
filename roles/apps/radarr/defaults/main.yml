@@ -1,0 +1,21 @@
+---
+radarr_version: latest
+radarr_network: apps
+
+radarr_root_dir: media/movies
+
+radarr_data_storage: path
+
+radarr_data_path: "{{ project_dir }}/radarr/data"
+
+radarr_data_nfs_server: ""
+radarr_data_nfs_path: ""
+radarr_data_nfs_opts: noexec,nolock,rw,soft,nfsvers=4
+
+radarr_download_client_host: transmission
+radarr_download_client_port: 9091
+radarr_download_client_ssl: false
+radarr_download_client_user: ""
+radarr_download_client_password: ""
+radarr_download_client_category: movies
+radarr_download_client_remotePath: /downloads

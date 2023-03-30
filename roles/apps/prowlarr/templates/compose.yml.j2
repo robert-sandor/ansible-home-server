@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  prowlarr:
+    container_name: prowlarr
+    hostname: prowlarr
+    image: ghcr.io/linuxserver/prowlarr:{{ prowlarr_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+    volumes:
+      - {{ project_dir }}/prowlarr/config:/config
+    networks:
+      - {{ prowlarr_network }}
+    expose:
+      - 9696
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.prowlarr.loadbalancer.server.port=9696
+      - traefik.http.routers.prowlarr.rule=Host(`prowlarr.{{ domain }}`)
+      - traefik.http.routers.prowlarr.entrypoints=websecure
+      - traefik.http.routers.prowlarr.service=prowlarr
+      - simplydash.enable=true
+      - simplydash.name=Prowlarr
+      - simplydash.description=Indexer for *arr
+      - simplydash.link=https://prowlarr.{{ domain }}
+      - simplydash.group=media-management
+
+networks:
+  {{ prowlarr_network }}:
+    external: true

@@ -1,0 +1,84 @@
+---
+- name: Attempt to login using default credentials
+  ansible.builtin.uri:
+    method: POST
+    url: "{{ mealie_api }}/auth/token"
+    body_format: form-urlencoded
+    body:
+      username: "{{ mealie_admin_email }}"
+      password: "{{ mealie_admin_password }}"
+    status_code: 200
+  register: auth_response
+  until: auth_response.status > 0
+  delay: 10
+  retries: 5
+  changed_when: false
+
+- vars:
+    bearer_token: bearer {{ auth_response.json.access_token }}
+    existing_users: "{{ get_users_response.json['items'] | json_query('[].username') }}"
+    users_to_remove: "{{ existing_users | difference([mealie_admin_username]) | difference(mealie_users | dict2items | map(attribute='key')) }}"
+    users_to_create: "{{ mealie_users | dict2items | map(attribute='key') | difference(existing_users) }}"
+  block:
+    - name: Get users
+      ansible.builtin.uri:
+        method: GET
+        url: "{{ mealie_api }}/users"
+        headers:
+          authorization: "{{ bearer_token }}"
+        status_code: 200
+      register: get_users_response
+      until: get_users_response.status > 0
+      delay: 10
+      retries: 5
+      changed_when: false
+
+    - debug:
+        var: existing_users
+    - debug:
+        var: users_to_create
+    - debug:
+        var: users_to_remove
+
+    - name: Remove users
+      vars:
+        user_id_query: "[?username=='{{ username }}'] | [0].id"
+        user_id: "{{ get_users_response.json | json_query(user_id_query) }}"
+      ansible.builtin.uri:
+        method: DELETE
+        url: "{{ mealie_api }}/users/{{ user_id }}"
+        headers:
+          authorization: "{{ bearer_token }}"
+        status_code: 200
+      register: user_delete_response
+      until: user_delete_response.status > 0
+      delay: 10
+      retries: 5
+      changed_when: true
+      with_items: "{{ users_to_remove }}"
+      loop_control:
+        loop_var: username
+
+    - name: Create users
+      ansible.builtin.uri:
+        method: POST
+        url: "{{ mealie_api }}/users"
+        headers:
+          authorization: "{{ bearer_token }}"
+        body_format: json
+        body:
+          username: "{{ username }}"
+          fullName: "{{ mealie_users[username].fullname }}"
+          email: "{{ mealie_users[username].email }}"
+          admin: "{{ mealie_users[username].admin | default(false) }}"
+          group: "{{ mealie_user_group }}"
+          password: "{{ mealie_users[username].password }}"
+        status_code: 201
+      register: user_create_response
+      until: user_create_response.status > 0
+      delay: 10
+      retries: 5
+      changed_when: true
+      with_items: "{{ users_to_create }}"
+      loop_control:
+        loop_var: username

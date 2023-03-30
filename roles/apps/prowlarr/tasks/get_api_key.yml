@@ -1,0 +1,10 @@
+---
+- name: Get API Key for Prowlarr
+  community.docker.docker_container_exec:
+    container: prowlarr
+    command: /bin/bash -c "cat /config/config.xml | grep ApiKey | tr '<' '>' | cut -d '>' -f3"
+  register: get_api_key_response
+
+- name: Save Prowlarr API Key
+  set_fact: 
+    prowlarr_api_key: "{{ get_api_key_response.stdout }}"

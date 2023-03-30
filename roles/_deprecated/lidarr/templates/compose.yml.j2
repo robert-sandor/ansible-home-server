@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  lidarr:
+    container_name: lidarr
+    hostname: lidarr
+    image: ghcr.io/linuxserver/lidarr:{{ lidarr_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:lidarr
+    volumes:
+      - {{ project_dir }}/lidarr/data:/config
+    networks:
+      - {{ lidarr_network }}
+    expose:
+      - 8686
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.lidarr.loadbalancer.server.port=8686
+      - traefik.http.routers.lidarr.rule=Host(`lidarr.{{ domain }}`)
+      - traefik.http.routers.lidarr.entrypoints=websecure
+      - traefik.http.routers.lidarr.service=lidarr
+
+networks:
+  {{ lidarr_network }}:
+    external: true

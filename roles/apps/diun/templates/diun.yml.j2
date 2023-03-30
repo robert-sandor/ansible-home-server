@@ -1,0 +1,16 @@
+---
+watch:
+  workers: {{ diun_workers }}
+  schedule: "{{ diun_schedule }}"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    watchByDefault: true
+
+{% if diun_notifications == "discord" %}
+notif:
+  discord:
+    webhookUrl: {{ diun_discord_webhook }}
+    mentions: []
+{% endif %}

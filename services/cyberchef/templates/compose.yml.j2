@@ -13,6 +13,10 @@ services:
       - 8001:8000
     labels:
       - domain={{ domain }}
+      - simplydash.enable=true
+      - simplydash.name=cyberchef
+      - simplydash.group=dev
+      - simplydash.href=https://cyberchef.yavin.xyz
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.cyberchef.rule=Host(`cyberchef.{{ domain }}`)

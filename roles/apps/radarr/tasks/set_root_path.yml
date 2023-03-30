@@ -1,0 +1,39 @@
+- name: Get root dir
+  ansible.builtin.uri:
+    method: GET
+    url: "{{ radarr_api }}/rootFolder"
+    headers:
+      x-api-key: "{{ radarr_api_key }}"
+  register: get_root_path_response
+  retries: 10
+  delay: 10
+  until: get_root_path_response.status > 0 and get_root_path_response.status != 404
+  changed_when: false
+
+- name: Set root dir
+  vars:
+    rootdir_set: "{{ get_root_path_response.json | json_query('[*].path') | length() > 0 }}"
+  when: not rootdir_set
+  block:
+    - name: Ensure root dir exists
+      community.docker.docker_container_exec:
+        container: radarr
+        command: /bin/bash -c "mkdir -p /data/{{ radarr_root_dir }}"
+        user: "{{ ansible_facts.user_uid }}"
+      changed_when: true
+
+    - name: Update root dir
+      uri:
+        url: "{{ radarr_api }}/rootFolder"
+        method: POST
+        headers:
+          x-api-key: "{{ radarr_api_key }}"
+        body_format: json
+        body:
+          path: "/data/{{ radarr_root_dir }}"
+        status_code: 201
+      register: set_root_path_response
+      retries: 10
+      delay: 10
+      until: set_root_path_response.status > 0 and set_root_path_response.status != 404
+      changed_when: true

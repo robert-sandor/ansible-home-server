@@ -10,7 +10,7 @@ services:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-      - TRANSMISSION_WEB_HOME=/flood-for-transmission/
+      # - TRANSMISSION_WEB_HOME=/flood-for-transmission/
 {% if transmission_user is defined and transmission_pass is defined %}
       - USER={{ transmission_user }}
       - PASS={{ transmission_pass }}
@@ -27,6 +27,10 @@ services:
       - 9091:9091
     labels:
       - domain={{ domain }}
+      - simplydash.enable=true
+      - simplydash.name=transmission
+      - simplydash.group=media-management
+      - simplydash.href=https://transmission.yavin.xyz
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.transmission.rule=Host(`transmission.{{ domain }}`)

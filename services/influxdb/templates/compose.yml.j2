@@ -17,6 +17,10 @@ services:
       - {{ project_dir }}/influxdb/config:/etc/influxdb2
     labels:
       - domain={{ domain }}
+      - simplydash.enable=true
+      - simplydash.name=influxdb
+      - simplydash.group=monitoring
+      - simplydash.href=https://influxdb.yavin.xyz
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.influxdb.rule=Host(`influxdb.{{ domain }}`)

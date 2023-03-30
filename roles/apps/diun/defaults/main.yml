@@ -1,0 +1,10 @@
+---
+diun_version: latest
+diun_network: apps
+
+diun_workers: 10
+diun_schedule: "0 0 0 * * *"
+
+diun_notifications: none
+
+diun_discord_webhook: ""

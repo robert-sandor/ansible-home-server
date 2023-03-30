@@ -1,0 +1,39 @@
+---
+- name: Include host specific vars
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files: [ "{{ ansible_hostname }}.yml" ]
+      skip: true
+
+- name: Create directory structure
+  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  vars:
+    subdirs:
+      - prowlarr
+      - prowlarr/config
+
+- name: Template compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ project_dir }}/prowlarr/compose.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0600
+
+- name: Setup docker network {{ prowlarr_network }}
+  community.docker.docker_network:
+    name: "{{ prowlarr_network }}"
+
+- name: Start service using docker compose
+  community.docker.docker_compose:
+    project_name: prowlarr
+    project_src: "{{ project_dir }}/prowlarr"
+    pull: true
+    remove_orphans: true
+
+- name: Configure prowlarr
+  vars:
+    prowlarr_api: https://prowlarr.{{ domain }}/api/v1
+  block:
+    - ansible.builtin.import_tasks: get_api_key.yml
+    - ansible.builtin.import_tasks: server_config.yml

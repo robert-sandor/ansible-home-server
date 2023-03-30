@@ -1,0 +1,40 @@
+---
+- name: Include host specific vars
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files: [ "{{ ansible_hostname }}.yml" ]
+      skip: true
+
+- name: Create directory structure
+  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  vars:
+    subdirs:
+      - radarr
+      - radarr/config
+
+- name: Template compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ project_dir }}/radarr/compose.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0600
+
+- name: Setup docker network {{ radarr_network }}
+  community.docker.docker_network:
+    name: "{{ radarr_network }}"
+
+- name: Start service using docker compose
+  community.docker.docker_compose:
+    project_name: radarr
+    project_src: "{{ project_dir }}/radarr"
+    pull: true
+    remove_orphans: true
+
+- name: Configure
+  vars:
+    radarr_api: "https://radarr.{{ domain }}/api/v3"
+  block:
+    - ansible.builtin.import_tasks: get_api_key.yml
+    - ansible.builtin.import_tasks: set_root_path.yml
+    - ansible.builtin.import_tasks: set_download_client.yml

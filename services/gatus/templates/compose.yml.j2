@@ -16,6 +16,10 @@ services:
       - 8087:8080
     labels:
       - domain={{ domain }}
+      - simplydash.enable=true
+      - simplydash.name=gatus
+      - simplydash.group=monitoring
+      - simplydash.href=https://gatus.yavin.xyz
 {% if 'traefik' in services %}
       - traefik.enable=true
       - traefik.http.routers.gatus.rule=Host(`gatus.{{ domain }}`)

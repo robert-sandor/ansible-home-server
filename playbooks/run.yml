@@ -1,16 +1,29 @@
 ---
 - name: Setup apps using docker
 
-  hosts: "{{ target | default('home') }}"
+  hosts: "{{ target | default('all') }}"
 
   tasks:
+    - name: Include core apps
+      vars:
+        core_apps:
+          - traefik
+          - diun
+          - docker-socket-proxy
+          - simplydash
+      ansible.builtin.set_fact:
+        apps: "{{ core_apps + apps | default([]) }}"
+      when: not exclude_core_apps | default(None)
+      tags:
+        - always
+
     - name: Include apps
       ansible.builtin.include_role:
-        name: "apps/{{ app }}"
+        name: "{{ app }}"
         apply:
           tags:
             - "{{ app }}"
-      with_items: "{{ apps }}"
+      with_items: "{{ apps | default([]) }}"
       loop_control:
         loop_var: app
       tags:

@@ -9,25 +9,19 @@ services:
     user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
     networks:
       - {{ cyberchef_network }}
-    ports:
-      - 8001:8000
+    expose:
+      - 8000
     labels:
-      - domain={{ domain }}
-{% if 'traefik' in apps %}
       - traefik.enable=true
+      - traefik.http.services.cyberchef.loadbalancer.server.port=8000
       - traefik.http.routers.cyberchef.rule=Host(`cyberchef.{{ domain }}`)
       - traefik.http.routers.cyberchef.entrypoints=websecure
-      - traefik.http.services.cyberchef.loadbalancer.server.port=8000
       - traefik.http.routers.cyberchef.service=cyberchef
-      - traefik.http.routers.cyberchef.tls=true
-      - traefik.http.routers.cyberchef.tls.certresolver=acme_provider
-{% endif %}
-{% if 'flame' in apps %}
-      - flame.type=application
-      - flame.name=cyberchef
-      - flame.url=cyberchef.{{ domain }}
-      - flame.icon=chef-hat
-{% endif %}
+      - simplydash.enable=true
+      - simplydash.name=Cyberchef
+      - simplydash.description=Random Dev Tools
+      - simplydash.link=https://cyberchef.{{ domain }}
+      - simplydash.group=apps
 
 networks:
   {{ cyberchef_network }}:

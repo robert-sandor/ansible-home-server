@@ -1,0 +1,53 @@
+---
+- name: Include host specific vars
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files: [ "{{ ansible_hostname }}.yml" ]
+      skip: true
+
+- name: Create directory structure
+  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  vars:
+    subdirs:
+      - simplydash
+      - simplydash/config
+      - simplydash/images
+
+- name: Template compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ project_dir }}/simplydash/compose.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0600
+
+- name: Create config file
+  vars:
+    simplydash_config:
+      docker: "{{ simplydash_dockers }}"
+      services: "{{ simplydash_services }}"
+      groups: "{{ simplydash_groups }}"
+      log:
+        level: "{{ simplydash_log_level }}"
+        format: "{{ simplydash_log_format }}"
+      app:
+        title: "{{ simplydash_title }}"
+        theme: "{{ simplydash_theme }}"
+        backgroundImage: "{{ simplydash_backgroundImage }}"
+  ansible.builtin.copy:
+    content: "{{ simplydash_config | to_nice_yaml }}"
+    dest: "{{ project_dir }}/simplydash/config/config.yml"
+    owner: "{{ ansible_facts.user_uid }}"
+    group: "{{ ansible_facts.user_gid }}"
+    mode: 0600
+
+- name: Setup docker network {{ simplydash_network }}
+  community.docker.docker_network:
+    name: "{{ simplydash_network }}"
+
+- name: Start service using docker compose
+  community.docker.docker_compose:
+    project_name: simplydash
+    project_src: "{{ project_dir }}/simplydash"
+    pull: true
+    remove_orphans: true

@@ -1,0 +1,24 @@
+---
+version: "3.8"
+
+services:
+  diun:
+    container_name: diun
+    hostname: diun
+    image: crazymax/diun:{{ diun_version }}
+    restart: unless-stopped
+    command: serve
+    environment:
+      - TZ={{ timezone }}
+      - LOG_LEVEL=info
+      - LOG_JSON=true
+    volumes:
+      - {{ project_dir }}/diun/data:/data
+      - {{ project_dir }}/diun/diun.yml:/diun.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - {{ diun_network }}
+
+networks:
+  {{ diun_network }}:
+    external: true

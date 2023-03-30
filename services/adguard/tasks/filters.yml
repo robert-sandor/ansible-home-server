@@ -2,8 +2,8 @@
   uri:
     url: "http://localhost:3000/control/filtering/status"
     method: GET
-    body_format: json
     headers:
+      Accept-Encoding: gzip
       Cookie: "{{ adguard_cookie }}"
     status_code: 200
   register: _response

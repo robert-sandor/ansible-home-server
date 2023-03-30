@@ -1,0 +1,56 @@
+---
+- name: Attempt to login using default credentials
+  ansible.builtin.uri:
+    method: POST
+    url: "{{ mealie_api }}/auth/token"
+    body_format: form-urlencoded
+    body:
+      username: "{{ mealie_default_email }}"
+      password: "{{ mealie_default_password }}"
+    status_code: [ 200, 401, 404 ]
+  register: default_auth_response
+  until: default_auth_response.status > 0 and default_auth_response.status != 404
+  delay: 10
+  retries: 5
+  changed_when: false
+
+- when: default_auth_response.status == 200
+  vars:
+    bearer_token: bearer {{ default_auth_response.json.access_token }}
+  block:
+    - name: Get user data
+      ansible.builtin.uri:
+        method: GET
+        url: "{{ mealie_api }}/users/self"
+        headers:
+          authorization: "{{ bearer_token }}"
+      changed_when: false
+      register: self_user_data
+
+    - name: Change default password for admin
+      ansible.builtin.uri:
+        method: PUT
+        url: "{{ mealie_api }}/users/password"
+        headers:
+          authorization: "{{ bearer_token }}"
+        body_format: json
+        body:
+          currentPassword: "{{ mealie_default_password }}"
+          newPassword: "{{ mealie_admin_password }}"
+        status_code: 200
+      changed_when: true
+
+    - name: Change admin user details
+      ansible.builtin.uri:
+        method: PUT
+        url: "{{ mealie_api }}/users/{{ self_user_data.json.id }}"
+        headers:
+          authorization: "{{ bearer_token }}"
+        body_format: json
+        body:
+          username: "{{ mealie_admin_username }}"
+          fullName: "{{ mealie_admin_fullname }}"
+          email: "{{ mealie_admin_email }}"
+          admin: true
+        status_code: 200
+      changed_when: true

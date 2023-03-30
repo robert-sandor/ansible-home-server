@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  mealie-frontend:
+    container_name: mealie-frontend
+    hostname: mealie-frontend
+    image: hkotel/mealie:frontend-{{ mealie_version }}
+    restart: unless-stopped
+    environment:
+      - API_URL=http://mealie-api:9000
+    volumes:
+      - {{ project_dir }}/mealie/data:/app/data
+    networks:
+      - {{ mealie_network }}
+    expose:
+      - 3000
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.mealie.loadbalancer.server.port=3000
+      - traefik.http.routers.mealie.rule=Host(`mealie.{{ domain }}`)
+      - traefik.http.routers.mealie.entrypoints=websecure
+      - traefik.http.routers.mealie.service=mealie
+      - simplydash.enable=true
+      - simplydash.name=Mealie
+      - simplydash.description=Recipes
+      - simplydash.link=https://mealie.{{ domain }}
+      - simplydash.group=apps
+
+  mealie-api:
+    container_name: mealie-api
+    hostname: mealie-api
+    image: hkotel/mealie:api-{{ mealie_version }}
+    restart: unless-stopped
+    environment:
+      - TZ={{timezone}}
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - BASE_URL=https://mealie.{{ domain }}
+      - ALLOW_SIGNUP=false
+    volumes:
+      - {{ project_dir }}/mealie/data:/app/data
+    networks:
+      - {{ mealie_network }}
+    expose:
+      - 9000
+
+networks:
+  {{ mealie_network }}:
+    external: true

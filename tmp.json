@@ -1,0 +1,1198 @@
+[
+  {
+    "Id": "6e680e3e73d24e5ed89ace53bbfe4dcab8058efbae8fb5d5af92949d38e240e4",
+    "Names": [
+      "/traefik"
+    ],
+    "Image": "traefik:latest",
+    "ImageID": "sha256:85dec640e68e655f5cf95c8ce8671da1194710b38a539166ca080ba0c93e1d4d",
+    "Command": "/entrypoint.sh --api=true --accesslog=False --providers.docker=true --providers.docker.network=apps --providers.docker.exposedbydefault=false --entrypoints.web.address=:80 --entrypoints.web.http.redirections.entrypoint.to=websecure --entrypoints.web.http.redirections.entrypoint.scheme=https --entrypoints.websecure.address=:443 --entrypoints.websecure.http.tls=true --entrypoints.websecure.http.tls.certresolver=acme_provider --entrypoints.websecure.http.tls.domains[0].main=prod.yavin.xyz --entrypoints.websecure.http.tls.domains[0].sans=*.prod.yavin.xyz --certificatesresolvers.acme_provider.acme.dnschallenge=true --certificatesresolvers.acme_provider.acme.dnschallenge.provider=cloudflare --certificatesresolvers.acme_provider.acme.email=sandorrobertk94@gmail.com --certificatesresolvers.acme_provider.acme.storage=/letsencrypt/acme.json --certificatesresolvers.acme_provider.acme.caserver=https://acme-v02.api.letsencrypt.org/directory --metrics.prometheus=true --entryPoints.metrics.address=:8081 --metrics.prometheus.entrypoint=websecure",
+    "Created": 1678293183,
+    "Ports": [
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 443,
+        "PublicPort": 443,
+        "Type": "tcp"
+      },
+      {
+        "IP": "::",
+        "PrivatePort": 443,
+        "PublicPort": 443,
+        "Type": "tcp"
+      },
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 80,
+        "PublicPort": 80,
+        "Type": "tcp"
+      },
+      {
+        "IP": "::",
+        "PrivatePort": 80,
+        "PublicPort": 80,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "5c1402ccc0cb1a930f253d363113491573019e93ecc472d50f6e2de3ace79bbd",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "traefik",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/traefik/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/traefik",
+      "com.docker.compose.service": "traefik",
+      "com.docker.compose.version": "1.29.2",
+      "org.opencontainers.image.description": "A modern reverse-proxy",
+      "org.opencontainers.image.documentation": "https://docs.traefik.io",
+      "org.opencontainers.image.source": "https://github.com/traefik/traefik",
+      "org.opencontainers.image.title": "Traefik",
+      "org.opencontainers.image.url": "https://traefik.io",
+      "org.opencontainers.image.vendor": "Traefik Labs",
+      "org.opencontainers.image.version": "v2.9.8",
+      "simplydash.description": "Traefik Dashboard @ prod-main",
+      "simplydash.enable": "true",
+      "simplydash.group": "admin",
+      "simplydash.href": "https://traefik.prod.yavin.xyz",
+      "simplydash.name": "Traefik",
+      "traefik.enable": "true",
+      "traefik.http.routers.traefik.entrypoints": "websecure",
+      "traefik.http.routers.traefik.rule": "Host(`traefik.prod.yavin.xyz`)",
+      "traefik.http.routers.traefik.service": "api@internal"
+    },
+    "State": "running",
+    "Status": "Up 4 hours",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "15204e67212fa0b6f50fd491270d0d000df05b9bb6d2d488d2bbf1a78b81aed3",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.2",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:02",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/traefik/acme-data",
+        "Destination": "/letsencrypt",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/var/run/docker.sock",
+        "Destination": "/var/run/docker.sock",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "fcbcd47c203d463d500cf141455f94b854942c76c90116d1c716dd8abc0d2351",
+    "Names": [
+      "/radarr"
+    ],
+    "Image": "ghcr.io/linuxserver/radarr:latest",
+    "ImageID": "sha256:29fad8dfc9036d00fb7039003d3add137197704943126d01cb822c81ef834472",
+    "Command": "/init",
+    "Created": 1678274689,
+    "Ports": [
+      {
+        "PrivatePort": 7878,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "build_version": "Linuxserver.io version:- 4.3.2.6857-ls164 Build-date:- 2023-03-06T17:03:10+01:00",
+      "com.docker.compose.config-hash": "a5a1652a5a3fbade57cc2b9d013acf4c7c5f0b900d8ab87e4fb9adf1da000e1c",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "radarr",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/radarr/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/radarr",
+      "com.docker.compose.service": "radarr",
+      "com.docker.compose.version": "1.29.2",
+      "maintainer": "thelamer",
+      "org.opencontainers.image.authors": "linuxserver.io",
+      "org.opencontainers.image.created": "2023-03-06T17:03:10+01:00",
+      "org.opencontainers.image.description": "[Radarr](https://github.com/Radarr/Radarr) - A fork of Sonarr to work with movies à la Couchpotato.  ",
+      "org.opencontainers.image.documentation": "https://docs.linuxserver.io/images/docker-radarr",
+      "org.opencontainers.image.licenses": "GPL-3.0-only",
+      "org.opencontainers.image.ref.name": "9e06068d514afad735f37bb643b96f76b753d249",
+      "org.opencontainers.image.revision": "9e06068d514afad735f37bb643b96f76b753d249",
+      "org.opencontainers.image.source": "https://github.com/linuxserver/docker-radarr",
+      "org.opencontainers.image.title": "Radarr",
+      "org.opencontainers.image.url": "https://github.com/linuxserver/docker-radarr/packages",
+      "org.opencontainers.image.vendor": "linuxserver.io",
+      "org.opencontainers.image.version": "4.3.2.6857-ls164",
+      "traefik.enable": "true",
+      "traefik.http.routers.radarr.entrypoints": "websecure",
+      "traefik.http.routers.radarr.rule": "Host(`radarr.prod.yavin.xyz`)",
+      "traefik.http.routers.radarr.service": "radarr",
+      "traefik.http.services.radarr.loadbalancer.server.port": "7878"
+    },
+    "State": "running",
+    "Status": "Up 9 hours",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "5af213d04deb90d851ab0dfa4db1af44ca64e1fbdeb8426b5e8fc108d54ee5b3",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.15",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:0f",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "radarr_data",
+        "Source": "/var/lib/docker/volumes/radarr_data/_data",
+        "Destination": "/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/radarr/config",
+        "Destination": "/config",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "39699c18c66340ebf28dcf3385311e7607fdc643dfa50bc7e17ebcd07b917cb4",
+    "Names": [
+      "/sonarr"
+    ],
+    "Image": "ghcr.io/linuxserver/sonarr:latest",
+    "ImageID": "sha256:794046b6fe2e9c5ed15f07fa6ae6a5227850ca643645756f233dac43a09d8213",
+    "Command": "/init",
+    "Created": 1678270841,
+    "Ports": [
+      {
+        "PrivatePort": 8989,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "build_version": "Linuxserver.io version:- 3.0.10.1566-ls182 Build-date:- 2023-03-07T07:44:54-06:00",
+      "com.docker.compose.config-hash": "ec05e6860b06e5d28444250a6e783aeab43682d3d081541fdd7d0f0bc10b1383",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "sonarr",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/sonarr/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/sonarr",
+      "com.docker.compose.service": "sonarr",
+      "com.docker.compose.version": "1.29.2",
+      "maintainer": "aptalca",
+      "org.opencontainers.image.authors": "linuxserver.io",
+      "org.opencontainers.image.created": "2023-03-07T07:44:54-06:00",
+      "org.opencontainers.image.description": "[Sonarr](https://sonarr.tv/) (formerly NZBdrone) is a PVR for usenet and bittorrent users. It can monitor multiple RSS feeds for new episodes of your favorite shows and will grab, sort and rename them. It can also be configured to automatically upgrade the quality of files already downloaded when a better quality format becomes available.  ",
+      "org.opencontainers.image.documentation": "https://docs.linuxserver.io/images/docker-sonarr",
+      "org.opencontainers.image.licenses": "GPL-3.0-only",
+      "org.opencontainers.image.ref.name": "401076de8295d32acb49fc1f4ee62fd2f9d23803",
+      "org.opencontainers.image.revision": "401076de8295d32acb49fc1f4ee62fd2f9d23803",
+      "org.opencontainers.image.source": "https://github.com/linuxserver/docker-sonarr",
+      "org.opencontainers.image.title": "Sonarr",
+      "org.opencontainers.image.url": "https://github.com/linuxserver/docker-sonarr/packages",
+      "org.opencontainers.image.vendor": "linuxserver.io",
+      "org.opencontainers.image.version": "3.0.10.1566-ls182",
+      "traefik.enable": "true",
+      "traefik.http.routers.sonarr.entrypoints": "websecure",
+      "traefik.http.routers.sonarr.rule": "Host(`sonarr.prod.yavin.xyz`)",
+      "traefik.http.routers.sonarr.service": "sonarr",
+      "traefik.http.services.sonarr.loadbalancer.server.port": "8989"
+    },
+    "State": "running",
+    "Status": "Up 10 hours",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "7293cf85eb4ab033bb1438bdc7862a64c427c8ab6d4c2b47e633ab0cf115e915",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.14",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:0e",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/sonarr/config",
+        "Destination": "/config",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "sonarr_data",
+        "Source": "/var/lib/docker/volumes/sonarr_data/_data",
+        "Destination": "/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "8a691f3adb30a821c34cf59f4a74ef5bcd7862148c9ea3c009d080a9f349d9a9",
+    "Names": [
+      "/transmission-flood"
+    ],
+    "Image": "jesec/flood:latest",
+    "ImageID": "sha256:9da744a156299687929ef288adeb9ce298ee8c3ceea2c1431f8509b4ca310e12",
+    "Command": "/sbin/tini -- flood",
+    "Created": 1678187380,
+    "Ports": [
+      {
+        "PrivatePort": 3000,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "d2ceae91547f04b974b84369eb2e5c1d38f948340b325abc83b6eab9d3dd8893",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "transmission",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/transmission/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/transmission",
+      "com.docker.compose.service": "transmission-flood",
+      "com.docker.compose.version": "1.29.2",
+      "traefik.enable": "true",
+      "traefik.http.routers.flood.entrypoints": "websecure",
+      "traefik.http.routers.flood.rule": "Host(`transmission.prod.yavin.xyz`) && PathPrefix(`/flood`)",
+      "traefik.http.routers.flood.service": "flood",
+      "traefik.http.services.flood.loadbalancer.server.port": "3000"
+    },
+    "State": "running",
+    "Status": "Up 33 hours",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "ef88923155b58cbdc6299caf8260677f44148bbd25b7d2f730ef7e3ccabfdfc1",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.12",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:0c",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": []
+  },
+  {
+    "Id": "b28df27ea8a49a7ce501eecdde507c88a82cc4e159ecfeef6c2a18bef56241f3",
+    "Names": [
+      "/transmission"
+    ],
+    "Image": "ghcr.io/linuxserver/transmission:latest",
+    "ImageID": "sha256:15dce0054250e39aa3c69fb0fe9f8215c330aa25400d457b905755356dfeb258",
+    "Command": "/init",
+    "Created": 1678187270,
+    "Ports": [
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 51413,
+        "PublicPort": 51413,
+        "Type": "udp"
+      },
+      {
+        "IP": "::",
+        "PrivatePort": 51413,
+        "PublicPort": 51413,
+        "Type": "udp"
+      },
+      {
+        "PrivatePort": 9091,
+        "Type": "tcp"
+      },
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 51413,
+        "PublicPort": 51413,
+        "Type": "tcp"
+      },
+      {
+        "IP": "::",
+        "PrivatePort": 51413,
+        "PublicPort": 51413,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "build_version": "Linuxserver.io version:- 4.0.1-r0-ls158 Build-date:- 2023-03-01T21:41:47-06:00",
+      "com.docker.compose.config-hash": "2be5ee92dc0504bfa7251aeb175805b5a2c7ab464a54e392f5e0daf28b0fe3ce",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "transmission",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/transmission/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/transmission",
+      "com.docker.compose.service": "transmission",
+      "com.docker.compose.version": "1.29.2",
+      "maintainer": "aptalca",
+      "org.opencontainers.image.authors": "linuxserver.io",
+      "org.opencontainers.image.created": "2023-03-01T21:41:47-06:00",
+      "org.opencontainers.image.description": "[Transmission](https://www.transmissionbt.com/) is designed for easy, powerful use. Transmission has the features you want from a BitTorrent client: encryption, a web interface, peer exchange, magnet links, DHT, µTP, UPnP and NAT-PMP port forwarding, webseed support, watch directories, tracker editing, global and per-torrent speed limits, and more.",
+      "org.opencontainers.image.documentation": "https://docs.linuxserver.io/images/docker-transmission",
+      "org.opencontainers.image.licenses": "GPL-3.0-only",
+      "org.opencontainers.image.ref.name": "df76b33e0a8e72f198afde24e9845c8dff5bfdc1",
+      "org.opencontainers.image.revision": "df76b33e0a8e72f198afde24e9845c8dff5bfdc1",
+      "org.opencontainers.image.source": "https://github.com/linuxserver/docker-transmission",
+      "org.opencontainers.image.title": "Transmission",
+      "org.opencontainers.image.url": "https://github.com/linuxserver/docker-transmission/packages",
+      "org.opencontainers.image.vendor": "linuxserver.io",
+      "org.opencontainers.image.version": "4.0.1-r0-ls158",
+      "traefik.enable": "true",
+      "traefik.http.routers.transmission.entrypoints": "websecure",
+      "traefik.http.routers.transmission.rule": "Host(`transmission.prod.yavin.xyz`) && PathPrefix(`/transmission`)",
+      "traefik.http.routers.transmission.service": "transmission",
+      "traefik.http.services.transmission.loadbalancer.server.port": "9091"
+    },
+    "State": "running",
+    "Status": "Up 33 hours",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "995c81987cfa97dbcc0654f67f1b92f1ece0a4874657509c83d044ca6fa76a50",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.11",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:0b",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "transmission_downloads",
+        "Source": "/var/lib/docker/volumes/transmission_downloads/_data",
+        "Destination": "/downloads",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "transmission_watch",
+        "Source": "/var/lib/docker/volumes/transmission_watch/_data",
+        "Destination": "/watch",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/transmission/data",
+        "Destination": "/config",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "070857649a7a5e0a7c8218e8c06374a2bb7cafff47267766c6dc93ab138f34aa",
+    "Names": [
+      "/lidarr"
+    ],
+    "Image": "ghcr.io/linuxserver/lidarr:latest",
+    "ImageID": "sha256:176aaada2b663fcf2578339df641e1acf02b3a024a22e8063aecc376e1d568fb",
+    "Command": "/init",
+    "Created": 1678185084,
+    "Ports": [
+      {
+        "PrivatePort": 8686,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "build_version": "Linuxserver.io version:- 1.0.2.2592-ls113 Build-date:- 2023-03-04T09:02:54-06:00",
+      "com.docker.compose.config-hash": "6ae3945f39286f2a5e582440a9d0fa00020bdc01c432eb1d10823310ec926147",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "lidarr",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/lidarr/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/lidarr",
+      "com.docker.compose.service": "lidarr",
+      "com.docker.compose.version": "1.29.2",
+      "maintainer": "thelamer",
+      "org.opencontainers.image.authors": "linuxserver.io",
+      "org.opencontainers.image.created": "2023-03-04T09:02:54-06:00",
+      "org.opencontainers.image.description": "[Lidarr](https://github.com/lidarr/Lidarr) is a music collection manager for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new tracks from your favorite artists and will grab, sort and rename them. It can also be configured to automatically upgrade the quality of files already downloaded when a better quality format becomes available.",
+      "org.opencontainers.image.documentation": "https://docs.linuxserver.io/images/docker-lidarr",
+      "org.opencontainers.image.licenses": "GPL-3.0-only",
+      "org.opencontainers.image.ref.name": "b8d42a6aeb0e4bac704893bf8fa37438e0966331",
+      "org.opencontainers.image.revision": "b8d42a6aeb0e4bac704893bf8fa37438e0966331",
+      "org.opencontainers.image.source": "https://github.com/linuxserver/docker-lidarr",
+      "org.opencontainers.image.title": "Lidarr",
+      "org.opencontainers.image.url": "https://github.com/linuxserver/docker-lidarr/packages",
+      "org.opencontainers.image.vendor": "linuxserver.io",
+      "org.opencontainers.image.version": "1.0.2.2592-ls113",
+      "traefik.enable": "true",
+      "traefik.http.routers.lidarr.entrypoints": "websecure",
+      "traefik.http.routers.lidarr.rule": "Host(`lidarr.prod.yavin.xyz`)",
+      "traefik.http.routers.lidarr.service": "lidarr",
+      "traefik.http.services.lidarr.loadbalancer.server.port": "8686"
+    },
+    "State": "running",
+    "Status": "Up 34 hours",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "b17c38fede3770dbfe9a66233d97be32b2efd45067eeb8dc74666de69c9bf8c9",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.16",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:10",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/lidarr/data",
+        "Destination": "/config",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "51ebd1e1b58150d8128d2c8a980b54c59ddea328404bb170f9df25c794556d53",
+    "Names": [
+      "/cyberchef"
+    ],
+    "Image": "mpepping/cyberchef:latest",
+    "ImageID": "sha256:4b92ab827e2613627063e319838972d5e93504a104c9839460e492851d31c898",
+    "Command": "/docker-entrypoint.sh nginx -g 'daemon off;'",
+    "Created": 1678183476,
+    "Ports": [
+      {
+        "PrivatePort": 8000,
+        "Type": "tcp"
+      },
+      {
+        "PrivatePort": 8080,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "b2f98e4935c3bf529db8ad669435c2515198a2b8e8cde9cd7780133441768059",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "cyberchef",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/cyberchef/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/cyberchef",
+      "com.docker.compose.service": "cyberchef",
+      "com.docker.compose.version": "1.29.2",
+      "maintainer": "Martijn Pepping <martijn.pepping@automiq.nl>",
+      "org.label-schema.description": "CyberChef",
+      "org.label-schema.docker.cmd": "docker run -it mpepping/cyberchef:latest",
+      "org.label-schema.name": "mpepping/cyberchef",
+      "org.label-schema.schema-version": "1.0",
+      "org.label-schema.url": "https://github.com/mpepping/docker-cyberchef",
+      "org.label-schema.vcs-ref": "github.com/mpepping/docker-cyberchef",
+      "org.label-schema.vcs-url": "https://github.com/mpepping/docker-cyberchef",
+      "org.label-schema.vendor": "Martijn Pepping",
+      "traefik.enable": "true",
+      "traefik.http.routers.cyberchef.entrypoints": "websecure",
+      "traefik.http.routers.cyberchef.rule": "Host(`cyberchef.prod.yavin.xyz`)",
+      "traefik.http.routers.cyberchef.service": "cyberchef",
+      "traefik.http.services.cyberchef.loadbalancer.server.port": "8000"
+    },
+    "State": "running",
+    "Status": "Up 34 hours",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "5a6ddb45d5ae4b2373462c32d1b5bfed091a9a235337c5cabe91d2e5c6aaf5ae",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.5",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:05",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": []
+  },
+  {
+    "Id": "fc8575f529182a1dbe595e4ae18493242e9ef7f72d0aefd1c3da39509aaafe69",
+    "Names": [
+      "/prowlarr"
+    ],
+    "Image": "ghcr.io/linuxserver/prowlarr:latest",
+    "ImageID": "sha256:31654343e099b863e93a61db84c31053d6d10978f031537157d517519ee08750",
+    "Command": "/init",
+    "Created": 1678178493,
+    "Ports": [
+      {
+        "PrivatePort": 9696,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "build_version": "Linuxserver.io version:- 1.2.2.2699-ls7 Build-date:- 2023-03-03T16:58:56+01:00",
+      "com.docker.compose.config-hash": "6e2ce5a3d90328ae311468aef59fea775703e4683b2c3f5822408cf3047b9e60",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "prowlarr",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/prowlarr/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/prowlarr",
+      "com.docker.compose.service": "prowlarr",
+      "com.docker.compose.version": "1.29.2",
+      "maintainer": "Roxedus,thespad",
+      "org.opencontainers.image.authors": "linuxserver.io",
+      "org.opencontainers.image.created": "2023-03-03T16:58:56+01:00",
+      "org.opencontainers.image.description": "[Prowlarr](https://github.com/Prowlarr/Prowlarr) is a indexer manager/proxy built on the popular arr .net/reactjs base stack to integrate with your various PVR apps. Prowlarr supports both Torrent Trackers and Usenet Indexers. It integrates seamlessly with Sonarr, Radarr, Lidarr, and Readarr offering complete management of your indexers with no per app Indexer setup required (we do it all).  ",
+      "org.opencontainers.image.documentation": "https://docs.linuxserver.io/images/docker-prowlarr",
+      "org.opencontainers.image.licenses": "GPL-3.0-only",
+      "org.opencontainers.image.ref.name": "de1af557f1aabdad0d21129b52cec1bbf8f57dac",
+      "org.opencontainers.image.revision": "de1af557f1aabdad0d21129b52cec1bbf8f57dac",
+      "org.opencontainers.image.source": "https://github.com/linuxserver/docker-prowlarr",
+      "org.opencontainers.image.title": "Prowlarr",
+      "org.opencontainers.image.url": "https://github.com/linuxserver/docker-prowlarr/packages",
+      "org.opencontainers.image.vendor": "linuxserver.io",
+      "org.opencontainers.image.version": "1.2.2.2699-ls7",
+      "traefik.enable": "true",
+      "traefik.http.routers.prowlarr.entrypoints": "websecure",
+      "traefik.http.routers.prowlarr.rule": "Host(`prowlarr.prod.yavin.xyz`)",
+      "traefik.http.routers.prowlarr.service": "prowlarr",
+      "traefik.http.services.prowlarr.loadbalancer.server.port": "9696"
+    },
+    "State": "running",
+    "Status": "Up 36 hours",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "4350ce61f5b20e91c57f80acd29c734f2681a35a76c581adb5917a4c95cac38d",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.13",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:0d",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/prowlarr/config",
+        "Destination": "/config",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "af59d956601046e04b75ee9d100bc3ada13fdfe6db8c263bf7240598791edcc1",
+    "Names": [
+      "/vaultwarden"
+    ],
+    "Image": "vaultwarden/server:latest",
+    "ImageID": "sha256:241447ae76e9de0d377a5a2bc9efbb9309286cba1333fedd497010a5b5baae56",
+    "Command": "/start.sh",
+    "Created": 1678085265,
+    "Ports": [
+      {
+        "PrivatePort": 3012,
+        "Type": "tcp"
+      },
+      {
+        "PrivatePort": 80,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "1bc0e55bd4748f77dcb91b26f60c6e17a119ef21d70d787caf8aa33e4eb85be3",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "vaultwarden",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/vaultwarden/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/vaultwarden",
+      "com.docker.compose.service": "vaultwarden",
+      "com.docker.compose.version": "1.29.2",
+      "org.opencontainers.image.created": "2022-12-24T15:53:16+00:00",
+      "org.opencontainers.image.documentation": "https://github.com/dani-garcia/vaultwarden/wiki",
+      "org.opencontainers.image.licenses": "GPL-3.0-only",
+      "org.opencontainers.image.revision": "10dadfca068ed449fcd4a74b70ae2cd83990d3d4",
+      "org.opencontainers.image.source": "https://github.com/dani-garcia/vaultwarden",
+      "org.opencontainers.image.url": "https://hub.docker.com/r/vaultwarden/server",
+      "org.opencontainers.image.version": "1.27.0",
+      "traefik.enable": "true",
+      "traefik.http.routers.vaultwarden-websocket.entrypoints": "websecure",
+      "traefik.http.routers.vaultwarden-websocket.rule": "Host(`vaultwarden.prod.yavin.xyz`) && Path(`/notifications/hub`)",
+      "traefik.http.routers.vaultwarden-websocket.service": "vaultwarden-websocket",
+      "traefik.http.routers.vaultwarden.entrypoints": "websecure",
+      "traefik.http.routers.vaultwarden.rule": "Host(`vaultwarden.prod.yavin.xyz`)",
+      "traefik.http.routers.vaultwarden.service": "vaultwarden",
+      "traefik.http.services.vaultwarden-websocket.loadbalancer.server.port": "3012",
+      "traefik.http.services.vaultwarden.loadbalancer.server.port": "80"
+    },
+    "State": "running",
+    "Status": "Up 2 days (healthy)",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "b46fbadb3ac1045c4a2b8de2e6436b360e535d66c6354744011e0861f9d6b585",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.10",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:0a",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/vaultwarden/data",
+        "Destination": "/data",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "509d8480c5062dd762fb303713a057b686d24272fa8b6a938bc2edfc83a8d9d5",
+    "Names": [
+      "/mealie-frontend"
+    ],
+    "Image": "hkotel/mealie:frontend-v1.0.0beta-5",
+    "ImageID": "sha256:2778fd95c0fd67ea63ede0df7f5b6d7ea53354ea61a0c3b266582593fbf9ca6a",
+    "Command": "/bin/sh -c /app/run.sh",
+    "Created": 1678023830,
+    "Ports": [
+      {
+        "PrivatePort": 3000,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "eabada242c921c22e159d85e5a45974c3f6d135c707734c2777d6408ae50435e",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "mealie",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/mealie/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/mealie",
+      "com.docker.compose.service": "mealie-frontend",
+      "com.docker.compose.version": "1.29.2",
+      "traefik.enable": "true",
+      "traefik.http.routers.mealie.entrypoints": "websecure",
+      "traefik.http.routers.mealie.rule": "Host(`mealie.prod.yavin.xyz`)",
+      "traefik.http.routers.mealie.service": "mealie",
+      "traefik.http.services.mealie.loadbalancer.server.port": "3000"
+    },
+    "State": "running",
+    "Status": "Up 3 days",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "3f8fcc44044e5ffb105e162ed13303eeaab110280b9ac3c49074586a4212ff77",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.9",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:09",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/mealie/data",
+        "Destination": "/app/data",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "9116169c33e368eb30b7b8b79b732456c15fbf7a83a049b5039c2e978c4ba443",
+    "Names": [
+      "/mealie-api"
+    ],
+    "Image": "hkotel/mealie:api-v1.0.0beta-5",
+    "ImageID": "sha256:f1a02be39e07a76b22eda29e99ce701b36a13dfa3fa6cca6867781dd6b6f0c37",
+    "Command": "/bin/sh -c $MEALIE_HOME/mealie/run.sh",
+    "Created": 1678021680,
+    "Ports": [
+      {
+        "PrivatePort": 9000,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "66c8761cce58f8d3b74dd179e1eab978e646b24ce207f96ccbb1a49adbbe3400",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "mealie",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/mealie/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/mealie",
+      "com.docker.compose.service": "mealie-api",
+      "com.docker.compose.version": "1.29.2"
+    },
+    "State": "running",
+    "Status": "Up 3 days (healthy)",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "3fbc4bc9758c34f7e96eca05885f6f6e4295248a9337d43b36eade1ce5f58324",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.8",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:08",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/mealie/data",
+        "Destination": "/app/data",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "beccd6d83a1bc8610177659dd31b4a1d8de877e6df768be1c3e0ff8ddf92ff56",
+    "Names": [
+      "/portainer"
+    ],
+    "Image": "portainer/portainer-ce:latest",
+    "ImageID": "sha256:a87d51c7a32408ba63e65888d023ad7d4328fd575d8a4c8bd8cffa495fcd055c",
+    "Command": "/portainer",
+    "Created": 1678007025,
+    "Ports": [
+      {
+        "PrivatePort": 8000,
+        "Type": "tcp"
+      },
+      {
+        "PrivatePort": 9000,
+        "Type": "tcp"
+      },
+      {
+        "PrivatePort": 9443,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "a1a379eabe0afeda681318e4991709919b79bb24560a3c3d9d1cd2a843f5dd52",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "portainer",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/portainer/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/portainer",
+      "com.docker.compose.service": "portainer",
+      "com.docker.compose.version": "1.29.2",
+      "com.docker.desktop.extension.api.version": ">= 0.2.2",
+      "com.docker.desktop.extension.icon": "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/logos/portainer.png",
+      "com.docker.extension.additional-urls": "[{\"title\":\"Website\",\"url\":\"https://www.portainer.io?utm_campaign=DockerCon&utm_source=DockerDesktop\"},{\"title\":\"Documentation\",\"url\":\"https://docs.portainer.io\"},{\"title\":\"Support\",\"url\":\"https://join.slack.com/t/portainer/shared_invite/zt-txh3ljab-52QHTyjCqbe5RibC2lcjKA\"}]",
+      "com.docker.extension.detailed-description": "<p data-renderer-start-pos=\"226\">Portainer&rsquo;s Docker Desktop extension gives you access to all of Portainer&rsquo;s rich management functionality within your docker desktop experience.</p><h2 data-renderer-start-pos=\"374\">With Portainer you can:</h2><ul><li>See all your running containers</li><li>Easily view all of your container logs</li><li>Console into containers</li><li>Easily deploy your code into containers using a simple form</li><li>Turn your YAML into custom templates for easy reuse</li></ul><h2 data-renderer-start-pos=\"660\">About Portainer&nbsp;</h2><p data-renderer-start-pos=\"680\">Portainer is the worlds&rsquo; most popular universal container management platform with more than 650,000 active monthly users. Portainer can be used to manage Docker Standalone, Kubernetes, Docker Swarm and Nomad environments through a single common interface. It includes a simple GitOps automation engine and a Kube API.&nbsp;</p><p data-renderer-start-pos=\"1006\">Portainer Business Edition is our fully supported commercial grade product for business-wide use. It includes all the functionality that businesses need to manage containers at scale. Visit <a class=\"sc-jKJlTe dPfAtb\" href=\"http://portainer.io/\" title=\"http://Portainer.io\" data-renderer-mark=\"true\">Portainer.io</a> to learn more about Portainer Business and <a class=\"sc-jKJlTe dPfAtb\" href=\"http://portainer.io/take5?utm_campaign=DockerCon&amp;utm_source=Docker%20Desktop\" title=\"http://portainer.io/take5?utm_campaign=DockerCon&amp;utm_source=Docker%20Desktop\" data-renderer-mark=\"true\">get 5 free nodes.</a></p>",
+      "com.docker.extension.publisher-url": "https://www.portainer.io",
+      "com.docker.extension.screenshots": "[{\"alt\": \"screenshot one\", \"url\": \"https://portainer-io-assets.sfo2.digitaloceanspaces.com/screenshots/docker-extension-1.png\"},{\"alt\": \"screenshot two\", \"url\": \"https://portainer-io-assets.sfo2.digitaloceanspaces.com/screenshots/docker-extension-2.png\"},{\"alt\": \"screenshot three\", \"url\": \"https://portainer-io-assets.sfo2.digitaloceanspaces.com/screenshots/docker-extension-3.png\"},{\"alt\": \"screenshot four\", \"url\": \"https://portainer-io-assets.sfo2.digitaloceanspaces.com/screenshots/docker-extension-4.png\"},{\"alt\": \"screenshot five\", \"url\": \"https://portainer-io-assets.sfo2.digitaloceanspaces.com/screenshots/docker-extension-5.png\"},{\"alt\": \"screenshot six\", \"url\": \"https://portainer-io-assets.sfo2.digitaloceanspaces.com/screenshots/docker-extension-6.png\"},{\"alt\": \"screenshot seven\", \"url\": \"https://portainer-io-assets.sfo2.digitaloceanspaces.com/screenshots/docker-extension-7.png\"},{\"alt\": \"screenshot eight\", \"url\": \"https://portainer-io-assets.sfo2.digitaloceanspaces.com/screenshots/docker-extension-8.png\"},{\"alt\": \"screenshot nine\", \"url\": \"https://portainer-io-assets.sfo2.digitaloceanspaces.com/screenshots/docker-extension-9.png\"}]",
+      "io.portainer.server": "true",
+      "org.opencontainers.image.description": "Docker container management made simple, with the world’s most popular GUI-based container management platform.",
+      "org.opencontainers.image.title": "Portainer",
+      "org.opencontainers.image.vendor": "Portainer.io",
+      "traefik.enable": "true",
+      "traefik.http.routers.portainer.entrypoints": "websecure",
+      "traefik.http.routers.portainer.rule": "Host(`portainer.prod.yavin.xyz`)",
+      "traefik.http.routers.portainer.service": "portainer",
+      "traefik.http.services.portainer.loadbalancer.server.port": "9000"
+    },
+    "State": "running",
+    "Status": "Up 3 days",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "8db6df16dc70ef94fc05f2d1f1c318d3dd544f0c283d1fed9a4e47da5ef3466b",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.3",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:03",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/portainer/data",
+        "Destination": "/data",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/var/run/docker.sock",
+        "Destination": "/var/run/docker.sock",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "075cba3f0ebe48388c833e9bdf803763e6f038ef356b60b8a8e97124b6178799",
+    "Names": [
+      "/diun"
+    ],
+    "Image": "crazymax/diun:latest",
+    "ImageID": "sha256:bbfeeba32adb8a2c17d4d7d65c7414f41a3a2e3a67565e8b357758aeef47acee",
+    "Command": "diun serve",
+    "Created": 1678006072,
+    "Ports": [],
+    "Labels": {
+      "com.docker.compose.config-hash": "8895a11daa1eec47bee913690863a0d7c48029db27f669a537a82af2ee636a1e",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "diun",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/diun/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/diun",
+      "com.docker.compose.service": "diun",
+      "com.docker.compose.version": "1.29.2",
+      "org.opencontainers.image.created": "2022-12-29T11:16:29.306Z",
+      "org.opencontainers.image.description": "Docker image update notifier",
+      "org.opencontainers.image.licenses": "MIT",
+      "org.opencontainers.image.revision": "463130b67fb20225bb3178a2689fedae704e6216",
+      "org.opencontainers.image.source": "https://github.com/crazy-max/diun",
+      "org.opencontainers.image.title": "Diun",
+      "org.opencontainers.image.url": "https://github.com/crazy-max/diun",
+      "org.opencontainers.image.vendor": "CrazyMax",
+      "org.opencontainers.image.version": "4.24.0"
+    },
+    "State": "running",
+    "Status": "Up 3 days",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "c88fe277746774d54a4035cc92dda47cec1bdd7752074568c631f69284242ca6",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.7",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:07",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/diun/data",
+        "Destination": "/data",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/rsandor/docker/diun/diun.yml",
+        "Destination": "/diun.yml",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/var/run/docker.sock",
+        "Destination": "/var/run/docker.sock",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "fb01c372a172c442db1e09bf8e468cc5d7e01ca1f8e8353fcc14fe0d1beca779",
+    "Names": [
+      "/excalidraw"
+    ],
+    "Image": "excalidraw/excalidraw:latest",
+    "ImageID": "sha256:21f55ec2361fba7e0c3738f3bdfbd479a1eb56fca679ec49d534b15f1d2a01e0",
+    "Command": "/docker-entrypoint.sh nginx -g 'daemon off;'",
+    "Created": 1678003089,
+    "Ports": [
+      {
+        "PrivatePort": 80,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "f26379e49cc30764d88e8fd89d35cfa05cec93de3496e759ea6ba1101b5c44ce",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "excalidraw",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/excalidraw/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/excalidraw",
+      "com.docker.compose.service": "excalidraw",
+      "com.docker.compose.version": "1.29.2",
+      "domain": "prod.yavin.xyz",
+      "maintainer": "NGINX Docker Maintainers <docker-maint@nginx.com>",
+      "traefik.enable": "true",
+      "traefik.http.routers.excalidraw.entrypoints": "websecure",
+      "traefik.http.routers.excalidraw.rule": "Host(`excalidraw.prod.yavin.xyz`)",
+      "traefik.http.routers.excalidraw.service": "excalidraw",
+      "traefik.http.services.excalidraw.loadbalancer.server.port": "80"
+    },
+    "State": "running",
+    "Status": "Up 3 days (healthy)",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "9344454ce3841d0571a82aa875ed4f83d2f2d991646386aa134d66629c577ebb",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.6",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:06",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": []
+  },
+  {
+    "Id": "c828b2e9aab6b244266f1b5409c63d6b72aa9a5bd101bc7e2a2fe5d3a3701943",
+    "Names": [
+      "/docker-socket-proxy"
+    ],
+    "Image": "ghcr.io/tecnativa/docker-socket-proxy:latest",
+    "ImageID": "sha256:e419047c5d433fa7f9e45cbf3117255a6114a5e1c66dbef7cd8cbe500bbe16e9",
+    "Command": "/docker-entrypoint.sh haproxy -f /usr/local/etc/haproxy/haproxy.cfg",
+    "Created": 1678003084,
+    "Ports": [
+      {
+        "PrivatePort": 2375,
+        "Type": "tcp"
+      }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "25b4f535ee379b3bdc616c130e64226cf2a79d28588dcdf4bab18500e3d7723e",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "docker-socket-proxy",
+      "com.docker.compose.project.config_files": "/home/rsandor/docker/docker-socket-proxy/compose.yml",
+      "com.docker.compose.project.working_dir": "/home/rsandor/docker/docker-socket-proxy",
+      "com.docker.compose.service": "docker-socket-proxy",
+      "com.docker.compose.version": "1.29.2",
+      "org.opencontainers.image.created": "2021-01-26T10:32:59.090Z",
+      "org.opencontainers.image.description": "Proxy over your Docker socket to restrict which requests it accepts",
+      "org.opencontainers.image.licenses": "Apache-2.0",
+      "org.opencontainers.image.revision": "b911e572d0d65c672f4da6d2ef06d7d95c89de6d",
+      "org.opencontainers.image.source": "https://github.com/Tecnativa/docker-socket-proxy",
+      "org.opencontainers.image.title": "docker-socket-proxy",
+      "org.opencontainers.image.url": "https://github.com/Tecnativa/docker-socket-proxy",
+      "org.opencontainers.image.vendor": "Tecnativa",
+      "org.opencontainers.image.version": "0.1.1",
+      "traefik.enable": "true",
+      "traefik.http.routers.docker-socket-proxy.entrypoints": "websecure",
+      "traefik.http.routers.docker-socket-proxy.rule": "Host(`docker.prod.yavin.xyz`)",
+      "traefik.http.routers.docker-socket-proxy.service": "docker-socket-proxy",
+      "traefik.http.services.docker-socket-proxy.loadbalancer.server.port": "2375"
+    },
+    "State": "running",
+    "Status": "Up 3 days",
+    "HostConfig": {
+      "NetworkMode": "apps"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "apps": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "NetworkID": "55ce19370e9ad21f07f18f1f773dbaaa940799ceb0b1400011f4632be979e759",
+          "EndpointID": "333b5b71d489176c5d6a0e7656549cecddda0abc40c5054424fb234c1133ad68",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.4",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "MacAddress": "02:42:ac:12:00:04",
+          "DriverOpts": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/var/run/docker.sock",
+        "Destination": "/var/run/docker.sock",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  }
+]

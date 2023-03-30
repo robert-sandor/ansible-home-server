@@ -1,0 +1,17 @@
+---
+simplydash_version: latest
+simplydash_network: apps
+
+simplydash_title: "{{ domain }}"
+simplydash_theme: dark
+simplydash_backgroundImage: ""
+
+simplydash_dockers:
+  local: 
+    host: http://docker-socket-proxy:2375
+
+simplydash_groups: []
+simplydash_services: []
+
+simplydash_log_level: info
+simplydash_log_format: text

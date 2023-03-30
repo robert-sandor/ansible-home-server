@@ -17,7 +17,7 @@
     dest: "{{ project_dir }}/template/compose.yml"
     owner: "{{ ansible_facts.user_uid }}"
     group: "{{ ansible_facts.user_gid }}"
-    mode: 0644
+    mode: 0600
 
 - name: Setup docker network {{ template_network }}
   community.docker.docker_network:

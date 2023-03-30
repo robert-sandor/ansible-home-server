@@ -15,8 +15,13 @@ services:
       - "--entrypoints.web.address=:80"
 {% if traefik_https %}
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
 {% if traefik_acme_enabled %}
+      - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.websecure.http.tls.certresolver=acme_provider"
+      - "--entrypoints.websecure.http.tls.domains[0].main={{ domain }}"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.{{ domain }}"
       - "--certificatesresolvers.acme_provider.acme.dnschallenge=true"
       - "--certificatesresolvers.acme_provider.acme.dnschallenge.provider={{ traefik_acme_provider }}"
       - "--certificatesresolvers.acme_provider.acme.email=$TRAEFIK_ACME_EMAIL"
@@ -27,7 +32,7 @@ services:
 {% if traefik_metrics %}
       - "--metrics.prometheus=true"
       - "--entryPoints.metrics.address=:8081"
-      - "--metrics.prometheus.entryPoint=metrics"
+      - "--metrics.prometheus.entrypoint=websecure"
 {% endif %}
     environment:
       - PUID={{ ansible_facts.user_uid }}
@@ -48,27 +53,21 @@ services:
 {% if traefik_https %}
       - 443:443
 {% endif %}
-{% if traefik_metrics %}
-      - 8081:8081
-{% endif %}
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 {% if traefik_https and traefik_acme_enabled %} 
       - {{ project_dir}}/traefik/acme-data:/letsencrypt
 {% endif %}
-      - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
-      - domain={{ domain }}
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.{{ domain }}`)
       - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik.tls.certresolver=acme_provider
-{% if 'flame' in apps %}
-      - flame.type=application
-      - flame.name=Traefik
-      - flame.url=traefik.{{ domain }}
-      - flame.icon=traffic-light
-{% endif %}
+      - simplydash.enable=true
+      - simplydash.name=Traefik
+      - simplydash.link=https://traefik.{{ domain }}
+      - simplydash.group=admin
+      - simplydash.description=Traefik Dashboard @ {{ ansible_facts.hostname }}
 
 networks:
   {{ traefik_network }}:

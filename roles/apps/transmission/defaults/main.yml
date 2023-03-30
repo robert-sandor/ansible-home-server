@@ -1,11 +1,10 @@
 ---
 transmission_version: latest
+transmission_flood_version: latest
 transmission_network: apps
 
 transmission_user: ""
 transmission_password: ""
-
-transmission_ui: flood-for-transmission
 
 transmission_storage: path
 

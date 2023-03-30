@@ -10,7 +10,6 @@ services:
       - PUID={{ ansible_facts.user_uid }}
       - PGID={{ ansible_facts.user_gid }}
       - TZ={{ timezone }}
-      - TRANSMISSION_WEB_HOME=/{{ transmission_ui }}/
       - USER={{ transmission_user }}
       - PASS={{ transmission_password }}
     volumes:
@@ -24,26 +23,46 @@ services:
 {% endif %}
     networks:
       - {{ transmission_network }}
+    expose:
+      - 9091
     ports:
       - 51413:51413
       - 51413:51413/udp
-      - 9091:9091
     labels:
-      - domain={{ domain }}
-{% if 'traefik' in apps %}
       - traefik.enable=true
-      - traefik.http.routers.transmission.rule=Host(`transmission.{{ domain }}`)
-      - traefik.http.routers.transmission.entrypoints=websecure
       - traefik.http.services.transmission.loadbalancer.server.port=9091
+      - traefik.http.routers.transmission.rule=Host(`transmission.{{ domain }}`) && PathPrefix(`/transmission`)
+      - traefik.http.routers.transmission.entrypoints=websecure
       - traefik.http.routers.transmission.service=transmission
-      - traefik.http.routers.transmission.tls.certresolver=acme_provider
-{% endif %}
-{% if 'flame' in apps %}
-      - flame.type=application
-      - flame.name=transmission
-      - flame.url=transmission.{{ domain }}
-      - flame.icon=download
-{% endif %}
+
+  transmission-flood:
+    container_name: transmission-flood
+    hostname: transmission-flood
+    image: jesec/flood:{{ transmission_flood_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    environment:
+      - TZ={{ timezone }}
+      - FLOOD_OPTION_AUTH=none
+      - FLOOD_OPTION_TRURL=http://transmission:9091/transmission/rpc
+      - FLOOD_OPTION_TRUSER={{ transmission_user }}
+      - FLOOD_OPTION_TRPASS={{ transmission_password }}
+      - FLOOD_OPTION_BASEURI=/flood
+    networks:
+      - {{ transmission_network }}
+    expose:
+      - 3000
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.flood.loadbalancer.server.port=3000
+      - traefik.http.routers.flood.rule=Host(`transmission.{{ domain }}`) && PathPrefix(`/flood`)
+      - traefik.http.routers.flood.entrypoints=websecure
+      - traefik.http.routers.flood.service=flood
+      - simplydash.enable=true
+      - simplydash.name=Transmission
+      - simplydash.description=Torrent Client
+      - simplydash.link=https://transmission.{{ domain }}/flood
+      - simplydash.group=apps
 
 networks:
   {{ transmission_network }}:

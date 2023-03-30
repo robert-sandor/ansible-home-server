@@ -1,0 +1,33 @@
+---
+
+{% for group in homepage_services | dict2items %}
+- {{ group.key }}:
+{% for service in group.value | dict2items %}
+    - {{ service.key }}:
+        href: {{ service.value.href }}
+        description: {{ service.value.description | default(service.value.href) }}
+        icon: {{ service.value.icon | default(service.key) }}
+        ping: {{ service.value.ping | default(service.value.href) }}
+{% if service.value.widget is defined %}
+        widget:
+            type: {{ service.value.widget.type | default(service.key) }}
+            url: {{ service.value.widget.url | default(service.value.href) }}
+{% if service.value.widget.key is defined %}
+            key: {{ service.value.widget.key }}
+{% endif %}
+{% if service.value.widget.env is defined %}
+            env: {{ service.value.widget.env }}
+{% endif %}
+{% if service.value.widget.fields is defined %}
+            fields: {{ service.value.widget.fields }}
+{% endif %}
+{% if service.value.widget.username is defined %}
+            username: {{ service.value.widget.username }}
+{% endif %}
+{% if service.value.widget.password is defined %}
+            password: {{ service.value.widget.password }}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% endfor %}

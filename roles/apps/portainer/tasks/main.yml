@@ -33,7 +33,7 @@
 
 - name: Configure Portainer
   vars:
-    portainer_api: http://localhost:9000/api
+    portainer_api: https://portainer.{{ domain }}/api
   block:
     - ansible.builtin.import_tasks: initialize_admin.yml
     - ansible.builtin.import_tasks: configure.yml

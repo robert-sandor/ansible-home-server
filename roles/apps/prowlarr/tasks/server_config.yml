@@ -1,0 +1,39 @@
+---
+- name: Get current server config
+  ansible.builtin.uri:
+    method: GET
+    url: "{{ prowlarr_api }}/config/host"
+    headers:
+      x-api-key: "{{ prowlarr_api_key }}"
+    status_code: 200
+  register: current_config_response
+  retries: 10
+  delay: 10
+  until: |
+    current_config_response.status > 0 and
+    current_config_response.status != 404
+  changed_when: false
+
+- name: Set new config
+  vars:
+    new_config: |
+      {{
+      current_config_response.json |
+      combine(default_prowlarr_config) |
+      combine(prowlarr_config | default({}))
+      }}
+  ansible.builtin.uri:
+    method: PUT
+    url: "{{ prowlarr_api }}/config/host"
+    headers:
+      x-api-key: "{{ prowlarr_api_key }}"
+    body_format: json
+    body: "{{ new_config }}"
+    status_code: 202
+  register: updated_config_response
+  retries: 10
+  delay: 10
+  until: |
+    updated_config_response.status > 0 and
+    updated_config_response.status != 404
+  changed_when: current_config_response.json != updated_config_response.json

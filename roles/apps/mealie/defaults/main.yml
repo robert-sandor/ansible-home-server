@@ -1,0 +1,20 @@
+---
+mealie_version: latest
+mealie_network: apps
+
+mealie_default_email: changeme@email.com
+mealie_default_password: MyPassword
+
+mealie_user_group: home
+
+mealie_admin_email: admin@{{ domain }}
+mealie_admin_password: P@ssw0rd!@#
+mealie_admin_username: admin
+mealie_admin_fullname: Admin Admin
+
+mealie_users:
+  user:
+    fullname: Mealie User
+    email: mealieuser@email.com
+    admin: false
+    password: P@ssw0rd!@#

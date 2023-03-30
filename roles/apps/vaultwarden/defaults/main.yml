@@ -1,0 +1,6 @@
+---
+vaultwarden_version: latest
+vaultwarden_network: apps
+
+vaultwarden_allow_signups: true
+vaultwarden_admin_token: ""

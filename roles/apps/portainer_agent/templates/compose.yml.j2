@@ -8,12 +8,16 @@ services:
     restart: unless-stopped
     networks:
       - {{ portainer_agent_network }}
-    ports:
-      - 9001:9001
+    expose:
+      - 9001
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
     labels:
-      - domain={{ domain }}
+      - traefik.enable=true
+      - traefik.http.services.portainer-agent.loadbalancer.server.port=9001
+      - traefik.http.routers.portainer-agent.rule=Host(`portainer-agent.{{ domain }}`)
+      - traefik.http.routers.portainer-agent.entrypoints=websecure
+      - traefik.http.routers.portainer-agent.service=portainer-agent
 
 networks:
   {{ portainer_agent_network }}:

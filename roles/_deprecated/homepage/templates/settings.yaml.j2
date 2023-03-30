@@ -1,0 +1,19 @@
+title: {{ domain }}
+
+theme: dark
+color: neutral
+
+headerStyle: clean
+
+target: _self
+
+quicklaunch:
+    searchDescriptions: true
+    hideInternetSearch: true
+
+layout:
+{% for group in homepage_layout | default({}) | dict2items %}
+    {{ group.key }}:
+        style: {{ group.value.style | default('row') }}
+        columns: {{ group.value.columns | default(3) }}
+{% endfor %}

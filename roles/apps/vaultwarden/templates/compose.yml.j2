@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  vaultwarden:
+    container_name: vaultwarden
+    hostname: vaultwarden
+    image: vaultwarden/server:{{ vaultwarden_version }}
+    restart: unless-stopped
+    user: "{{ ansible_facts.user_uid }}:{{ ansible_facts.user_gid }}"
+    environment:
+      - DOMAIN=https://vaultwarden.{{ domain }}
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED={{ vaultwarden_allow_signups }}
+      - ADMIN_TOKEN={{ vaultwarden_admin_token }}
+    volumes:
+      - {{ project_dir }}/vaultwarden/data/:/data/
+    networks:
+      - {{ vaultwarden_network }}
+    expose:
+      - 80
+      - 3012
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.vaultwarden.loadbalancer.server.port=80
+      - traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.{{ domain }}`)
+      - traefik.http.routers.vaultwarden.entrypoints=websecure
+      - traefik.http.routers.vaultwarden.service=vaultwarden
+      - traefik.http.services.vaultwarden-websocket.loadbalancer.server.port=3012
+      - traefik.http.routers.vaultwarden-websocket.rule=Host(`vaultwarden.{{ domain }}`) && Path(`/notifications/hub`)
+      - traefik.http.routers.vaultwarden-websocket.entrypoints=websecure
+      - traefik.http.routers.vaultwarden-websocket.service=vaultwarden-websocket
+      - simplydash.enable=true
+      - simplydash.name=Vaultwarden
+      - simplydash.description=Password Manager
+      - simplydash.link=https://vaultwarden.{{ domain }}
+      - simplydash.group=admin
+
+networks:
+  {{ vaultwarden_network }}:
+    external: true

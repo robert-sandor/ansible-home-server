@@ -24,19 +24,14 @@ services:
 {% endif %}
     networks:
       - {{ registry_network }}
-    ports:
-      - 5000:5000
+    expose:
+      - 5000
     labels:
-      - domain={{ domain }}
-{% if 'traefik' in apps %}
       - traefik.enable=true
+      - traefik.http.services.registry.loadbalancer.server.port=5000
       - traefik.http.routers.registry.rule=Host(`registry.{{ domain }}`)
       - traefik.http.routers.registry.entrypoints=websecure
-      - traefik.http.services.registry.loadbalancer.server.port=5000
       - traefik.http.routers.registry.service=registry
-      - traefik.http.routers.registry.tls=true
-      - traefik.http.routers.registry.tls.certresolver=acme_provider
-{% endif %}
 
 networks:
   {{ registry_network }}:

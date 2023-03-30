@@ -1,0 +1,15 @@
+- name: Create folder for Docker Socket Proxy
+  include_tasks: ../tasks/create_service_dir.yml
+  vars:
+    service: docker-socket-proxy
+    dir: data
+
+- name: Copy service docker-compose file
+  include_tasks: ../tasks/template_compose.yml
+  vars:
+    service: docker-socket-proxy
+
+- name: Start service
+  include_tasks: ../tasks/compose_up.yml
+  vars:
+    service: docker-socket-proxy

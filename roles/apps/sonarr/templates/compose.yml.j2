@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  sonarr:
+    container_name: sonarr
+    hostname: sonarr
+    image: ghcr.io/linuxserver/sonarr:{{ sonarr_version }}
+    restart: unless-stopped
+    environment:
+      - PUID={{ ansible_facts.user_uid }}
+      - PGID={{ ansible_facts.user_gid }}
+      - TZ={{ timezone }}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
+    volumes:
+      - {{ project_dir }}/sonarr/config:/config
+{% if 'nfs' == sonarr_data_storage %}
+      - data:/data
+{% elif 'path' == sonarr_data_storage %}
+      - {{ sonarr_data_path }}:/data
+{% endif %}
+    networks:
+      - {{ sonarr_network }}
+    expose:
+      - 8989
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.sonarr.loadbalancer.server.port=8989
+      - traefik.http.routers.sonarr.rule=Host(`sonarr.{{ domain }}`)
+      - traefik.http.routers.sonarr.entrypoints=websecure
+      - traefik.http.routers.sonarr.service=sonarr
+      - simplydash.enable=true
+      - simplydash.name=Sonarr
+      - simplydash.description=TV Series Manager
+      - simplydash.link=https://sonarr.{{ domain }}
+      - simplydash.group=media-management
+
+networks:
+  {{ sonarr_network }}:
+    external: true
+
+{% if 'nfs' == sonarr_data_storage %}
+volumes:
+  data:
+    driver_opts:
+      type: "nfs" 
+      o: "addr={{ sonarr_data_nfs_server }},{{ sonarr_data_nfs_opts }}"
+      device: ":{{ sonarr_data_nfs_path }}"
+
+{% endif %}
