@@ -32,3 +32,6 @@ services/cloudflared/files
 
 # Ignore telegraf conf
 services/telegraf/files/telegraf.conf
+
+# Ignore .DS_Store
+.DS_Store
