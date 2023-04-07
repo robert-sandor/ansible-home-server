@@ -2,11 +2,13 @@
 - name: Include host specific vars
   ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - files: [ "{{ inventory_hostname }}.yml" ]
+    - files: ["{{ inventory_hostname }}.yml"]
       skip: true
 
 - name: Create directory structure
-  ansible.builtin.import_role: name=common tasks_from=service_dir_structure
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: service_dir_structure
   vars:
     subdirs:
       - diun
@@ -18,7 +20,7 @@
     dest: "{{ project_dir }}/diun/diun.yml"
     owner: "{{ ansible_facts.user_uid }}"
     group: "{{ ansible_facts.user_gid }}"
-    mode: 0600
+    mode: "0600"
 
 - name: Template compose file
   ansible.builtin.template:
@@ -26,7 +28,7 @@
     dest: "{{ project_dir }}/diun/compose.yml"
     owner: "{{ ansible_facts.user_uid }}"
     group: "{{ ansible_facts.user_gid }}"
-    mode: 0644
+    mode: "0644"
 
 - name: Setup docker network {{ diun_network }}
   community.docker.docker_network:
